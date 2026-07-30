@@ -17,7 +17,7 @@ import xyz.aerii.library.api.client
 import xyz.aerii.library.handlers.Observable
 
 @Load
-@OnlyIn(islands = [SkyBlockIsland.THE_PARK])
+@OnlyIn(islands = [SkyBlockIsland.THE_PARK, SkyBlockIsland.PRIVATE_ISLAND])
 object AutoHarp : Module(
     "Auto harp",
     "Automatically does Melody's Harp for you!",
