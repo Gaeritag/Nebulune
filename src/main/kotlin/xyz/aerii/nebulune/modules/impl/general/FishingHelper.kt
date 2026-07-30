@@ -29,7 +29,7 @@ object FishingHelper : Module(
     private val `variance$pull` by config.slider("Delay variance", 0, 0, 3, "ticks").dependsOn { autoPull }
 
     private val recast by config.switch("Auto recast")
-    private val `recast$check` by config.switch("Recast check", true).dependsOn { recast }
+    private val `recast$check` by config.switch("Recast check").dependsOn { recast }
     private val `_recast$check` by config.textParagraph("Recast check checks if the fishing rod is already being used, and uses it if not.").dependsOn { recast }
     private val `delay$recast` by config.slider("Recast delay", 1, 0, 10, "ticks").dependsOn { recast }
     private val `variance$recast` by config.slider("Delay variance", 0, 0, 5, "ticks").dependsOn { recast }
@@ -60,7 +60,8 @@ object FishingHelper : Module(
             if (!`recast$check`) return@repeat
             val p = client.player ?: return@repeat
 
-            if (p.fishing != null && p.fishing?.hookedIn == null) return@repeat
+            val b = p.fishing
+            if (b != null && b.isAlive) return@repeat
             if (held?.item != Items.FISHING_ROD) return@repeat
 
             rightClick()
