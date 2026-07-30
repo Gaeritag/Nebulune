@@ -84,14 +84,26 @@ dependencies {
 
     rune("devauth".global)
 
-    //impl("athen-prod".versioned)
-    impl("athen-act".versioned) { exclude(group = "tech.thatgravyboat", module = "skyblock-api") }
+    impl("athen-prod".versioned)
+    //impl("athen-act".versioned) { exclude(group = "tech.thatgravyboat", module = "skyblock-api") }
     impl("modmenu".versioned)
     impl("fabric-api".versioned)
     impl("fabric-loader".global)
     impl("fabric-language-kotlin".global)
     impl("hypixel-modapi".global)
     impl("hypixel-modapi-fabric".global)
+
+    impl("ktor-client-core".global)
+    impl("ktor-client-cio".global)
+    impl("ktor-client-websockets".global)
+    impl("ktor-utils".global)
+    impl("ktor-io".global)
+    impl("ktor-http".global)
+    impl("ktor-http-cio".global)
+    impl("ktor-network".global)
+    impl("ktor-network-tls".global)
+    impl("ktor-events".global)
+    impl("ktor-websockets".global)
 
     impl("classgraph".global)
     impl("autoupdate".global)
