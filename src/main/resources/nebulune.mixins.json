@@ -1,6 +1,6 @@
 {
   "required": false,
-  "package": "xyz.aerii.nebulune.mixin",
+  "package": "foo.starred.nebulune.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [],
   "injectors": {

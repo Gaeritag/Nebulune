@@ -13,7 +13,7 @@
   "entrypoints": {
     "client": [
       {
-        "value": "xyz.aerii.nebulune.Nebulune",
+        "value": "foo.starred.nebulune.Nebulune",
         "adapter": "kotlin"
       }
     ]

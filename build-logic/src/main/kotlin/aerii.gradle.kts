@@ -41,7 +41,7 @@ plugins {
 val stonecutter = project.extensions.getByName("stonecutter") as dev.kikugie.stonecutter.build.StonecutterBuildExtension
 val new = stonecutter.current.parsed >= "26.1"
 val ver = stonecutter.current.version
-val java = if (new) 25 else 21
+val java = if (new) 25 else 25
 
 val loom = extensions.getByName<net.fabricmc.loom.api.LoomGradleExtensionAPI>("loom")
 val impl = if (new) "implementation" else "modImplementation"
@@ -64,11 +64,12 @@ repositories {
     strictMaven("https://repo.hypixel.net/repository/Hypixel", "net.hypixel")
     strictMaven("https://api.modrinth.com/maven", "maven.modrinth")
     strictMaven("https://maven.parchmentmc.org/", "org.parchmentmc")
-    strictMaven("https://maven.teamresourceful.com/repository/maven-public/", "tech.thatgravyboat", "com.terraformersmc", "earth.terrarium", "com.teamresourceful", "me.owdding")
-    strictMaven("https://maven.deftu.dev/snapshots", "dev.deftu")
-    strictMaven("https://maven.deftu.dev/releases", "dev.deftu")
+    strictMaven("https://maven.teamresourceful.com/repository/maven-public/", "tech.thatgravyboat", "com.teamresourceful", "me.owdding")
     strictMaven("https://repo.nea.moe/releases", "moe.nea")
     strictMaven("https://jitpack.io", "com.github.skies-starred")
+
+    maven("https://maven.starred.foo/releases")
+    maven("https://maven.starred.foo/snapshots")
 }
 
 fletchingTable {
@@ -84,8 +85,7 @@ dependencies {
 
     rune("devauth".global)
 
-    impl("athen-prod".versioned)
-    //impl("athen-act".versioned) { exclude(group = "tech.thatgravyboat", module = "skyblock-api") }
+    impl("athen-prod".versioned) { isTransitive = false }
     impl("modmenu".versioned)
     impl("fabric-api".versioned)
     impl("fabric-loader".global)
@@ -93,21 +93,11 @@ dependencies {
     impl("hypixel-modapi".global)
     impl("hypixel-modapi-fabric".global)
 
-    impl("ktor-client-core".global)
-    impl("ktor-client-cio".global)
-    impl("ktor-client-websockets".global)
-    impl("ktor-utils".global)
-    impl("ktor-io".global)
-    impl("ktor-http".global)
-    impl("ktor-http-cio".global)
-    impl("ktor-network".global)
-    impl("ktor-network-tls".global)
-    impl("ktor-events".global)
-    impl("ktor-websockets".global)
-
+    impl("okhttp".global)
+    impl("okio".global)
     impl("classgraph".global)
     impl("autoupdate".global)
-    impl("library".versioned)
+    impl("snowbird".versioned)
     impl("lwjgl-nanovg".versioned)
     for (p in listOf("windows", "linux", "macos", "macos-arm64")) impl("lwjgl-nanovg".versioned.get().toString() + ":natives-$p")
 
