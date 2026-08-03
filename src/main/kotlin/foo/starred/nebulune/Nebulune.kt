@@ -14,7 +14,7 @@ import java.util.concurrent.atomic.AtomicInteger
 import kotlin.time.Duration.Companion.milliseconds
 
 object Nebulune : ClientModInitializer, ICommand {
-    const val modVersion: String = /*$ mod_version*/ "0.2.0"
+    const val modVersion: String = /*$ mod_version*/ "0.2.1"
     const val modId: String = /*$ mod_id*/ "nebulune"
 
     override fun onInitializeClient() {
