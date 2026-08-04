@@ -72,7 +72,7 @@ object LoadoutHelper : ICommand {
                 if (!autoEquip.value) return@int "Enable auto equip in loadout keybinds!".modMessage(Typo.PrefixType.ERROR)
 
                 val int = int("slot")
-                val slot = LoadoutKeybinds.slots.find { it.idx == 13 + int } ?: return@int
+                val slot = LoadoutKeybinds.slots.find { it.index == int - 1 } ?: return@int
 
                 slot0 = slot
                 swapping = true
