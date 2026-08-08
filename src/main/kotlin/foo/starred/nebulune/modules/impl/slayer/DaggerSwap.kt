@@ -64,10 +64,10 @@ object DaggerSwap : Module(
         val inv = client.player?.inventory ?: return
         val acc = inv as InventoryAccessor
 
-        val heldStack = inv.getItem(acc.selectedSlot)
-        val heldId = heldStack.getData(DataTypes.ID)
-        if (heldId != null && heldId in attr.set) {
-            if (heldStack.fn() != attr.mode) return rightClick()
+        val held = inv.getItem(acc.selectedSlot)
+        val id = held.getData(DataTypes.ID)
+        if (id in attr.set) {
+            if (held.fn() != attr.mode) rightClick()
             swap = null
             return
         }
