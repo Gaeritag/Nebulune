@@ -15,7 +15,6 @@ import foo.starred.athen.modules.Module
 import foo.starred.athen.utils.enchants
 import foo.starred.nebulune.utils.rightClick
 import foo.starred.snowbird.api.client
-import foo.starred.snowbird.api.held
 import net.minecraft.world.phys.EntityHitResult
 import tech.thatgravyboat.skyblockapi.api.datatype.DataTypes
 import tech.thatgravyboat.skyblockapi.api.datatype.getData
@@ -45,9 +44,12 @@ object AutoSoulcry : Module(
             if (slayer?.type as? SlayerBoss != SlayerBoss.Voidgloom) return@on reset()
             if (client.screen != null) return@on reset()
 
-            val item = held ?: return@on reset()
+            val player = client.player ?: return@on reset()
+            val item = player.mainHandItem
+
             if (item.getData(DataTypes.ID) !in ids) return@on reset()
             if (hitbox && client.hitResult as? EntityHitResult != slayer.entity) return@on
+            if (player.cooldowns.isOnCooldown(item)) return@on
 
             val m = if ("ultimate_wise" in item.enchants()) 100 else 200
             if (mana && (StatsAPI.mana + StatsAPI.overflowMana) < m) return@on reset()
@@ -63,8 +65,11 @@ object AutoSoulcry : Module(
             val si = SlayerAPI.bosses[entity] ?: return@on
             if (!si.owned && !otherBosses) return@on
 
-            val item = held ?: return@on
+            val player = client.player ?: return@on reset()
+            val item = player.mainHandItem
+
             if (item.getData(DataTypes.ID) !in ids) return@on
+            if (player.cooldowns.isOnCooldown(item)) return@on
 
             val m = if ("ultimate_wise" in item.enchants()) 100 else 200
             if (mana && (StatsAPI.mana + StatsAPI.overflowMana) < m) return@on
