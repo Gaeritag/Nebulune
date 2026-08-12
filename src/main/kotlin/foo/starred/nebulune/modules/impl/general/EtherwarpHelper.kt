@@ -2,10 +2,10 @@ package foo.starred.nebulune.modules.impl.general
 
 import foo.starred.athen.annotations.Load
 import foo.starred.athen.annotations.OnlyIn
+import foo.starred.athen.api.scheduling.Scheduler
 import foo.starred.athen.config.Category
 import foo.starred.athen.events.InputEvent
 import foo.starred.athen.events.core.runWhen
-import foo.starred.athen.handlers.Chronos
 import foo.starred.athen.mixin.accessors.KeyMappingAccessor
 import foo.starred.athen.modules.Module
 import foo.starred.athen.utils.etherwarp
@@ -41,10 +41,10 @@ object EtherwarpHelper : Module(
 
             if (!a) {
                 KeyMapping.set((client.options.keyShift as KeyMappingAccessor).boundKey, true)
-                Chronos.schedule(ints.random().client.start) {
+                Scheduler.schedule(ints.random().client.start) {
                     action()
 
-                    Chronos.schedule(1.client.start) { KeyMapping.set((client.options.keyShift as KeyMappingAccessor).boundKey, false) }
+                    Scheduler.schedule(1.client.start) { KeyMapping.set((client.options.keyShift as KeyMappingAccessor).boundKey, false) }
                 }
 
                 return@on cancel()

@@ -4,9 +4,9 @@ package foo.starred.nebulune.modules.impl.general
 
 import foo.starred.athen.annotations.Load
 import foo.starred.athen.annotations.OnlyIn
+import foo.starred.athen.api.scheduling.Scheduler
 import foo.starred.athen.config.Category
 import foo.starred.athen.events.EntityEvent
-import foo.starred.athen.handlers.Chronos
 import foo.starred.athen.modules.Module
 import foo.starred.nebulune.utils.rightClick
 import foo.starred.snowbird.api.client
@@ -42,19 +42,19 @@ object FishingHelper : Module(
 
             val a = (`delay$pull` + if (`variance$pull` > 0) (0..`variance$pull`).random() else 0).coerceAtLeast(0)
 
-            Chronos.schedule(a.client.start) {
+            Scheduler.schedule(a.client.start) {
                 rightClick()
 
                 if (!recast) return@schedule
 
                 val b = 2 + `delay$recast` + if (`variance$recast` > 0) (0..`variance$recast`).random() else 0
-                Chronos.schedule(b.client.start) {
+                Scheduler.schedule(b.client.start) {
                     rightClick()
                 }
             }
         }
 
-        Chronos.repeat((15 * 20).client.start) {
+        Scheduler.repeat((15 * 20).client.start) {
             if (!enabled) return@repeat
             if (!recast) return@repeat
             if (!`recast$check`) return@repeat

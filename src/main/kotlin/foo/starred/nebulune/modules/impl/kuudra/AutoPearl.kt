@@ -5,9 +5,9 @@ import foo.starred.athen.annotations.OnlyIn
 import foo.starred.athen.api.kuudra.KuudraAPI
 import foo.starred.athen.api.kuudra.enums.KuudraPhase
 import foo.starred.athen.api.location.SkyBlockIsland
+import foo.starred.athen.api.scheduling.Scheduler
 import foo.starred.athen.config.Category
 import foo.starred.athen.events.InputEvent
-import foo.starred.athen.handlers.Chronos
 import foo.starred.athen.modules.Module
 import foo.starred.nebulune.mixin.accessors.InventoryAccessor
 import foo.starred.nebulune.utils.rightClick
@@ -37,7 +37,7 @@ object AutoPearl : Module(
 
             cancel()
             (player.inventory as InventoryAccessor).selectedSlot = fn() ?: return@on
-            Chronos.schedule(click.client.start, ::rightClick)
+            Scheduler.schedule(click.client.start, ::rightClick)
         }
     }
 

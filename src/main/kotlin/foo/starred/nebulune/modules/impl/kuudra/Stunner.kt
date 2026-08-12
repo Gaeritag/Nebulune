@@ -3,7 +3,7 @@
 package foo.starred.nebulune.modules.impl.kuudra
 
 import foo.starred.athen.annotations.Load
-import foo.starred.athen.handlers.Chronos
+import foo.starred.athen.api.scheduling.Scheduler
 import foo.starred.athen.modules.impl.kuudra.StunHelper
 import foo.starred.snowbird.api.client
 import foo.starred.snowbird.handlers.time.client
@@ -19,7 +19,7 @@ object Stunner {
         val player = client.player ?: return
         val menu = player.containerMenu ?: return
 
-        Chronos.schedule(`autoClose$delay`.client) {
+        Scheduler.schedule(`autoClose$delay`.client) {
             if (menu == player.containerMenu) player.closeContainer()
         }
     }

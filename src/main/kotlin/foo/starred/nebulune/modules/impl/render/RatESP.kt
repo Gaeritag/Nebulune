@@ -4,11 +4,11 @@ import foo.starred.athen.annotations.Load
 import foo.starred.athen.annotations.OnlyIn
 import foo.starred.athen.api.location.SkyBlockIsland
 import foo.starred.athen.api.rendering.level.impl.extensions.impl.extractFrameBox
+import foo.starred.athen.api.scheduling.Scheduler
 import foo.starred.athen.config.Category
 import foo.starred.athen.events.LocationEvent
 import foo.starred.athen.events.PacketEvent
 import foo.starred.athen.events.WorldRenderEvent
-import foo.starred.athen.handlers.Chronos
 import foo.starred.athen.modules.Module
 import foo.starred.athen.ui.themes.Catppuccin
 import foo.starred.athen.utils.render.renderPos
@@ -39,7 +39,7 @@ object RatESP : Module(
 
     init {
         on<PacketEvent.Receive, ClientboundSetEntityDataPacket> {
-            Chronos.schedule(2.client) {
+            Scheduler.schedule(2.client) {
                 val entity = level?.getEntity(id) as? ArmorStand ?: return@schedule
                 if (!entity.hasItemInSlot(EquipmentSlot.HEAD)) return@schedule
                 if (entity in entities) return@schedule

@@ -3,10 +3,10 @@ package foo.starred.nebulune.modules.impl.dungeons
 import foo.starred.athen.annotations.Load
 import foo.starred.athen.annotations.OnlyIn
 import foo.starred.athen.api.location.SkyBlockIsland
+import foo.starred.athen.api.scheduling.Scheduler
 import foo.starred.athen.config.Category
 import foo.starred.athen.events.GuiEvent
 import foo.starred.athen.events.PacketEvent
-import foo.starred.athen.handlers.Chronos
 import foo.starred.athen.modules.Module
 import foo.starred.snowbird.api.client
 import foo.starred.snowbird.handlers.time.client
@@ -43,7 +43,7 @@ object ChestCloser : Module(
             val r = (minDelay..maxDelay.coerceAtLeast(minDelay)).random()
             if (r == 0) return@on ServerboundContainerClosePacket(containerId).send()
 
-            Chronos.schedule(r.client) {
+            Scheduler.schedule(r.client) {
                 client.player?.closeContainer()
             }
         }

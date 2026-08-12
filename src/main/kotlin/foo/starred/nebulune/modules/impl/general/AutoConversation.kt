@@ -2,9 +2,9 @@ package foo.starred.nebulune.modules.impl.general
 
 import foo.starred.athen.annotations.Load
 import foo.starred.athen.annotations.OnlyIn
+import foo.starred.athen.api.scheduling.Scheduler
 import foo.starred.athen.config.Category
 import foo.starred.athen.events.MessageEvent
-import foo.starred.athen.handlers.Chronos
 import foo.starred.athen.modules.Module
 import foo.starred.snowbird.api.command
 import foo.starred.snowbird.handlers.time.client
@@ -43,7 +43,7 @@ object AutoConversation : Module(
             if (a.size > 1 && !multi) return@on
             if (delay == 0) return@on a.first().command()
 
-            Chronos.schedule((delay + (0..3).random()).client.start) {
+            Scheduler.schedule((delay + (0..3).random()).client.start) {
                 a.first().command()
             }
         }

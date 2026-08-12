@@ -4,9 +4,9 @@ package foo.starred.nebulune
 
 import foo.starred.athen.Athen
 import foo.starred.athen.annotations.AnnotationLoader
+import foo.starred.athen.api.messaging.impl.MessagingAPI.mod
+import foo.starred.athen.api.scheduling.Scheduler
 import foo.starred.athen.config.ui.ClickGUI
-import foo.starred.athen.handlers.Chronos
-import foo.starred.athen.handlers.Typo.modMessage
 import foo.starred.snowbird.handlers.time.server
 import foo.starred.snowbird.kommand.ICommand
 import net.fabricmc.api.ClientModInitializer
@@ -24,12 +24,12 @@ object Nebulune : ClientModInitializer, ICommand {
         command(modId) {
             executes {
                 ClickGUI.open()
-                "Opening Config GUI...".modMessage()
+                "Opening Config GUI...".mod()
             }
 
             "config" {
                 ClickGUI.open()
-                "Opening Config GUI...".modMessage()
+                "Opening Config GUI...".mod()
             }
         }
     }
@@ -39,9 +39,9 @@ object Nebulune : ClientModInitializer, ICommand {
         val count = AtomicInteger(0)
         val check = { if (count.incrementAndGet() == 2) action() }
 
-        Chronos.schedule(ms.milliseconds) { check() }
+        Scheduler.schedule(ms.milliseconds) { check() }
 
         if (ms < 15) return check()
-        Chronos.schedule(((ms / 50).coerceAtLeast(1)).server) { check() }
+        Scheduler.schedule(((ms / 50).coerceAtLeast(1)).server) { check() }
     }
 }

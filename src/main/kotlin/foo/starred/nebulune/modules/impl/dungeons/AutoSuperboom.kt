@@ -6,11 +6,11 @@ import com.mojang.serialization.Codec
 import foo.starred.athen.annotations.Load
 import foo.starred.athen.annotations.OnlyIn
 import foo.starred.athen.api.location.SkyBlockIsland
+import foo.starred.athen.api.messaging.impl.MessagingAPI.mod
+import foo.starred.athen.api.scheduling.Scheduler
+import foo.starred.athen.api.storage.JsonStore
 import foo.starred.athen.config.Category
 import foo.starred.athen.events.InputEvent
-import foo.starred.athen.handlers.Chronos
-import foo.starred.athen.handlers.Scribble
-import foo.starred.athen.handlers.Typo.modMessage
 import foo.starred.athen.modules.Module
 import foo.starred.nebulune.Nebulune
 import foo.starred.nebulune.mixin.accessors.InventoryAccessor
@@ -44,57 +44,57 @@ object AutoSuperboom : Module(
     private val `swapBack$type` by config.dropdown("Swap to", listOf("Original slot", "Custom slot")).dependsOn { swapBack }
     private val `swapBack$custom` by config.slider("Custom slot number", 1, 1, 9).dependsOn { swapBack && `swapBack$type` == 1 }
 
-    private val scribble = Scribble("features/autoSuperboom")
-    private val breakable = scribble.mutableSet("breakable", Codec.STRING, mutableSetOf("minecraft:cracked_stone_bricks", "minecraft:barrier"))
+    private val json = JsonStore("features/autoSuperboom")
+    private val breakable = json.mutableSet("breakable", Codec.STRING, mutableSetOf("minecraft:cracked_stone_bricks", "minecraft:barrier"))
 
     private val set = setOf("SUPERBOOM_TNT", "INFINITE_SUPERBOOM_TNT")
 
     init {
         command(Nebulune.modId) {
             "superboom" / "add" {
-                val h = client.hitResult as? BlockHitResult ?: return@invoke "Not looking at a block!".modMessage()
+                val h = client.hitResult as? BlockHitResult ?: return@invoke "Not looking at a block!".mod()
                 val b = client.level?.getBlockState(h.blockPos)?.block ?: return@invoke
 
                 val id = BuiltInRegistries.BLOCK.getKey(b)
 
-                if (id.toString() in breakable.value) return@invoke "Block already in breakable list!".modMessage()
+                if (id.toString() in breakable.value) return@invoke "Block already in breakable list!".mod()
                 breakable.update { add(id.toString()) }
 
-                "Added \"${id.path}\" to the breakable block list!".modMessage()
+                "Added \"${id.path}\" to the breakable block list!".mod()
             }
 
             "superboom" / "add" / string("block") {
                 val it = "minecraft:${string("block")}"
-                if (Identifier.tryParse(it) == null) return@string "Invalid block id, or format! Try the command \"/nebulune superboom add\" while looking at the block.".modMessage()
-                if (it in breakable.value) return@string "Block already in breakable list!".modMessage()
+                if (Identifier.tryParse(it) == null) return@string "Invalid block id, or format! Try the command \"/nebulune superboom add\" while looking at the block.".mod()
+                if (it in breakable.value) return@string "Block already in breakable list!".mod()
 
                 breakable.update { add(it) }
-                "Added \"${it.substringAfter(":")}\" to the breakable block list!".modMessage()
+                "Added \"${it.substringAfter(":")}\" to the breakable block list!".mod()
             }
 
             "superboom" / "remove" {
-                val h = client.hitResult as? BlockHitResult ?: return@invoke "Not looking at a block!".modMessage()
+                val h = client.hitResult as? BlockHitResult ?: return@invoke "Not looking at a block!".mod()
                 val b = client.level?.getBlockState(h.blockPos)?.block ?: return@invoke
 
                 val id = BuiltInRegistries.BLOCK.getKey(b)
 
-                if (id.toString() !in breakable.value) return@invoke "Block not in breakable list!".modMessage()
+                if (id.toString() !in breakable.value) return@invoke "Block not in breakable list!".mod()
                 breakable.update { remove(id.toString()) }
 
-                "Removed \"${id.path}\" from the breakable block list!".modMessage()
+                "Removed \"${id.path}\" from the breakable block list!".mod()
             }
 
             "superboom" / "remove" / string("block") {
                 val it = "minecraft:${string("block")}"
-                if (Identifier.tryParse(it) == null) return@string "Invalid block id, or format! Try the command \"/nebulune superboom add\" while looking at the block.".modMessage()
-                if (it !in breakable.value) return@string "Block not in breakable list!".modMessage()
+                if (Identifier.tryParse(it) == null) return@string "Invalid block id, or format! Try the command \"/nebulune superboom add\" while looking at the block.".mod()
+                if (it !in breakable.value) return@string "Block not in breakable list!".mod()
 
                 breakable.update { remove(it) }
-                "Removed \"${it.substringAfter(":")}\" from the breakable block list!".modMessage()
+                "Removed \"${it.substringAfter(":")}\" from the breakable block list!".mod()
             }
 
             "supeboom" / "list" {
-                "Breakable block list:".modMessage()
+                "Breakable block list:".mod()
                 for (a in breakable.value) {
                     val b = a.substringBefore(":")
                     val c = a.substringAfter(":")
@@ -118,16 +118,16 @@ object AutoSuperboom : Module(
 
             cancel()
 
-            Chronos.schedule((minDelay..maxDelay.coerceAtLeast(minDelay)).random().client.start) {
+            Scheduler.schedule((minDelay..maxDelay.coerceAtLeast(minDelay)).random().client.start) {
                 acc.selectedSlot = t
 
-                Chronos.schedule(1.client.start) {
+                Scheduler.schedule(1.client.start) {
                     leftClick()
 
                     if (!swapBack) return@schedule
                     val b = (`swapBack$minDelay`..`swapBack$maxDelay`.coerceAtLeast(`swapBack$minDelay`)).random()
 
-                    Chronos.schedule(b.client.start) {
+                    Scheduler.schedule(b.client.start) {
                         acc.selectedSlot = if (`swapBack$type` == 0) s else (`swapBack$custom`.coerceIn(1, 9) - 1)
                     }
                 }

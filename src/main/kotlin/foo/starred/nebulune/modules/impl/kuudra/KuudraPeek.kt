@@ -6,9 +6,9 @@ import foo.starred.athen.api.kuudra.KuudraAPI
 import foo.starred.athen.api.kuudra.enums.KuudraPhase
 import foo.starred.athen.api.kuudra.enums.KuudraTier
 import foo.starred.athen.api.location.SkyBlockIsland
+import foo.starred.athen.api.messaging.impl.MessagingAPI.mod
 import foo.starred.athen.config.Category
 import foo.starred.athen.events.TickEvent
-import foo.starred.athen.handlers.Typo.modMessage
 import foo.starred.athen.modules.Module
 import foo.starred.snowbird.api.client
 import foo.starred.snowbird.handlers.parser.parse
@@ -64,7 +64,7 @@ object KuudraPeek : Module(
             if (side == ns) return@on
             side = ns
 
-            "Kuudra peeked from <red>${side.str}<r>!".parse().modMessage()
+            "Kuudra peeked from <red>${side.str}<r>!".mod()
             "<red>${side.name}!".parse().alert()
         }
     }

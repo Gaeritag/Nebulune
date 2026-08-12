@@ -2,13 +2,11 @@ package foo.starred.nebulune.modules
 
 import com.google.gson.JsonArray
 import foo.starred.athen.annotations.Priority
+import foo.starred.athen.api.messaging.impl.MessagingAPI.mod
+import foo.starred.athen.api.network.http.WebAPI.request
+import foo.starred.athen.api.scheduling.Scheduler
 import foo.starred.athen.events.LocationEvent
 import foo.starred.athen.events.core.on
-import foo.starred.athen.handlers.Beacon.request
-import foo.starred.athen.handlers.Chronos
-import foo.starred.athen.handlers.Texter.onHover
-import foo.starred.athen.handlers.Texter.onUrl
-import foo.starred.athen.handlers.Typo.modMessage
 import foo.starred.athen.ui.themes.Catppuccin
 import foo.starred.nebulune.Nebulune
 import foo.starred.snowbird.api.mainThread
@@ -40,7 +38,7 @@ object UpdateNotifier {
         on<LocationEvent.Server.Connect> {
             if (times++ >= 3) return@on
             if (times == 1) {
-                Chronos.schedule(5.seconds) { latest() }
+                Scheduler.schedule(5.seconds) { latest() }
                 return@on
             }
 
@@ -54,10 +52,7 @@ object UpdateNotifier {
 
         mainThread {
             "<aqua>Update available: <red>${latest.display()}".parse().showTitle()
-            "<yellow>Update available for <${Catppuccin.Mocha.Green.argb}>Nebulune: <red>${current.display()} <gray>-> <aqua>${latest.display()}".parse()
-                .onHover("<${Catppuccin.Mocha.Mauve.argb}>Click to view release!".parse())
-                .onUrl("https://github.com/skies-starred/Nebulune/releases/tag/${latest.tag}")
-                .modMessage()
+            "<hover:<${Catppuccin.Mocha.Mauve.argb}>Click to view release!><click:url:https://github.com/skies-starred/Nebulune/releases/tag/${latest.tag}><yellow>Update available for <${Catppuccin.Mocha.Green.argb}>Nebulune: <red>${current.display()} <gray>-> <aqua>${latest.display()}".mod()
         }
     }
 

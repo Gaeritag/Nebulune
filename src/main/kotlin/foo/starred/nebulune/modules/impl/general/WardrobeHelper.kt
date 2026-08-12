@@ -3,16 +3,16 @@
 package foo.starred.nebulune.modules.impl.general
 
 import foo.starred.athen.annotations.Load
+import foo.starred.athen.api.messaging.enums.MessagePrefixType
+import foo.starred.athen.api.messaging.impl.MessagingAPI.mod
 import foo.starred.athen.api.rendering.ui.text.vanilla.extensions.sizedText
+import foo.starred.athen.api.scheduling.Scheduler
 import foo.starred.athen.events.GuiEvent
 import foo.starred.athen.events.InputEvent
 import foo.starred.athen.events.PacketEvent
 import foo.starred.athen.events.TickEvent
 import foo.starred.athen.events.core.on
 import foo.starred.athen.events.core.runWhen
-import foo.starred.athen.handlers.Chronos
-import foo.starred.athen.handlers.Typo
-import foo.starred.athen.handlers.Typo.modMessage
 import foo.starred.athen.mixin.accessors.KeyMappingAccessor
 import foo.starred.athen.modules.impl.general.WardrobeKeybinds
 import foo.starred.athen.utils.guiClick
@@ -69,8 +69,8 @@ object WardrobeHelper : ICommand {
     init {
         command(Nebulune.modId) {
             "wd" / int("slot", 1, 9) {
-                if (!WardrobeKeybinds.enabled) return@int "Enable wardrobe keybinds!".modMessage(Typo.PrefixType.ERROR)
-                if (!autoEquip.value) return@int "Enable auto equip in wardrobe keybinds!".modMessage(Typo.PrefixType.ERROR)
+                if (!WardrobeKeybinds.enabled) return@int "Enable wardrobe keybinds!".mod(MessagePrefixType.ERROR)
+                if (!autoEquip.value) return@int "Enable auto equip in wardrobe keybinds!".mod(MessagePrefixType.ERROR)
 
                 val int = int("slot")
                 val slot = WardrobeKeybinds.wardrobeSlots.find { it.idx == 35 + int } ?: return@int
@@ -157,7 +157,7 @@ object WardrobeHelper : ICommand {
     fun close(i: Int? = null) {
         val player = client.player ?: return
 
-        Chronos.schedule((i ?: (closeDelay + (0..delayVariance).random())).client) {
+        Scheduler.schedule((i ?: (closeDelay + (0..delayVariance).random())).client) {
             player.closeContainer()
         }
     }

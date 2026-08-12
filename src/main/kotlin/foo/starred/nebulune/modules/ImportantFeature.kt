@@ -3,7 +3,7 @@
 package foo.starred.nebulune.modules
 
 import foo.starred.athen.annotations.Load
-import foo.starred.athen.handlers.Chronos
+import foo.starred.athen.api.scheduling.Scheduler
 import foo.starred.athen.modules.impl.ModSettings
 import foo.starred.snowbird.api.client
 import foo.starred.snowbird.api.lie
@@ -18,7 +18,7 @@ object ImportantFeature {
     private val _enabled by ModSettings.config.textParagraph("Disabling the important feature may cause issues!")
 
     init {
-        Chronos.repeat(20.minutes) {
+        Scheduler.repeat(20.minutes) {
             if (client.level == null) return@repeat
             if (!enabled) return@repeat
             if ((0..100).random() > 4) return@repeat

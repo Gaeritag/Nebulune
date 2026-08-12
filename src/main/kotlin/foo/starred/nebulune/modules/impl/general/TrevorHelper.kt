@@ -7,11 +7,11 @@ import foo.starred.athen.annotations.OnlyIn
 import foo.starred.athen.api.location.SkyBlockIsland
 import foo.starred.athen.api.rendering.level.impl.extensions.impl.extractFrameBox
 import foo.starred.athen.api.rendering.ui.text.vanilla.extensions.sizedText
+import foo.starred.athen.api.scheduling.Scheduler
 import foo.starred.athen.config.Category
 import foo.starred.athen.events.LocationEvent
 import foo.starred.athen.events.MessageEvent
 import foo.starred.athen.events.WorldRenderEvent
-import foo.starred.athen.handlers.Chronos
 import foo.starred.athen.modules.Module
 import foo.starred.athen.ui.themes.Catppuccin
 import foo.starred.athen.utils.render.renderBoundingBox
@@ -104,7 +104,7 @@ object TrevorHelper : Module(
                 rarity = Rarity.get(t) ?: return@findThenNull
                 cooldown = System.currentTimeMillis() + 20_000
 
-                Chronos.schedule(20.seconds) {
+                Scheduler.schedule(20.seconds) {
                     if (endAlert) `alert$message`.parse().alert(soundType = `alert$sound`.sound)
                     cooldown = 0
                 }
@@ -116,13 +116,13 @@ object TrevorHelper : Module(
                 val ms = (cooldown - System.currentTimeMillis() - (callOff * 1000).toLong()).coerceAtLeast(0)
                 val extra = (callDelay + (0..2).random()) * 50L
 
-                Chronos.schedule((ms + extra).milliseconds) { "/call trevor".command() }
+                Scheduler.schedule((ms + extra).milliseconds) { "/call trevor".command() }
                 return@on reset()
             }
 
             if (!autoAccept) return@on
             if (message.siblings.getOrNull(0)?.stripped() == "Accept the trapper's task to hunt the animal?") {
-                Chronos.schedule((acceptDelay + (0..2).random()).client) {
+                Scheduler.schedule((acceptDelay + (0..2).random()).client) {
                     (message.siblings[3].style.clickEvent as? ClickEvent.RunCommand)?.command?.command()
                 }
 

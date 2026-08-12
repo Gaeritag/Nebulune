@@ -5,12 +5,12 @@ package foo.starred.nebulune.modules.impl.general
 import com.mojang.serialization.Codec
 import foo.starred.athen.Athen
 import foo.starred.athen.annotations.Load
+import foo.starred.athen.api.messaging.impl.MessagingAPI.mod
+import foo.starred.athen.api.storage.JsonStore
 import foo.starred.athen.config.Category
 import foo.starred.athen.events.InputEvent
 import foo.starred.athen.events.TickEvent
 import foo.starred.athen.events.core.runWhen
-import foo.starred.athen.handlers.Scribble
-import foo.starred.athen.handlers.Typo.modMessage
 import foo.starred.athen.mixin.accessors.KeyMappingAccessor
 import foo.starred.athen.modules.Module
 import foo.starred.nebulune.utils.leftClick
@@ -42,9 +42,9 @@ object AutoClicker : Module(
     private val breaker by config.switch("Block dungeon breaker", true)
     private val whitelist by config.switch("Whitelist mode")
 
-    private val scribble = Scribble("features/autoClicker")
-    private val set1 = scribble.mutableSet("left", Codec.STRING)
-    private val set2 = scribble.mutableSet("right", Codec.STRING)
+    private val json = JsonStore("features/autoClicker")
+    private val set1 = json.mutableSet("left", Codec.STRING)
+    private val set2 = json.mutableSet("right", Codec.STRING)
 
     private var l = 0
     private var r = 0
@@ -99,51 +99,51 @@ object AutoClicker : Module(
 
         command(Athen.modId) {
             "ac" / "add" / "left" {
-                val h = fn() ?: return@invoke "Hold an item to whitelist.".modMessage()
-                if (h in set1.value) return@invoke "$h is already in left whitelist!".modMessage()
+                val h = fn() ?: return@invoke "Hold an item to whitelist.".mod()
+                if (h in set1.value) return@invoke "$h is already in left whitelist!".mod()
 
                 set1.update { add(h) }
-                "Added <green>$h<r> to left whitelist!".parse().modMessage()
+                "Added <green>$h<r> to left whitelist!".mod()
             }
 
             "ac" / "add" / "right" {
-                val h = fn() ?: return@invoke "Hold an item to whitelist.".modMessage()
-                if (h in set2.value) return@invoke "$h is already in right whitelist!".modMessage()
+                val h = fn() ?: return@invoke "Hold an item to whitelist.".mod()
+                if (h in set2.value) return@invoke "$h is already in right whitelist!".mod()
 
                 set2.update { add(h) }
-                "Added <green>$h<r> to right whitelist!".parse().modMessage()
+                "Added <green>$h<r> to right whitelist!".mod()
             }
 
             "ac" / "remove" / "left" {
-                val h = fn() ?: return@invoke "Hold an item to whitelist.".modMessage()
-                if (h !in set1.value) return@invoke "$h is not in left whitelist!".modMessage()
+                val h = fn() ?: return@invoke "Hold an item to whitelist.".mod()
+                if (h !in set1.value) return@invoke "$h is not in left whitelist!".mod()
 
                 set1.update { remove(h) }
-                "Removed <green>$h<r> from left whitelist!".parse().modMessage()
+                "Removed <green>$h<r> from left whitelist!".mod()
             }
 
             "ac" / "remove" / "right" {
-                val h = fn() ?: return@invoke "Hold an item to whitelist.".modMessage()
-                if (h !in set2.value) return@invoke "$h is not in right whitelist!".modMessage()
+                val h = fn() ?: return@invoke "Hold an item to whitelist.".mod()
+                if (h !in set2.value) return@invoke "$h is not in right whitelist!".mod()
 
                 set2.update { remove(h) }
-                "Removed <green>$h<r> from right whitelist!".parse().modMessage()
+                "Removed <green>$h<r> from right whitelist!".mod()
             }
 
             "ac" / "clear" / "left" {
                 set1.update { clear() }
-                "Cleared left whitelist.".modMessage()
+                "Cleared left whitelist.".mod()
             }
 
             "ac" / "clear" / "right" {
                 set2.update { clear() }
-                "Cleared right whitelist.".modMessage()
+                "Cleared right whitelist.".mod()
             }
 
             "ac" / "list" {
                 val a = ("<gray>" + ("-".repeat())).parse()
 
-                "Autoclicker whitelist:".modMessage()
+                "Autoclicker whitelist:".mod()
                 a.lie()
 
                 "Left whitelist:".lie()
@@ -154,7 +154,7 @@ object AutoClicker : Module(
                 for (s in set2.value) " <dark_gray>- <gray>$s".parse().lie()
                 a.lie()
 
-                if (!enabled) "Please turn on the feature \"AutoClicker\"".modMessage()
+                if (!enabled) "Please turn on the feature \"AutoClicker\"".mod()
             }
         }
     }

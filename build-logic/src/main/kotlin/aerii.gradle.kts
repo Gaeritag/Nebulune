@@ -98,6 +98,7 @@ dependencies {
     impl("classgraph".global)
     impl("autoupdate".global)
     impl("snowbird".versioned)
+    impl("cascade".versioned)
     impl("lwjgl-nanovg".versioned)
     for (p in listOf("windows", "linux", "macos", "macos-arm64")) impl("lwjgl-nanovg".versioned.get().toString() + ":natives-$p")
 

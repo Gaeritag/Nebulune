@@ -3,14 +3,13 @@ package foo.starred.nebulune.modules.impl.render.worldScanner
 import foo.starred.athen.annotations.Load
 import foo.starred.athen.annotations.OnlyIn
 import foo.starred.athen.api.location.SkyBlockIsland
+import foo.starred.athen.api.messaging.impl.MessagingAPI.mod
 import foo.starred.athen.api.rendering.level.impl.extensions.impl.extractStyledBox
 import foo.starred.athen.api.rendering.level.impl.extensions.impl.extractText
 import foo.starred.athen.config.Category
 import foo.starred.athen.config.ExpandableHandle
 import foo.starred.athen.events.LocationEvent
 import foo.starred.athen.events.WorldRenderEvent
-import foo.starred.athen.handlers.Notifier.notify
-import foo.starred.athen.handlers.Typo.modMessage
 import foo.starred.athen.modules.Module
 import foo.starred.nebulune.events.ClientChunkEvent
 import foo.starred.nebulune.utils.extractTracer
@@ -39,7 +38,6 @@ object WorldScanner: Module(
         val displayName: () -> Boolean,
         val displayScale: () -> Float,
         val displayBackgroundOpacity: () -> Float,
-        val showNotification: () -> Boolean,
         val sendCoordsInChat: () -> Boolean,
     )
 
@@ -79,10 +77,6 @@ object WorldScanner: Module(
             .dependsOn { displayName }
             .childOf { expandable }
 
-        val notification by config.switch("Show Notification", true)
-            .unique(key + "Show Notification")
-            .childOf { expandable }
-
         val sendCoordsInChat by config.switch("Send Coords In Chat", true)
             .unique(key + "Send Coords In Chat")
             .childOf { expandable }
@@ -96,7 +90,6 @@ object WorldScanner: Module(
             { displayName },
             { displayScale },
             { displayBackgroundOpacity },
-            { notification },
             { sendCoordsInChat },
         )
     }
@@ -351,8 +344,7 @@ object WorldScanner: Module(
                         if (!scanStructure(chunk, structureToScan, x, y, z)) continue
 
                         foundStructure.add(structureToScan)
-                        if (structureToScan.config.showNotification()) (structureToScan.displayName + " Found").notify(duration = 5000)
-                        if (structureToScan.config.sendCoordsInChat()) "${structureToScan.displayName} found at x: $worldX, y: $y, z: $worldZ".modMessage()
+                        if (structureToScan.config.sendCoordsInChat()) "${structureToScan.displayName} found at x: $worldX, y: $y, z: $worldZ".mod()
 
                         structures.add(
                             structureToScan to Triple(
@@ -410,7 +402,6 @@ object WorldScanner: Module(
 
         grottos.add(Triple(Pair(chunkX, chunkZ), merged, cluster.sumOf { it.third }))
 
-        if (grottoConfig.showNotification() && numGrottos != grottos.size) (Structure.FAIRY_GROTTO.displayName + " Found").notify(duration = 5000)
-        if (grottoConfig.sendCoordsInChat() && numGrottos != grottos.size) "Fairy Grotto found at x: ${merged.x}, y: ${merged.y}, z: ${merged.z}".modMessage()
+        if (grottoConfig.sendCoordsInChat() && numGrottos != grottos.size) "Fairy Grotto found at x: ${merged.x}, y: ${merged.y}, z: ${merged.z}".mod()
     }
 }
