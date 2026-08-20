@@ -2,6 +2,7 @@ package foo.starred.nebulune.mixin.mixins.athen;
 
 import foo.starred.athen.api.dungeon.terminals.TerminalAPI;
 import foo.starred.athen.api.dungeon.terminals.TerminalType;
+import foo.starred.athen.config.dsl.impl.builders.sound.ConfigSoundOption;
 import foo.starred.athen.modules.impl.dungeon.terminals.simulator.TerminalSimulator;
 import foo.starred.athen.modules.impl.dungeon.terminals.simulator.base.ITerminalSim;
 import foo.starred.athen.modules.impl.dungeon.terminals.solver.TerminalSolver;
@@ -16,7 +17,7 @@ import foo.starred.nebulune.modules.impl.dungeons.QueueTerms;
 import foo.starred.snowbird.api.ClientKt;
 import kotlin.Unit;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -136,7 +137,7 @@ public abstract class ITerminalMixin implements ITerminalAccessor {
         nebulune$clickClick(c);
     }
 
-    @ModifyVariable(method = "main(FFFFF)V", at = @At(value = "STORE", ordinal = 0), ordinal = 0)
+    @ModifyVariable(method = "main(Lnet/minecraft/client/gui/GuiGraphicsExtractor;FFFFFLorg/joml/Matrix3x2f;Lnet/minecraft/client/gui/navigation/ScreenRectangle;)V", at = @At(value = "STORE", ordinal = 0), ordinal = 0)
     private String nebulune$modifyTitleText(String titleText) {
         if (!QueueTerms.INSTANCE.getEnabled()) return titleText;
         return titleText + " - " + QueueTerms.INSTANCE.getClicks().size() + QueueTerms.INSTANCE.getClicks().size();
@@ -164,9 +165,11 @@ public abstract class ITerminalMixin implements ITerminalAccessor {
     @Unique
     private void nebulune$clickClick(Click click) {
         QueueTerms.INSTANCE.setYearning(true);
+        ConfigSoundOption sound = TerminalSolver.INSTANCE.getClickSound();
 
         if (TerminalSimulator.INSTANCE.getS().getValue()) {
             var client = ClientKt.getClient();
+            //~ if >= 26.2 'client.screen' -> 'client.gui.screen()'
             var screen = client.screen;
             if (!(screen instanceof ITerminalSim sim)) return;
 
@@ -175,21 +178,21 @@ public abstract class ITerminalMixin implements ITerminalAccessor {
             if (slotIndex >= slots.size()) return;
 
             var slot = slots.get(slotIndex);
-            sim.slotClicked(slot, slotIndex, click.getButton(), click.getButton() == 0 ? ClickType.CLONE : ClickType.PICKUP);
+            sim.slotClicked(slot, slotIndex, click.getButton(), click.getButton() == 0 ? ContainerInput.CLONE : ContainerInput.PICKUP);
             TerminalSolver.INSTANCE.setLast(System.currentTimeMillis());
             clicked = true;
 
-            if (TerminalSolver.INSTANCE.getSound$enabled()) TerminalSolver.INSTANCE.getClickSound().play();
+            if (sound.getEnabled()) sound.play(sound.getVolume(), sound.getPitch());
             return;
         }
 
-        if (TerminalSolver.INSTANCE.getSound$enabled()) TerminalSolver.INSTANCE.getClickSound().play();
+        if (sound.getEnabled()) sound.play(sound.getVolume(), sound.getPitch());
 
         PlayerUtilsKt.guiClick(
                 TerminalAPI.INSTANCE.getId(),
                 click.getSlot(),
                 click.getButton() == 0 ? 2 : click.getButton(),
-                click.getButton() == 0 ? ClickType.CLONE : ClickType.PICKUP
+                click.getButton() == 0 ? ContainerInput.CLONE : ContainerInput.PICKUP
         );
         TerminalSolver.INSTANCE.setLast(System.currentTimeMillis());
         clicked = true;
@@ -201,6 +204,7 @@ public abstract class ITerminalMixin implements ITerminalAccessor {
             if (!TerminalAPI.INSTANCE.getOpened().getValue()) return Unit.INSTANCE;
             if (id != TerminalAPI.INSTANCE.getId()) return Unit.INSTANCE;
 
+            //~ if >= 26.2 'ClientKt.getClient().screen' -> 'ClientKt.getClient().gui.screen()'
             var menu = ClientKt.getClient().screen;
             if (!(menu instanceof AbstractContainerScreen<?> a)) return Unit.INSTANCE;
             var items = a.getMenu().getItems().subList(0, terminalType.getSlots());

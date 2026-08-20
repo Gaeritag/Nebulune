@@ -29,18 +29,21 @@ object AutoClicker : Module(
     "Automatically clicks for you!",
     Category.GENERAL
 ), ICommand {
-    private val left by config.switch("Left clicker")
-    private val `left$key` by config.keybind("Left key").dependsOn { left }
-    private val `left$cps` by config.slider("Left CPS", 3, 5, 20).dependsOn { left }
+    private val left by config.group("Left clicker")
+    private val `left$enabled` by left.switch("Enable left clicker")
+    private val `left$key` by left.keybind("Left key")
+    private val `left$cps` by left.slider("Left CPS", 3, 5, 20)
 
-    private val right by config.switch("Right clicker")
-    private val `right$key` by config.keybind("Right key").dependsOn { right }
-    private val `right$cps` by config.slider("Right CPS", 3, 5, 20).dependsOn { right }
+    private val right by config.group("Right clicker")
+    private val `right$enabled` by right.switch("Right clicker")
+    private val `right$key` by right.keybind("Right key")
+    private val `right$cps` by right.slider("Right CPS", 3, 5, 20)
 
-    private val jitter by config.slider("CPS jitter", 2, 1, 3, "clicks")
-    private val breaking = config.switch("Allow breaking blocks", true).custom("breaking")
-    private val breaker by config.switch("Block dungeon breaker", true)
-    private val whitelist by config.switch("Whitelist mode")
+    private val customisation by config.group("Customisation")
+    private val jitter by customisation.slider("CPS jitter", 2, 1, 3, "clicks")
+    private val breaking = customisation.switch("Allow breaking blocks", true).unique("breaking")
+    private val breaker by customisation.switch("Block dungeon breaker", true)
+    private val whitelist by customisation.switch("Whitelist mode")
 
     private val json = JsonStore("features/autoClicker")
     private val set1 = json.mutableSet("left", Codec.STRING)
@@ -51,6 +54,7 @@ object AutoClicker : Module(
 
     init {
         on<TickEvent.Client.Start> {
+            //~ if >= 26.2 'client.screen' -> 'client.gui.screen()'
             if (client.screen != null) return@on
             val p = client.player ?: return@on
             val lv = client.level ?: return@on
@@ -66,8 +70,8 @@ object AutoClicker : Module(
             val c = !a || h in set2.value
             if (!b && !c) return@on
 
-            val d = b && left && `left$key`.fn0()
-            val e = c && right && `right$key`.fn0()
+            val d = b && `left$enabled` && `left$key`.fn0()
+            val e = c && `right$enabled` && `right$key`.fn0()
 
             val h0 = client.hitResult as? BlockHitResult
             if (h0 != null && !lv.getBlockState(h0.blockPos).isAir && d && breaking.value) {

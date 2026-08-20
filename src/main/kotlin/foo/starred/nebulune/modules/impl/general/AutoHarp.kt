@@ -12,7 +12,7 @@ import foo.starred.athen.utils.guiClick
 import foo.starred.snowbird.api.client
 import foo.starred.snowbird.handlers.Observable
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
-import net.minecraft.world.inventory.ClickType
+import net.minecraft.world.inventory.ContainerInput
 import net.minecraft.world.inventory.MenuType
 import net.minecraft.world.item.Items
 
@@ -39,6 +39,7 @@ object AutoHarp : Module(
         }.runWhen(bool)
 
         on<TickEvent.Client.Start> {
+            //~ if >= 26.2 'client.screen' -> 'client.gui.screen()'
             val screen = client.screen as? AbstractContainerScreen<*> ?: return@on
             val slots = screen.menu.slots
 
@@ -55,7 +56,7 @@ object AutoHarp : Module(
             hash = hash0
 
             if (slot == -1) return@on
-            guiClick(screen.menu.containerId, slot, clickType = ClickType.CLONE)
+            guiClick(screen.menu.containerId, slot, clickType = ContainerInput.CLONE)
         }.runWhen(bool)
     }
 }

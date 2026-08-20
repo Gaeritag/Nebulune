@@ -33,16 +33,16 @@ object AutoSuperboom : Module(
     "Automatically swaps to and uses the superboom if clicking on a breakable wall.",
     Category.DUNGEONS
 ), ICommand {
-    private val _unused by config.textParagraph("Use the command <red>\"/nebulune superboom [add|remove]\"<r> while looking at a block to add/remove it to the breakable blocks list!")
+    private val _unused by config.information("Use the command <red>\"/nebulune superboom [add|remove]\"<r> while looking at a block to add/remove it to the breakable blocks list!")
 
     private val minDelay by config.slider("Minimum delay", 1, 1, 5, "ticks")
     private val maxDelay by config.slider("Maximum delay", 3, 1, 5, "ticks")
 
     private val swapBack by config.switch("Swap back")
-    private val `swapBack$minDelay` by config.slider("Minimum delay", 1, 1, 5, "ticks").dependsOn { swapBack }
-    private val `swapBack$maxDelay` by config.slider("Maximum delay", 3, 1, 5, "ticks").dependsOn { swapBack }
-    private val `swapBack$type` by config.dropdown("Swap to", listOf("Original slot", "Custom slot")).dependsOn { swapBack }
-    private val `swapBack$custom` by config.slider("Custom slot number", 1, 1, 9).dependsOn { swapBack && `swapBack$type` == 1 }
+    private val `swapBack$minDelay` by config.slider("Minimum delay", 1, 1, 5, "ticks")
+    private val `swapBack$maxDelay` by config.slider("Maximum delay", 3, 1, 5, "ticks")
+    private val `swapBack$type` by config.selector("Swap to", listOf("Original slot", "Custom slot"))
+    private val `swapBack$custom` by config.slider("Custom slot number", 1, 1, 9)
 
     private val json = JsonStore("features/autoSuperboom")
     private val breakable = json.mutableSet("breakable", Codec.STRING, mutableSetOf("minecraft:cracked_stone_bricks", "minecraft:barrier"))
@@ -105,6 +105,7 @@ object AutoSuperboom : Module(
         }
 
         on<InputEvent.Mouse.Press> {
+            //~ if >= 26.2 'client.screen' -> 'client.gui.screen()'
             if (client.screen != null) return@on
             val p = client.player ?: return@on
             val h = client.hitResult as? BlockHitResult ?: return@on

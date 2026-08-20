@@ -33,14 +33,14 @@ import net.minecraft.world.item.Items
 @Load
 object WardrobeHelper : ICommand {
     val autoClose by WardrobeKeybinds.config.switch("Auto close after use")
-    private val autoEquip = WardrobeKeybinds.config.switch("Auto equip").custom("autoEquip")
-    private val _unused by WardrobeKeybinds.config.textParagraph("Automatically equips the wardrobe slot without opening the gui. Use at your own risk.")
-    private val moveEquip by WardrobeKeybinds.config.switch("Equip while moving").dependsOn { autoEquip.value }
-    private val _unused0 by WardrobeKeybinds.config.textParagraph("Equip while moving increases your chances of being banned by a lot.").dependsOn { autoEquip.value && moveEquip }
-    private val resetOpen by WardrobeKeybinds.config.switch("Reset on GUI open", true).dependsOn { autoEquip.value }
-    private val equipDelay by WardrobeKeybinds.config.slider("Click delay", 1, 0, 8, "ticks").dependsOn { autoEquip.value }
-    private val closeDelay by WardrobeKeybinds.config.slider("Close delay", 1, 0, 8, "ticks").dependsOn { autoEquip.value }
-    private val delayVariance by WardrobeKeybinds.config.slider("Max delay variety", 1, 0, 5, "ticks").dependsOn { autoEquip.value }
+    private val autoEquip = WardrobeKeybinds.config.switch("Auto equip").unique("autoEquip")
+    private val _unused by WardrobeKeybinds.config.information("Automatically equips the wardrobe slot without opening the gui. Use at your own risk.")
+    private val moveEquip by WardrobeKeybinds.config.switch("Equip while moving")
+    private val _unused0 by WardrobeKeybinds.config.information("Equip while moving increases your chances of being banned by a lot.")
+    private val resetOpen by WardrobeKeybinds.config.switch("Reset on GUI open", true)
+    private val equipDelay by WardrobeKeybinds.config.slider("Click delay", 1, 0, 8, "ticks")
+    private val closeDelay by WardrobeKeybinds.config.slider("Close delay", 1, 0, 8, "ticks")
+    private val delayVariance by WardrobeKeybinds.config.slider("Max delay variety", 1, 0, 5, "ticks")
 
     private val hud = WardrobeKeybinds.config.hud("Display text") {
         if (it) return@hud sizedText("Equipping §7[§c2§7]")
@@ -85,6 +85,7 @@ object WardrobeHelper : ICommand {
         }
 
         on<InputEvent.Keyboard.Press> {
+            //~ if >= 26.2 'client.screen' -> 'client.gui.screen()'
             if (client.screen != null) return@on
 
             val key = keyEvent.key
@@ -144,7 +145,8 @@ object WardrobeHelper : ICommand {
             if (menu.containerId != id) return@on
 
             val mcSlot = menu.slots.getOrNull(slot.idx)?.takeIf { !it.item.isEmpty } ?: return@on
-            if (mcSlot.item.item != Items.GRAY_DYE) return@on
+            //~ if >= 26.2 'Items.LIME_DYE' -> 'Items.DYE.lime()'
+            if (mcSlot.item.item != Items.LIME_DYE) return@on
 
             if (!slot.equipped) guiClick(id, slot.idx)
 

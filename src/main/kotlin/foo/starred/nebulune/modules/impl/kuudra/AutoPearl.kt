@@ -28,6 +28,7 @@ object AutoPearl : Module(
 
     init {
         on<InputEvent.Mouse.Press> {
+            //~ if >= 26.2 'client.screen' -> 'client.gui.screen()'
             if (client.screen != null) return@on
             if (KuudraAPI.phase != KuudraPhase.Supply) return@on
 

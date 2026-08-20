@@ -1,26 +1,21 @@
 package foo.starred.nebulune.modules.impl.render
 
 import foo.starred.athen.annotations.Load
-import foo.starred.athen.config.Category
-import foo.starred.athen.modules.Module
+import foo.starred.athen.modules.impl.render.CameraHelper
 
 @Load
-object CameraHelper : Module(
-    "Camera helper",
-    "QoL additions to the vanilla camera.",
-    Category.RENDER
-) {
-    private val _clip by config.switch("Camera clip")
-    private val _dist by config.switch("Custom distance")
+object CameraHelper {
+    private val _clip by CameraHelper.config.switch("Camera clip")
+    private val _dist by CameraHelper.config.switch("Custom distance")
 
     @JvmStatic
-    val distance by config.slider("Distance", 4f, 3f, 15f, "blocks", true).dependsOn { _dist }
+    val distance by CameraHelper.config.slider("Distance", 4f, 3f, 15f, "blocks", true)
 
     @JvmStatic
     val dist: Boolean
-        get() = enabled && _dist
+        get() = CameraHelper.enabled && _dist
 
     @JvmStatic
     val clip: Boolean
-        get() = enabled && _clip
+        get() = CameraHelper.enabled && _clip
 }

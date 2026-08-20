@@ -7,7 +7,7 @@ import foo.starred.athen.api.messaging.impl.MessagingAPI.mod
 import foo.starred.athen.api.rendering.level.impl.extensions.impl.extractStyledBox
 import foo.starred.athen.api.rendering.level.impl.extensions.impl.extractText
 import foo.starred.athen.config.Category
-import foo.starred.athen.config.ExpandableHandle
+import foo.starred.athen.config.dsl.impl.builders.group.ConfigGroupBuilder
 import foo.starred.athen.events.LocationEvent
 import foo.starred.athen.events.WorldRenderEvent
 import foo.starred.athen.modules.Module
@@ -22,6 +22,9 @@ import net.minecraft.world.level.chunk.LevelChunk
 import net.minecraft.world.phys.AABB
 import java.awt.Color
 
+//? if >= 26.2
+//import net.minecraft.world.phys.Vec3
+
 @Load
 @OnlyIn(islands = [SkyBlockIsland.CRYSTAL_HOLLOWS])
 object WorldScanner: Module(
@@ -30,7 +33,7 @@ object WorldScanner: Module(
     Category.RENDER
 ) {
     data class StructureEspConfig(
-        val expandable: ExpandableHandle,
+        val expandable: ConfigGroupBuilder,
         val enable: () -> Boolean,
         val highlightStyle: () -> Int,
         val color: () -> Color,
@@ -42,47 +45,37 @@ object WorldScanner: Module(
     )
 
     fun createStructureEspConfig(
-        expandable: ExpandableHandle,
+        group: ConfigGroupBuilder,
         defaultColor: Color,
     ): StructureEspConfig {
-        val key = expandable.key
+        val key = group.key
 
-        val enable by config.switch("Enable", true)
+        val enable by group.switch("Enable", true)
             .unique(key + "Enable")
-            .childOf { expandable }
 
-        val highlightStyle by config.dropdown("Highlight Style", listOf("Outline", "Filled", "Both"), 2)
+        val highlightStyle by group.selector("Highlight Style", listOf("Outline", "Filled", "Both"), 2)
             .unique(key + "Highlight Style")
-            .childOf { expandable }
 
-        val color by config.colorPicker("ESP Color", defaultColor)
+        val color by group.colorPicker("ESP Color", defaultColor)
             .unique(key + "ESP Color")
-            .childOf { expandable }
 
-        val tracer by config.switch("Tracer", false)
+        val tracer by group.switch("Tracer", false)
             .unique(key + "Tracer")
-            .childOf { expandable }
 
-        val displayName by config.switch("Display Name", true)
+        val displayName by group.switch("Display Name", true)
             .unique(key + "Display Name")
-            .childOf { expandable }
 
-        val displayScale by config.slider("Name Scale", 1f, 0f, 1f, showDouble = true)
+        val displayScale by group.slider("Name Scale", 1f, 0f, 1f, double = true)
             .unique(key + "Name Scale")
-            .dependsOn { displayName }
-            .childOf { expandable }
 
-        val displayBackgroundOpacity by config.slider("Display Background Opacity", 0.5f, 0f, 1f, showDouble = true)
+        val displayBackgroundOpacity by group.slider("Display Background Opacity", 0.5f, 0f, 1f, double = true)
             .unique(key + "Display Background Opacity")
-            .dependsOn { displayName }
-            .childOf { expandable }
 
-        val sendCoordsInChat by config.switch("Send Coords In Chat", true)
+        val sendCoordsInChat by group.switch("Send Coords In Chat", true)
             .unique(key + "Send Coords In Chat")
-            .childOf { expandable }
 
         return StructureEspConfig(
-            expandable,
+            group,
             { enable },
             { highlightStyle },
             { color },
@@ -94,85 +87,46 @@ object WorldScanner: Module(
         )
     }
 
-    private val grottoExpandable by config.expandable("Fairy Grotto")
-    val grottoConfig = createStructureEspConfig(
-        grottoExpandable,
-        Color(255, 85, 255)
-    )
-    val grottoConfigShowNumberOfBlocks by config.switch("Show Number of Blocks", true).childOf { grottoExpandable }
-    val grottoConfigShowNumberOfBlocksBackgroundOpacity by config.slider("Text Background Opacity", 0.5f, 0f, 1f, showDouble = true).dependsOn { grottoConfigShowNumberOfBlocks }.childOf { grottoExpandable }
+    private val grotto by config.group("Fairy Grotto")
+    val grottoConfig = createStructureEspConfig(grotto, Color(255, 85, 255))
+    val grottoConfigShowNumberOfBlocks by grotto.switch("Show Number of Blocks", true)
+    val grottoConfigShowNumberOfBlocksBackgroundOpacity by grotto.slider("Text Background Opacity", 0.5f, 0f, 1f, double = true)
 
-    private val sapphireExpandable by config.expandable("Sapphire Crystal")
-    val sapphireConfig = createStructureEspConfig(
-        sapphireExpandable,
-        Color(85, 255, 255)
-    )
+    private val sapphire by config.group("Sapphire Crystal")
+    val sapphireConfig = createStructureEspConfig(sapphire, Color(85, 255, 255))
 
-    private val amberExpandable by config.expandable("Amber Crystal")
-    val amberConfig = createStructureEspConfig(
-        amberExpandable,
-        Color(255, 170, 0)
-    )
+    private val amber by config.group("Amber Crystal")
+    val amberConfig = createStructureEspConfig(amber, Color(255, 170, 0))
 
-    private val amethystExpandable by config.expandable("Amethyst Crystal")
-    val amethystConfig = createStructureEspConfig(
-        amethystExpandable,
-        Color(170, 0, 170)
-    )
+    private val amethyst by config.group("Amethyst Crystal")
+    val amethystConfig = createStructureEspConfig(amethyst, Color(170, 0, 170))
 
-    private val jadeExpandable by config.expandable("Jade Crystal")
-    val jadeConfig = createStructureEspConfig(
-        jadeExpandable,
-        Color(0, 170, 0)
-    )
+    private val jade by config.group("Jade Crystal")
+    val jadeConfig = createStructureEspConfig(jade, Color(0, 170, 0))
 
-    private val topazExpandable by config.expandable("Topaz Crystal")
-    val topazConfig = createStructureEspConfig(
-        topazExpandable,
-        Color(255, 255, 85)
-    )
+    private val topaz by config.group("Topaz Crystal")
+    val topazConfig = createStructureEspConfig(topaz, Color(255, 255, 85))
 
-    private val corleoneExpandable by config.expandable("Corleone")
-    val corleoneConfig = createStructureEspConfig(
-        corleoneExpandable,
-        Color(85, 255, 85)
-    )
+    private val corleone by config.group("Corleone")
+    val corleoneConfig = createStructureEspConfig(corleone, Color(85, 255, 85))
 
-    private val goldenDragonExpandable by config.expandable("Golden Dragon")
-    val goldenDragonConfig = createStructureEspConfig(
-        goldenDragonExpandable,
-        Color(255, 255, 255)
-    )
+    private val goldenDragon by config.group("Golden Dragon")
+    val goldenDragonConfig = createStructureEspConfig(goldenDragon, Color(255, 255, 255))
 
-    private val keyGuardianExpandable by config.expandable("Key Guardian")
-    val keyGuardianConfig = createStructureEspConfig(
-        keyGuardianExpandable,
-        Color(170, 0, 170)
-    )
+    private val keyGuardian by config.group("Key Guardian")
+    val keyGuardianConfig = createStructureEspConfig(keyGuardian, Color(170, 0, 170))
 
-    private val xalxExpandable by config.expandable("Xalx")
-    val xalxConfig = createStructureEspConfig(
-        xalxExpandable,
-        Color(80, 110, 0)
-    )
+    private val xalx by config.group("Xalx")
+    val xalxConfig = createStructureEspConfig(xalx, Color(80, 110, 0))
 
-    private val peteExpandable by config.expandable("Pete")
-    val peteConfig = createStructureEspConfig(
-        peteExpandable,
-        Color(110, 42, 0)
-    )
+    private val pete by config.group("Pete")
+    val peteConfig = createStructureEspConfig(pete, Color(110, 42, 0))
 
-    private val odawaExpandable by config.expandable("Odawa")
-    val odawaConfig = createStructureEspConfig(
-        odawaExpandable,
-        Color(170, 170, 170)
-    )
+    private val odawa by config.group("Odawa")
+    val odawaConfig = createStructureEspConfig(odawa, Color(170, 170, 170))
 
-    private val wormFishingExpandable by config.expandable("Worm Fishing")
-    val wormFishingConfig = createStructureEspConfig(
-        wormFishingExpandable,
-        Color(255, 85, 85)
-    )
+    private val wormFishing by config.group("Worm Fishing")
+    val wormFishingConfig = createStructureEspConfig(wormFishing, Color(255, 85, 85))
 
     private val grottos = mutableListOf<Triple<Pair<Int, Int>, BlockPos, Int>>()
     private val structures = mutableListOf<Pair<Structure, Triple<Int, Int, Int>>>()
@@ -198,6 +152,7 @@ object WorldScanner: Module(
             if (grottoConfig.enable()) {
                 for (grotto in grottos) {
                     val blockPos = grotto.second
+                    //~ if >= 26.2 'blockPos.center' -> 'Vec3.atCenterOf(blockPos)'
                     val center = blockPos.center
                     val aabb = AABB(blockPos)
                     val color = grottoConfig.color()
@@ -234,17 +189,10 @@ object WorldScanner: Module(
                 val aabb = AABB(blockPos)
                 val color = structureConfig.color()
                 extractStyledBox(aabb, color.rgb, structureConfig.highlightStyle(), depth = false)
+                //~ if >= 26.2 'blockPos.center' -> 'Vec3.atCenterOf(blockPos)' {
                 if (structureConfig.tracer()) extractTracer(blockPos.center, structureConfig.color().rgb, 2f, false)
-                if (structureConfig.displayName()) extractText(
-                    structure.first.displayName,
-                    blockPos.center,
-                    structureConfig.color().rgb,
-                    Color(0, 0, 0, (255 * structureConfig.displayBackgroundOpacity()).toInt()).rgb,
-                    structureConfig.displayScale(),
-                    depth = false,
-                    shadow = true,
-                    increase = true
-                )
+                if (structureConfig.displayName()) extractText(structure.first.displayName, blockPos.center, structureConfig.color().rgb, Color(0, 0, 0, (255 * structureConfig.displayBackgroundOpacity()).toInt()).rgb, structureConfig.displayScale(), depth = false, shadow = true, increase = true)
+                //~ }
             }
         }
     }
@@ -359,10 +307,9 @@ object WorldScanner: Module(
                         chunkPos.set(x, y, z)
                         val state = chunk.getBlockState(chunkPos)
 
-                        if (
-                            state.`is`(Blocks.MAGENTA_STAINED_GLASS_PANE) ||
-                            state.`is`(Blocks.MAGENTA_STAINED_GLASS)
-                        ) {
+                        //~ if >= 26.2 'Blocks.MAGENTA_STAINED_GLASS' -> 'Blocks.STAINED_GLASS.magenta()'
+                        //~ if >= 26.2 'Blocks.MAGENTA_STAINED_GLASS_PANE' -> 'Blocks.STAINED_GLASS_PANE.magenta()'
+                        if (state.`is`(Blocks.MAGENTA_STAINED_GLASS_PANE) || state.`is`(Blocks.MAGENTA_STAINED_GLASS)) {
                             worldPos.set(chunk.pos.x * 16 + x, y, chunk.pos.z * 16 + z)
                             if (!CrystalHollowsQuarter.NUCLEUS.testPredicate(worldPos)) chunkJasperBlocks.add(worldPos.immutable())
                         }

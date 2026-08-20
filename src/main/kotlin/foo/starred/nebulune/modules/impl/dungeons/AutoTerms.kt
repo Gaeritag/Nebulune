@@ -27,7 +27,7 @@ object AutoTerms : Module(
 
     private val minDelay by config.slider("Min delay", 80, 0, 500, "ms")
     private val maxDelay by config.slider("Max delay", 160, 0, 500, "ms")
-    private val order by config.dropdown("Order", listOf("First", "Random", "Closest", "Furthest"), 2)
+    private val order by config.selector("Order", listOf("First", "Random", "Closest", "Furthest"), 2)
 
     private val numbers by config.switch("Numbers", true)
     private val panes by config.switch("Panes", true)

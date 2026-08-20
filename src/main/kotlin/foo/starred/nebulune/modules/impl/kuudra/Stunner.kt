@@ -11,7 +11,7 @@ import foo.starred.snowbird.handlers.time.client
 @Load
 object Stunner {
     private val autoClose by StunHelper.config.switch("Auto close GUI")
-    private val `autoClose$delay` by StunHelper.config.slider("Close delay", 1, 0, 5, "ticks").dependsOn { autoClose }
+    private val `autoClose$delay` by StunHelper.config.slider("Close delay", 1, 0, 5, "ticks")
 
     @JvmStatic
     fun fn() {

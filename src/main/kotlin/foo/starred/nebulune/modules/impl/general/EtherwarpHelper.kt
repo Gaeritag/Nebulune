@@ -23,13 +23,14 @@ object EtherwarpHelper : Module(
     "Helper features for Etherwarp.",
     Category.GENERAL
 ) {
-    private val lcew = config.switch("Left click warp").custom("lcew")
-    private val shift by config.switch("Shift automatically").dependsOn { lcew.value }
+    private val lcew = config.switch("Left click warp").unique("lcew")
+    private val shift by config.switch("Shift automatically")
 
     private val ints = intArrayOf(2, 3, 4)
 
     init {
         on<InputEvent.Mouse.Press> {
+            //~ if >= 26.2 'client.screen' -> 'client.gui.screen()'
             if (client.screen != null) return@on
             if (buttonInfo.button != 0) return@on
 

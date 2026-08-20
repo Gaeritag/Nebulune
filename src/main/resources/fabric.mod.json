@@ -23,11 +23,11 @@
   ],
   "accessWidener": "${accessWidener}",
   "depends": {
-    "fabricloader": ">=0.17",
+    "fabricloader": ">=0.19.3",
     "fabric-api": "*",
     "fabric-language-kotlin": "*",
     "minecraft": "${minecraft}",
-    "athen": ">=0.1.8"
+    "athen": ">=0.3.0"
   },
   "custom": {
     "modmenu": {

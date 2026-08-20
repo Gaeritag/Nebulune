@@ -32,6 +32,7 @@ enum class Structure(
 ) {
     KING(
         mutableListOf(
+            //~ if >= 26.2 'Blocks.RED_WOOL' -> 'Blocks.WOOL.red()'
             Triple(Blocks.RED_WOOL, null, null),
             Triple(Blocks.DARK_OAK_STAIRS, null, null),
             Triple(Blocks.DARK_OAK_STAIRS, null, null),
@@ -113,8 +114,11 @@ enum class Structure(
             Triple(Blocks.CLAY, null, null),
             Triple(Blocks.OAK_LEAVES, null, null),
             Triple(Blocks.OAK_LEAVES, null, null),
+            //~ if >= 26.2 'Blocks.LIME_TERRACOTTA' -> 'Blocks.DYED_TERRACOTTA.lime()'
             Triple(Blocks.LIME_TERRACOTTA, null, null),
+            //~ if >= 26.2 'Blocks.LIME_TERRACOTTA' -> 'Blocks.DYED_TERRACOTTA.lime()'
             Triple(Blocks.LIME_TERRACOTTA, null, null),
+            //~ if >= 26.2 'Blocks.GREEN_TERRACOTTA' -> 'Blocks.DYED_TERRACOTTA.green()'
             Triple(Blocks.GREEN_TERRACOTTA, null, null),
 
         ),
@@ -196,6 +200,7 @@ enum class Structure(
             Triple(Blocks.POLISHED_ANDESITE, null, null), // 1
             Triple(Blocks.STONE_BRICKS, null, null), // 2
             Triple(Blocks.POLISHED_GRANITE, null, null), // 3
+            //~ if >= 26.2 'Blocks.LIGHT_GRAY_TERRACOTTA' -> 'Blocks.DYED_TERRACOTTA.lightGray()' {
             Triple(Blocks.LIGHT_GRAY_TERRACOTTA, null, null), // 4
             Triple(Blocks.LIGHT_GRAY_TERRACOTTA, null, null), // 5
             Triple(Blocks.LIGHT_GRAY_TERRACOTTA, null, null), // 6
@@ -214,6 +219,7 @@ enum class Structure(
             Triple(Blocks.LIGHT_GRAY_TERRACOTTA, null, null), // 17
             Triple(Blocks.LIGHT_GRAY_TERRACOTTA, null, null), // 18
             Triple(Blocks.LIGHT_GRAY_TERRACOTTA, null, null), // 19
+            //~ }
             Triple(Blocks.JUNGLE_STAIRS, null, null), // 20
             Triple(Blocks.GRANITE, null, null), // 21
             Triple(Blocks.POLISHED_GRANITE, null, null), // 22
@@ -234,6 +240,7 @@ enum class Structure(
             Triple(Blocks.JUNGLE_STAIRS, null, null), // 0
             Triple(Blocks.JUNGLE_PLANKS, null, null), // 1
             Triple(Blocks.GLOWSTONE, null, null), // 2
+            //~ if >= 26.2 'Blocks.BROWN_CARPET' -> 'Blocks.CARPET.brown()'
             Triple(Blocks.BROWN_CARPET, null, null), // 3
             Triple(null, null, null), // 4
             Triple(Blocks.JUNGLE_SLAB, null, null), // 5
@@ -331,6 +338,7 @@ enum class Structure(
             Triple(Blocks.JUNGLE_LOG, null, null), // 7
             Triple(Blocks.JUNGLE_LOG, null, null), // 8
             Triple(Blocks.HAY_BLOCK, null, null), // 9
+            //~ if >= 26.2 'Blocks.YELLOW_TERRACOTTA' -> 'Blocks.DYED_TERRACOTTA.yellow()'
             Triple(Blocks.YELLOW_TERRACOTTA, null, null), // 10
         ),
         StructureType.ODAWA,
@@ -345,10 +353,13 @@ enum class Structure(
     GOLDEN_DRAGON(
         mutableListOf(
             Triple(Blocks.STONE, null, null),
+            //~ if >= 26.2 'Blocks.RED_TERRACOTTA' -> 'Blocks.DYED_TERRACOTTA.red()' {
             Triple(Blocks.RED_TERRACOTTA, null, null),
             Triple(Blocks.RED_TERRACOTTA, null, null),
             Triple(Blocks.RED_TERRACOTTA, null, null),
+            //~ }
             Triple(Blocks.PLAYER_HEAD, null, null),
+            //~ if >= 26.2 'Blocks.RED_WOOL' -> 'Blocks.WOOL.red()'
             Triple(Blocks.RED_WOOL, null, null),
         ),
         StructureType.GOLDEN_DRAGON,
@@ -362,7 +373,9 @@ enum class Structure(
 
     FAIRY_GROTTO(
         mutableListOf(
+            //~ if >= 26.2 'Blocks.MAGENTA_STAINED_GLASS' -> 'Blocks.STAINED_GLASS.magenta()'
             Triple(Blocks.MAGENTA_STAINED_GLASS, null, null),
+            //~ if >= 26.2 'Blocks.MAGENTA_STAINED_GLASS_PANE' -> 'Blocks.STAINED_GLASS_PANE.magenta()'
             Triple(Blocks.MAGENTA_STAINED_GLASS_PANE, null, null),
         ),
         StructureType.FAIRY_GROTTO,

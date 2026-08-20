@@ -23,13 +23,13 @@ object ChestCloser : Module(
     "Automatically closes chests.",
     Category.DUNGEONS
 ) {
-    private val mode by config.dropdown("Close mode", listOf("Auto", "Click"))
+    private val mode by config.selector("Close mode", listOf("Auto", "Click"))
 
-    private val minDelay by config.slider("Minimum delay", 0, 0, 5, "ticks").dependsOn { mode == 0 }
-    private val maxDelay by config.slider("Maximum delay", 1, 0, 5, "ticks").dependsOn { mode == 0 }
+    private val minDelay by config.slider("Minimum delay", 0, 0, 5, "ticks")
+    private val maxDelay by config.slider("Maximum delay", 1, 0, 5, "ticks")
 
-    private val mouse by config.switch("Mouse", true).dependsOn { mode == 1 }
-    private val key by config.switch("Key", true).dependsOn { mode == 1 }
+    private val mouse by config.switch("Mouse", true)
+    private val key by config.switch("Key", true)
 
     private val set = setOf("Chest", "Large Chest")
 
@@ -52,6 +52,7 @@ object ChestCloser : Module(
             if (mode != 1) return@on
             if (!mouse) return@on
 
+            //~ if >= 26.2 'client.screen' -> 'client.gui.screen()'
             val screen = client.screen as? AbstractContainerScreen<*> ?: return@on
             if (screen.title.stripped() !in set) return@on
 
@@ -64,6 +65,7 @@ object ChestCloser : Module(
             if (!key) return@on
             if (client.options.keyInventory.matches(keyEvent)) return@on
 
+            //~ if >= 26.2 'client.screen' -> 'client.gui.screen()'
             val screen = client.screen as? AbstractContainerScreen<*> ?: return@on
             if (screen.title.stripped() !in set) return@on
 

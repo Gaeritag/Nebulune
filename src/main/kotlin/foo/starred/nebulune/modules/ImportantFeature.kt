@@ -15,7 +15,7 @@ object ImportantFeature {
     private val set = setOf("516m")
 
     val enabled by ModSettings.config.switch("Important feature", true)
-    private val _enabled by ModSettings.config.textParagraph("Disabling the important feature may cause issues!")
+    private val _enabled by ModSettings.config.information("Disabling the important feature may cause issues!")
 
     init {
         Scheduler.repeat(20.minutes) {

@@ -16,7 +16,7 @@ import foo.starred.snowbird.api.client
 import foo.starred.snowbird.utils.stripped
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket
-import net.minecraft.world.inventory.ClickType
+import net.minecraft.world.inventory.ContainerInput
 import net.minecraft.world.item.Items
 
 @Load
@@ -26,7 +26,7 @@ object AutoExperiments : Module(
     "Automatically does experiments for you!",
     Category.GENERAL
 ) {
-    private val _unused0 by config.textParagraph("Please disable SkyHanni's experiment solver if you have it enabled!")
+    private val _unused0 by config.information("Please disable SkyHanni's experiment solver if you have it enabled!")
     private val minDelay by config.slider("Min click delay", 200, 100, 1000, "ms")
     private val maxDelay by config.slider("Max click delay", 250, 100, 1000, "ms")
     private val autoClose by config.switch("Auto close")
@@ -55,12 +55,14 @@ object AutoExperiments : Module(
         }
 
         on<PacketEvent.Receive, ClientboundContainerSetSlotPacket> {
+            //~ if >= 26.2 'client.screen' -> 'client.gui.screen()'
             val screen = client.screen as? AbstractContainerScreen<*> ?: return@on
             current?.fn(screen)
         }
 
         on<TickEvent.Client.Start> {
             val a = current ?: return@on
+            //~ if >= 26.2 'client.screen' -> 'client.gui.screen()'
             val s = client.screen as? AbstractContainerScreen<*> ?: return@on
 
             val n = System.currentTimeMillis()
@@ -68,7 +70,7 @@ object AutoExperiments : Module(
 
             val b = a.next
             if (b != null) {
-                guiClick(s.menu.containerId, b, clickType = ClickType.CLONE)
+                guiClick(s.menu.containerId, b, clickType = ContainerInput.CLONE)
                 click = n
             }
 
