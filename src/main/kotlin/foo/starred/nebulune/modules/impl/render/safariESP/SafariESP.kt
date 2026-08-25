@@ -15,6 +15,7 @@ import foo.starred.nebulune.utils.safari.SafariMob
 import foo.starred.nebulune.utils.safari.getCritterSafariBiome
 import net.minecraft.client.player.AbstractClientPlayer
 import net.minecraft.client.renderer.entity.state.ShulkerRenderState
+import net.minecraft.world.entity.Display
 import net.minecraft.world.entity.Entity
 //? if >= 26.2
 //import net.minecraft.world.entity.EntityTypes as EntityType
@@ -23,6 +24,7 @@ import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.entity.decoration.ArmorStand
 import net.minecraft.world.item.DyeColor
+import net.minecraft.world.item.Items
 import tech.thatgravyboat.skyblockapi.utils.extentions.getTexture
 import java.awt.Color
 
@@ -146,14 +148,14 @@ object SafariESP : Module(
             SafariMob(MobIdentifier.VanillaEntity(EntityType.FROG), { `forest$treefrog` }, { `forest$treefrog_color` }),
             SafariMob(MobIdentifier.TexturedHead("BASE64_ICI"), { `forest$woodchucker` }, { `forest$woodchucker_color` }),
             SafariMob(MobIdentifier.VanillaEntity(EntityType.PANDA), { `forest$fluffling` }, { `forest$fluffling_color` }),
-            SafariMob(MobIdentifier.VanillaEntity(EntityType.SLIME), { `forest$hideonfloor` }, { `forest$hideonfloor_color` }),
+            SafariMob(MobIdentifier.ColoredShulker(DyeColor.GREEN), { `forest$hideonfloor` }, { `forest$hideonfloor_color` }),
             SafariMob(MobIdentifier.VanillaEntity(EntityType.PARROT), { `forest$parakeet` }, { `forest$parakeet_color` }),
             SafariMob(MobIdentifier.VanillaEntity(EntityType.PARROT), { `forest$macaw` }, { `forest$macaw_color` })
         )),
         SafariBiome.HAUNTED to Triple({ `haunted$toggle` }, { `haunted$only_in_biome` }, listOf(
             SafariMob(MobIdentifier.VanillaEntity(EntityType.CAVE_SPIDER), { `haunted$areita` }, { `haunted$areita_color` }),
             SafariMob(MobIdentifier.VanillaEntity(EntityType.BAT), { `haunted$bloodbat` }, { `haunted$bloodbat_color` }),
-            SafariMob(MobIdentifier.TexturedHead("BASE64_ICI"), { `haunted$duplico` }, { `haunted$duplico_color` }),
+            SafariMob(MobIdentifier.VanillaEntity(EntityType.ITEM_DISPLAY), { `haunted$duplico` }, { `haunted$duplico_color` }),
             SafariMob(MobIdentifier.TexturedHead("BASE64_ICI"), { `haunted$gazer` }, { `haunted$gazer_color` }),
             SafariMob(MobIdentifier.VanillaEntity(EntityType.ENDERMITE), { `haunted$litterbug` }, { `haunted$litterbug_color` }),
             SafariMob(MobIdentifier.VanillaEntity(EntityType.PHANTOM), { `haunted$solsnatcher` }, { `haunted$solsnatcher_color` }),
@@ -197,7 +199,8 @@ object SafariESP : Module(
                     e.type == id.type
                 }
                 is MobIdentifier.ColoredShulker -> {
-                    e.type == EntityType.SHULKER
+                    e.type == EntityType.SHULKER ||
+                            (e as? Display.ItemDisplay)?.itemStack?.`is`(Items.GREEN_SHULKER_BOX) == true
                 }
                 is MobIdentifier.TexturedHead -> {
                     if (e is ArmorStand && e.hasItemInSlot(EquipmentSlot.HEAD)) {
@@ -251,7 +254,11 @@ object SafariESP : Module(
                     }
                     is MobIdentifier.ColoredShulker -> {
                         val r = renderState as? ShulkerRenderState
-                        r != null && r.color == id.color
+                        val itemDisplay = e as? Display.ItemDisplay
+                        val isCorrectEntity = e.type == EntityType.SHULKER ||
+                                itemDisplay?.itemStack?.`is`(Items.GREEN_SHULKER_BOX) == true ||
+                                itemDisplay?.itemStack?.`is`(Items.PURPLE_SHULKER_BOX) == true
+                        isCorrectEntity && r != null && r.color == id.color
                     }
                     is MobIdentifier.TexturedHead -> {
                         if (e is ArmorStand && e.hasItemInSlot(EquipmentSlot.HEAD)) {
