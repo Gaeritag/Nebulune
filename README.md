@@ -7,6 +7,10 @@ Get Athen at: https://modrinth.com/mod/athen
 
 ---
 
+## Maintaining
+
+This mod has been abandoned by its original owner because they no longer have enough time for the project. I am not very experienced in Java development, but I will do my best to keep the mod up to date. I will publish new releases as soon as I can following an Athen update. Please be patient with me! If you need anything, my Discord is **gaeritag**.
+
 ## Branches
 
 ``master`` - main branch for athen development, no cheats. check it out [here](https://modrinth.com/mod/athen)<br>
