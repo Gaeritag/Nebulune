@@ -16,6 +16,9 @@ import foo.starred.nebulune.utils.safari.getCritterSafariBiome
 import net.minecraft.client.player.AbstractClientPlayer
 import net.minecraft.client.renderer.entity.state.ShulkerRenderState
 import net.minecraft.world.entity.Entity
+//? if >= 26.2
+//import net.minecraft.world.entity.EntityTypes as EntityType
+//? if = 26.1
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.entity.decoration.ArmorStand
