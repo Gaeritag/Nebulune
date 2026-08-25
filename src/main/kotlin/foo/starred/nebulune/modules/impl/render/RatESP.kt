@@ -17,8 +17,7 @@ import foo.starred.snowbird.api.level
 import foo.starred.snowbird.handlers.time.client
 import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket
 import net.minecraft.world.entity.Entity
-import net.minecraft.world.entity.EquipmentSlot
-import net.minecraft.world.entity.decoration.ArmorStand
+import net.minecraft.world.entity.Display
 import net.minecraft.world.phys.AABB
 import tech.thatgravyboat.skyblockapi.utils.extentions.getTexture
 import java.awt.Color
@@ -40,10 +39,9 @@ object RatESP : Module(
     init {
         on<PacketEvent.Receive, ClientboundSetEntityDataPacket> {
             Scheduler.schedule(2.client) {
-                val entity = level?.getEntity(id) as? ArmorStand ?: return@schedule
-                if (!entity.hasItemInSlot(EquipmentSlot.HEAD)) return@schedule
+                val entity = level?.getEntity(id) as? Display.ItemDisplay ?: return@schedule
                 if (entity in entities) return@schedule
-                if (entity.getItemBySlot(EquipmentSlot.HEAD).getTexture() != RAT) return@schedule
+                if (entity.itemStack.getTexture() != RAT) return@schedule
 
                 entities.add(entity)
             }
@@ -58,7 +56,7 @@ object RatESP : Module(
                     continue
                 }
 
-                val p = e.renderPos.add(-0.5, 1.0, -0.5)
+                val p = e.renderPos.add(-0.5, 0.0, -0.5)
                 extractFrameBox(AABB.unitCubeFromLowerCorner(p), color.rgb, thickness.toFloat(), false)
                 if (tracer) extractTracer(p, color.rgb, thickness.toFloat(), false)
             }
