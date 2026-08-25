@@ -45,29 +45,3 @@ jobs:
         with:
           name: build-artifacts
           path: build/libs/
-
-      - name: Zip and upload to builds.aerii.xyz
-        env:
-          UPLOAD_KEY: ${{ secrets.UPLOAD_KEY }}
-        run: |
-          cd build/libs && zip -r ../../build-output.zip . && cd ../..
-          curl -X POST https://builds.aerii.xyz/upload \
-            -H "Authorization: $UPLOAD_KEY" \
-            -F "file=@build-output.zip" \
-            -F "commit=${{ github.sha }}" \
-            -F "branch=${{ github.ref_name }}"
-
-      - name: Notify Discord
-        env:
-          NOTIFY_TOKEN: ${{ secrets.NOTIFY_TOKEN }}
-        run: |
-          curl -X POST "https://builds.aerii.xyz/notify?type=build" \
-            -H "Content-Type: application/json" \
-            -H "Authorization: $NOTIFY_TOKEN" \
-            -d "{
-              \"repo\": \"${{ github.repository }}\",
-              \"branch\": \"${{ github.ref_name }}\",
-              \"run_id\": \"${{ github.run_id }}\",
-              \"before\": \"${{ github.event.before }}\",
-              \"after\": \"${{ github.event.after }}\"
-            }"
