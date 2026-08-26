@@ -21,8 +21,8 @@ fun getCritterSafariBiome(x: Double, z: Double): SafariBiome {
     return when {
         x >= CENTER_X && z >= CENTER_Z -> SafariBiome.FOREST
         x >= CENTER_X && z < CENTER_Z -> SafariBiome.HAUNTED
-        x < CENTER_X && z >= CENTER_Z -> SafariBiome.ICY
-        else -> SafariBiome.CAVERN
+        x < CENTER_X && z >= CENTER_Z -> SafariBiome.CAVERN
+        else -> SafariBiome.ICY
     }
 }
 
