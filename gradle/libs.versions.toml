@@ -21,8 +21,8 @@ athen-26-2 = "0.3.0+26.2"
 snowbird-26-1 = "014+26.1"
 snowbird-26-2 = "014+26.2"
 
-cascade-26-1 = "025+26.1"
-cascade-26-2 = "025+26.2"
+cascade-26-1 = "035+26.1"
+cascade-26-2 = "035+26.2"
 
 skyblock-api = "4.2.19"
 classgraph = "4.8.184"
