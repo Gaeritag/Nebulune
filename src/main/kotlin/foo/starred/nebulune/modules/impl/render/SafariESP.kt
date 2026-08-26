@@ -1,11 +1,9 @@
-package foo.starred.nebulune.modules.impl.render.safariESP
+package foo.starred.nebulune.modules.impl.render
 
 import foo.starred.athen.annotations.Load
-import foo.starred.athen.annotations.OnlyIn
 import kotlin.Triple
 import foo.starred.athen.api.rendering.level.impl.extensions.impl.extractFrameBox
 import foo.starred.athen.config.Category
-import foo.starred.athen.events.TickEvent
 import foo.starred.athen.events.WorldRenderEvent
 import foo.starred.athen.modules.Module
 import foo.starred.athen.utils.render.renderBoundingBox
