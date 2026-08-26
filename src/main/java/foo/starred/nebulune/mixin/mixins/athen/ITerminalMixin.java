@@ -165,7 +165,7 @@ public abstract class ITerminalMixin implements ITerminalAccessor {
     @Unique
     private void nebulune$clickClick(Click click) {
         QueueTerms.INSTANCE.setYearning(true);
-        ConfigSoundOption sound = TerminalSolver.INSTANCE.getClickSound();
+        ConfigSoundOption sound = TerminalSolver.INSTANCE.getClicks();
 
         if (TerminalSimulator.INSTANCE.getS().getValue()) {
             var client = ClientKt.getClient();
