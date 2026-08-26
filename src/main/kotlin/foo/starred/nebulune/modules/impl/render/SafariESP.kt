@@ -1,0 +1,375 @@
+package foo.starred.nebulune.modules.impl.render
+
+//? if >= 26.2
+//import net.minecraft.world.entity.EntityTypes as EntityType
+//? if = 26.1
+import foo.starred.athen.annotations.Load
+import foo.starred.athen.annotations.OnlyIn
+import foo.starred.athen.api.location.SkyBlockIsland
+import foo.starred.athen.api.rendering.level.impl.extensions.impl.extractFrameBox
+import foo.starred.athen.api.scheduling.Scheduler
+import foo.starred.athen.config.Category
+import foo.starred.athen.events.LocationEvent
+import foo.starred.athen.events.PacketEvent
+import foo.starred.athen.events.WorldRenderEvent
+import foo.starred.athen.modules.Module
+import foo.starred.athen.utils.render.renderBoundingBox
+import foo.starred.nebulune.utils.getSkinTexture
+import foo.starred.nebulune.utils.safari.*
+import foo.starred.snowbird.api.level
+import foo.starred.snowbird.api.player
+import foo.starred.snowbird.handlers.time.client
+import net.minecraft.network.protocol.game.ClientboundAddEntityPacket
+import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket
+import net.minecraft.world.entity.Display
+import net.minecraft.world.entity.Entity
+import net.minecraft.world.entity.EntityType
+import net.minecraft.world.entity.EquipmentSlot
+import net.minecraft.world.entity.animal.fish.TropicalFish
+import net.minecraft.world.entity.animal.parrot.Parrot
+import net.minecraft.world.entity.decoration.ArmorStand
+import net.minecraft.world.entity.monster.Shulker
+import net.minecraft.world.entity.player.Player
+import net.minecraft.world.item.DyeColor
+import net.minecraft.world.item.Items
+import net.minecraft.world.level.block.Blocks
+import net.minecraft.world.phys.AABB
+import tech.thatgravyboat.skyblockapi.utils.extentions.getTexture
+import java.awt.Color
+
+@Load
+@OnlyIn(islands = [SkyBlockIsland.SAFARI])
+object SafariESP : Module(
+    "Safari ESP",
+    "ESP for Safari mobs",
+    Category.RENDER
+) {
+    // CAVERN
+    private val cavernGroup by config.group("Cavern Biome")
+    val `cavern$toggle` by cavernGroup.switch("Toggle cavern")
+    val `cavern$only_in_biome` by cavernGroup.switch("Toggle cavern mobs only in cavern biome")
+    val `cavern$cavernrnfish` by cavernGroup.switch("cavernfish")
+    val `cavern$cavernrnfish_color` by cavernGroup.colorPicker("Color", Color(180, 100, 30))
+    val `cavern$flitter` by cavernGroup.switch("Flitter")
+    val `cavern$flitter_color` by cavernGroup.colorPicker("Color", Color(40, 90, 110))
+    val `cavern$shyworm` by cavernGroup.switch("Shyworm")
+    val `cavern$shyworm_color` by cavernGroup.colorPicker("Color", Color(80, 160, 50))
+    val `cavern$driftling` by cavernGroup.switch("Driftling")
+    val `cavern$driftling_color` by cavernGroup.colorPicker("Color", Color(150, 110, 60))
+    val `cavern$chuckwalla` by cavernGroup.switch("Chuckwalla")
+    val `cavern$chuckwalla_color` by cavernGroup.colorPicker("Color", Color(60, 50, 40))
+    val `cavern$rockmite` by cavernGroup.switch("Rockmite")
+    val `cavern$rockmite_color` by cavernGroup.colorPicker("Color", Color(160, 160, 160))
+    val `cavern$scrappy` by cavernGroup.switch("Scrappy")
+    val `cavern$scrappy_color` by cavernGroup.colorPicker("Color", Color(190, 120, 130))
+    val `cavern$snoozle` by cavernGroup.switch("Snoozle")
+    val `cavern$snoozle_color` by cavernGroup.colorPicker("Color", Color(160, 40, 40))
+    val `cavern$gemzie` by cavernGroup.switch("Gemzie")
+    val `cavern$gemzie_color` by cavernGroup.colorPicker("Color", Color(150, 180, 240))
+
+    // FOREST
+    private val forestGroup by config.group("Forest Biome")
+    val `forest$toggle` by forestGroup.switch("Toggle Forest")
+    val `forest$only_in_biome` by forestGroup.switch("Toggle forest mobs only in forest biome")
+    val `forest$foxtrot` by forestGroup.switch("Foxtrot")
+    val `forest$foxtrot_color` by forestGroup.colorPicker("Color", Color(240, 110, 20))
+    val `forest$bluebird` by forestGroup.switch("Bluebird")
+    val `forest$bluebird_color` by forestGroup.colorPicker("Color", Color(20, 50, 200))
+    val `forest$honeybug` by forestGroup.switch("Honeybug")
+    val `forest$honeybug_color` by forestGroup.colorPicker("Color", Color(240, 190, 30))
+    val `forest$treefrog` by forestGroup.switch("Treefrog")
+    val `forest$treefrog_color` by forestGroup.colorPicker("Color", Color(110, 130, 90))
+    val `forest$woodchucker` by forestGroup.switch("Woodchucker")
+    val `forest$woodchucker_color` by forestGroup.colorPicker("Color", Color(80, 70, 70))
+    val `forest$fluffling` by forestGroup.switch("Fluffling")
+    val `forest$fluffling_color` by forestGroup.colorPicker("Color", Color(230, 230, 230))
+    val `forest$hideonfloor` by forestGroup.switch("Hideonfloor")
+    val `forest$hideonfloor_color` by forestGroup.colorPicker("Color", Color(100, 130, 40))
+    val `forest$parakeet` by forestGroup.switch("Parakeet")
+    val `forest$parakeet_color` by forestGroup.colorPicker("Color", Color(90, 200, 50))
+    val `forest$macaw` by forestGroup.switch("Macaw")
+    val `forest$macaw_color` by forestGroup.colorPicker("Color", Color(210, 30, 30))
+
+    // HAUNTED
+    private val hauntedGroup by config.group("Haunted Biome")
+    val `haunted$toggle` by hauntedGroup.switch("Toggle Haunted")
+    val `haunted$only_in_biome` by hauntedGroup.switch("Toggle haunted mobs only in haunted biome")
+    val `haunted$areita` by hauntedGroup.switch("Areita")
+    val `haunted$areita_color` by hauntedGroup.colorPicker("Color", Color(20, 90, 90))
+    val `haunted$bloodbat` by hauntedGroup.switch("Bloodbat")
+    val `haunted$bloodbat_color` by hauntedGroup.colorPicker("Color", Color(90, 40, 30))
+    val `haunted$duplico` by hauntedGroup.switch("Duplico")
+    val `haunted$duplico_color` by hauntedGroup.colorPicker("Color", Color(120, 120, 120))
+    val `haunted$gazer` by hauntedGroup.switch("Gazer")
+    val `haunted$gazer_color` by hauntedGroup.colorPicker("Color", Color(30, 50, 70))
+    val `haunted$litterbug` by hauntedGroup.switch("Litterbug")
+    val `haunted$litterbug_color` by hauntedGroup.colorPicker("Color", Color(130, 50, 170))
+    val `haunted$solsnatcher` by hauntedGroup.switch("Solsnatcher")
+    val `haunted$solsnatcher_color` by hauntedGroup.colorPicker("Color", Color(50, 60, 130))
+    val `haunted$gimmiegold` by hauntedGroup.switch("Gimmiegold")
+    val `haunted$gimmiegold_color` by hauntedGroup.colorPicker("Color", Color(255, 210, 0))
+    val `haunted$hideonwall` by hauntedGroup.switch("Hideonwall")
+    val `haunted$hideonwall_color` by hauntedGroup.colorPicker("Color", Color(140, 70, 140))
+    val `haunted$hideyho` by hauntedGroup.switch("Hideyho")
+    val `haunted$hideyho_color` by hauntedGroup.colorPicker("Color", Color(190, 190, 190))
+    val `haunted$doomspiral` by hauntedGroup.switch("Doomspiral")
+    val `haunted$doomspiral_color` by hauntedGroup.colorPicker("Color", Color(20, 140, 150))
+
+    // ICY
+    private val icyGroup by config.group("Icy Biome")
+    val `icy$toggle` by icyGroup.switch("Toggle Icy")
+    val `icy$only_in_biome` by icyGroup.switch("Toggle icy mobs only in icy biome")
+    val `icy$strongarm` by icyGroup.switch("Strongarm")
+    val `icy$strongarm_color` by icyGroup.colorPicker("Color", Color(220, 120, 20))
+    val `icy$tepid` by icyGroup.switch("Tepid")
+    val `icy$tepid_color` by icyGroup.colorPicker("Color", Color(200, 210, 200))
+    val `icy$polaris` by icyGroup.switch("Polaris")
+    val `icy$polaris_color` by icyGroup.colorPicker("Color", Color(255, 255, 255))
+    val `icy$shuddersquid` by icyGroup.switch("Shuddersquid")
+    val `icy$shuddersquid_color` by icyGroup.colorPicker("Color", Color(50, 190, 180))
+    val `icy$billygoat` by icyGroup.switch("Billygoat")
+    val `icy$billygoat_color` by icyGroup.colorPicker("Color", Color(230, 220, 200))
+    val `icy$mantis_shrimp` by icyGroup.switch("Mantis Shrimp")
+    val `icy$mantis_shrimp_color` by icyGroup.colorPicker("Color", Color(40, 90, 100))
+    val `icy$nozzlenose` by icyGroup.switch("Nozzlenose")
+    val `icy$nozzlenose_color` by icyGroup.colorPicker("Color", Color(140, 150, 170))
+    val `icy$troodon` by icyGroup.switch("Troodon")
+    val `icy$troodon_color` by icyGroup.colorPicker("Color", Color(120, 80, 190))
+    val `icy$wumpa` by icyGroup.switch("Wumpa")
+    val `icy$wumpa_color` by icyGroup.colorPicker("Color", Color(100, 90, 90))
+
+    private var safariRegistry: Map<SafariBiome, Triple<() -> Boolean, () -> Boolean, List<SafariMob>>> = mapOf(
+        SafariBiome.CAVERN to Triple({ `cavern$toggle` }, { `cavern$only_in_biome` }, listOf(
+            SafariMob(MobIdentifier.SpecificTropicalFish("CLAYFISH", "GRAY", "BROWN"), { `cavern$cavernrnfish` }, { `cavern$cavernrnfish_color` }),
+            SafariMob(MobIdentifier.TexturedItemDisplay(SafariTextures.FLITTER), { `cavern$flitter` }, { `cavern$flitter_color` }),
+            SafariMob(MobIdentifier.TexturedHead(SafariTextures.SHYWORM), { `cavern$shyworm` }, { `cavern$shyworm_color` }),
+            SafariMob(MobIdentifier.TexturedHead(SafariTextures.DRIFTLING), { `cavern$driftling` }, { `cavern$driftling_color` }),
+            SafariMob(MobIdentifier.TexturedItemDisplay(SafariTextures.CHUCKWALLA), { `cavern$chuckwalla` }, { `cavern$chuckwalla_color` }),
+            SafariMob(MobIdentifier.VanillaEntity(EntityType.SILVERFISH), { `cavern$rockmite` }, { `cavern$rockmite_color` }),
+            SafariMob(MobIdentifier.TexturedItemDisplay(SafariTextures.ROCKMITE_DISPLAY), { `cavern$rockmite` }, { `cavern$rockmite_color` }),
+            SafariMob(MobIdentifier.VanillaEntity(EntityType.ARMADILLO), { `cavern$scrappy` }, { `cavern$scrappy_color` }),
+            SafariMob(MobIdentifier.VanillaEntity(EntityType.SNIFFER), { `cavern$snoozle` }, { `cavern$snoozle_color` }),
+            SafariMob(MobIdentifier.VanillaEntity(EntityType.VEX), { `cavern$gemzie` }, { `cavern$gemzie_color` })
+        )),
+        SafariBiome.FOREST to Triple({ `forest$toggle` }, { `forest$only_in_biome` }, listOf(
+            SafariMob(MobIdentifier.VanillaEntity(EntityType.FOX), { `forest$foxtrot` }, { `forest$foxtrot_color` }),
+            SafariMob(MobIdentifier.SpecificParrot(Parrot.Variant.BLUE), { `forest$bluebird` }, { `forest$bluebird_color` }),
+            SafariMob(MobIdentifier.VanillaEntity(EntityType.BEE), { `forest$honeybug` }, { `forest$honeybug_color` }),
+            SafariMob(MobIdentifier.VanillaEntity(EntityType.FROG), { `forest$treefrog` }, { `forest$treefrog_color` }),
+            SafariMob(MobIdentifier.VanillaEntity(EntityType.CREAKING), { `forest$woodchucker` }, { `forest$woodchucker_color` }),
+            SafariMob(MobIdentifier.VanillaEntity(EntityType.PANDA), { `forest$fluffling` }, { `forest$fluffling_color` }),
+            SafariMob(MobIdentifier.ColoredShulker(DyeColor.GREEN), { `forest$hideonfloor` }, { `forest$hideonfloor_color` }),
+            SafariMob(MobIdentifier.SpecificParrot(Parrot.Variant.GREEN), { `forest$parakeet` }, { `forest$parakeet_color` }),
+            SafariMob(MobIdentifier.SpecificParrot(Parrot.Variant.RED_BLUE), { `forest$macaw` }, { `forest$macaw_color` })
+        )),
+        SafariBiome.HAUNTED to Triple({ `haunted$toggle` }, { `haunted$only_in_biome` }, listOf(
+            SafariMob(MobIdentifier.VanillaEntity(EntityType.CAVE_SPIDER), { `haunted$areita` }, { `haunted$areita_color` }),
+            SafariMob(MobIdentifier.VanillaEntity(EntityType.BAT), { `haunted$bloodbat` }, { `haunted$bloodbat_color` }),
+            SafariMob(MobIdentifier.VanillaEntity(EntityType.INTERACTION), { `haunted$duplico` }, { `haunted$duplico_color` }),
+            SafariMob(MobIdentifier.TexturedHead(SafariTextures.GAZER), { `haunted$gazer` }, { `haunted$gazer_color` }),
+            SafariMob(MobIdentifier.VanillaEntity(EntityType.ENDERMITE), { `haunted$litterbug` }, { `haunted$litterbug_color` }),
+            SafariMob(MobIdentifier.VanillaEntity(EntityType.PHANTOM), { `haunted$solsnatcher` }, { `haunted$solsnatcher_color` }),
+            SafariMob(MobIdentifier.TexturedItemDisplay(SafariTextures.GIMMIEGOLD), { `haunted$gimmiegold` }, { `haunted$gimmiegold_color` }),
+            SafariMob(MobIdentifier.ColoredShulker(DyeColor.PURPLE), { `haunted$hideonwall` }, { `haunted$hideonwall_color` }),
+            SafariMob(MobIdentifier.PlayerSkin(SafariTextures.HIDEYHO), { `haunted$hideyho` }, { `haunted$hideyho_color` }),
+            SafariMob(MobIdentifier.VanillaEntity(EntityType.WARDEN), { `haunted$doomspiral` }, { `haunted$doomspiral_color` })
+        )),
+        SafariBiome.ICY to Triple({ `icy$toggle` }, { `icy$only_in_biome` }, listOf(
+            SafariMob(MobIdentifier.VanillaEntity(EntityType.SNOW_GOLEM), { `icy$strongarm` }, { `icy$strongarm_color` }),
+            SafariMob(MobIdentifier.SpecificTropicalFish("SNOOPER", "WHITE", "WHITE"), { `icy$tepid` }, { `icy$tepid_color` }),
+            SafariMob(MobIdentifier.VanillaEntity(EntityType.POLAR_BEAR), { `icy$polaris` }, { `icy$polaris_color` }),
+            SafariMob(MobIdentifier.VanillaEntity(EntityType.GLOW_SQUID), { `icy$shuddersquid` }, { `icy$shuddersquid_color` }),
+            SafariMob(MobIdentifier.VanillaEntity(EntityType.GOAT), { `icy$billygoat` }, { `icy$billygoat_color` }),
+            SafariMob(MobIdentifier.TexturedItemDisplay(SafariTextures.MANTIS_SHRIMP), { `icy$mantis_shrimp` }, { `icy$mantis_shrimp_color` }),
+            SafariMob(MobIdentifier.VanillaEntity(EntityType.DOLPHIN), { `icy$nozzlenose` }, { `icy$nozzlenose_color` }),
+            SafariMob(MobIdentifier.TexturedItemDisplay(SafariTextures.TROODON), { `icy$troodon` }, { `icy$troodon_color` }),
+            SafariMob(MobIdentifier.VanillaEntity(EntityType.RAVAGER), { `icy$wumpa` }, { `icy$wumpa_color` })
+        ))
+    )
+
+    private val cachedEntities = mutableMapOf<Entity, SafariMob>()
+
+    private fun processAndCacheEntity(e: Entity) {
+        val mobBiome = getCritterSafariBiome(e.x, e.z)
+        if (mobBiome == SafariBiome.OUTSIDE) {
+            cachedEntities.remove(e)
+            return
+        }
+        val biomeConfig = safariRegistry[mobBiome]
+        if (biomeConfig == null) {
+            cachedEntities.remove(e)
+            return
+        }
+        val mobsInBiome = biomeConfig.third
+        for (mob in mobsInBiome) {
+            if (isMatchingEntity(e, mob.identifier)) {
+                cachedEntities[e] = mob
+                return
+            }
+        }
+        cachedEntities.remove(e)
+    }
+
+    private fun isMatchingEntity(e: Entity, identifier: MobIdentifier): Boolean {
+        return when (identifier) {
+            is MobIdentifier.VanillaEntity -> {
+                e.type == identifier.type && !(e.type == EntityType.SILVERFISH && (e.isInvisible || e.passengers.isNotEmpty()))
+            }
+            is MobIdentifier.ColoredShulker -> {
+                (e is Shulker && e.color == identifier.color) ||
+                        (e as? Display.BlockDisplay)?.blockState?.block in listOf(Blocks.GREEN_SHULKER_BOX, Blocks.PURPLE_SHULKER_BOX) ||
+                        //~ if >= 26.2 'GREEN_SHULKER_BOX' -> 'DYED_SHULKER_BOX.green'
+                        (e as? Display.ItemDisplay)?.itemStack?.`is`(Items.GREEN_SHULKER_BOX) == true ||
+                        //~ if >= 26.2 'PURPLE_SHULKER_BOX' -> 'DYED_SHULKER_BOX.purple'
+                        (e as? Display.ItemDisplay)?.itemStack?.`is`(Items.PURPLE_SHULKER_BOX) == true
+            }
+            is MobIdentifier.TexturedHead -> {
+                e is ArmorStand &&
+                        e.hasItemInSlot(EquipmentSlot.HEAD) &&
+                        e.getItemBySlot(EquipmentSlot.HEAD).getTexture() == identifier.texture
+            }
+            is MobIdentifier.TexturedItemDisplay -> {
+                e is Display.ItemDisplay && e.itemStack.getTexture() == identifier.texture
+            }
+            is MobIdentifier.TexturedBlockDisplay -> {
+               e is Display.BlockDisplay && e.blockState.block.name.string == identifier.texture
+            }
+            is MobIdentifier.PlayerSkin -> {
+                e is Player &&
+                        e.getSkinTexture() == identifier.texture
+            }
+            is MobIdentifier.SpecificTropicalFish -> {
+                e is TropicalFish &&
+                        e.pattern.name == identifier.pattern &&
+                        e.baseColor.name == identifier.baseColor &&
+                        e.patternColor.name == identifier.patternColor
+            }
+            is MobIdentifier.SpecificParrot -> {
+                e is Parrot && e.variant == identifier.variant
+            }
+        }
+    }
+
+    fun shouldForceRender(e: Entity): Boolean {
+        val mob = cachedEntities[e] ?: return false
+        val biome = getCritterSafariBiome(e.x, e.z)
+        if (biome == SafariBiome.OUTSIDE) return false
+
+        val biomeConfig = safariRegistry[biome] ?: return false
+        if (!biomeConfig.first()) return false
+
+        if (biomeConfig.second()) {
+            val player = player ?: return false
+            if (getCritterSafariBiome(player.x, player.z) != biome) return false
+        }
+        return mob.isEnabled()
+    }
+
+    init {
+        on<PacketEvent.Receive, ClientboundAddEntityPacket> {
+            safariRegistry = mapOf(
+                SafariBiome.CAVERN to Triple({ `cavern$toggle` }, { `cavern$only_in_biome` }, listOf(
+                    SafariMob(MobIdentifier.SpecificTropicalFish("CLAYFISH", "GRAY", "BROWN"), { `cavern$cavernrnfish` }, { `cavern$cavernrnfish_color` }),
+                    SafariMob(MobIdentifier.TexturedItemDisplay(SafariTextures.FLITTER), { `cavern$flitter` }, { `cavern$flitter_color` }),
+                    SafariMob(MobIdentifier.TexturedItemDisplay(SafariTextures.SHYWORM), { `cavern$shyworm` }, { `cavern$shyworm_color` }),
+                    SafariMob(MobIdentifier.TexturedHead(SafariTextures.DRIFTLING), { `cavern$driftling` }, { `cavern$driftling_color` }),
+                    SafariMob(MobIdentifier.TexturedItemDisplay(SafariTextures.CHUCKWALLA), { `cavern$chuckwalla` }, { `cavern$chuckwalla_color` }),
+                    SafariMob(MobIdentifier.VanillaEntity(EntityType.SILVERFISH), { `cavern$rockmite` }, { `cavern$rockmite_color` }),
+                    SafariMob(MobIdentifier.TexturedItemDisplay(SafariTextures.ROCKMITE_DISPLAY), { `cavern$rockmite` }, { `cavern$rockmite_color` }),
+                    SafariMob(MobIdentifier.VanillaEntity(EntityType.ARMADILLO), { `cavern$scrappy` }, { `cavern$scrappy_color` }),
+                    SafariMob(MobIdentifier.VanillaEntity(EntityType.SNIFFER), { `cavern$snoozle` }, { `cavern$snoozle_color` }),
+                    SafariMob(MobIdentifier.VanillaEntity(EntityType.VEX), { `cavern$gemzie` }, { `cavern$gemzie_color` })
+                )),
+                SafariBiome.FOREST to Triple({ `forest$toggle` }, { `forest$only_in_biome` }, listOf(
+                    SafariMob(MobIdentifier.VanillaEntity(EntityType.FOX), { `forest$foxtrot` }, { `forest$foxtrot_color` }),
+                    SafariMob(MobIdentifier.SpecificParrot(Parrot.Variant.BLUE), { `forest$bluebird` }, { `forest$bluebird_color` }),
+                    SafariMob(MobIdentifier.VanillaEntity(EntityType.BEE), { `forest$honeybug` }, { `forest$honeybug_color` }),
+                    SafariMob(MobIdentifier.VanillaEntity(EntityType.FROG), { `forest$treefrog` }, { `forest$treefrog_color` }),
+                    SafariMob(MobIdentifier.VanillaEntity(EntityType.CREAKING), { `forest$woodchucker` }, { `forest$woodchucker_color` }),
+                    SafariMob(MobIdentifier.VanillaEntity(EntityType.PANDA), { `forest$fluffling` }, { `forest$fluffling_color` }),
+                    SafariMob(MobIdentifier.ColoredShulker(DyeColor.GREEN), { `forest$hideonfloor` }, { `forest$hideonfloor_color` }),
+                    SafariMob(MobIdentifier.SpecificParrot(Parrot.Variant.GREEN), { `forest$parakeet` }, { `forest$parakeet_color` }),
+                    SafariMob(MobIdentifier.SpecificParrot(Parrot.Variant.RED_BLUE), { `forest$macaw` }, { `forest$macaw_color` })
+                )),
+                SafariBiome.HAUNTED to Triple({ `haunted$toggle` }, { `haunted$only_in_biome` }, listOf(
+                    SafariMob(MobIdentifier.VanillaEntity(EntityType.CAVE_SPIDER), { `haunted$areita` }, { `haunted$areita_color` }),
+                    SafariMob(MobIdentifier.VanillaEntity(EntityType.BAT), { `haunted$bloodbat` }, { `haunted$bloodbat_color` }),
+                    SafariMob(MobIdentifier.VanillaEntity(EntityType.INTERACTION), { `haunted$duplico` }, { `haunted$duplico_color` }),
+                    SafariMob(MobIdentifier.TexturedHead(SafariTextures.GAZER), { `haunted$gazer` }, { `haunted$gazer_color` }),
+                    SafariMob(MobIdentifier.VanillaEntity(EntityType.ENDERMITE), { `haunted$litterbug` }, { `haunted$litterbug_color` }),
+                    SafariMob(MobIdentifier.VanillaEntity(EntityType.PHANTOM), { `haunted$solsnatcher` }, { `haunted$solsnatcher_color` }),
+                    SafariMob(MobIdentifier.TexturedItemDisplay(SafariTextures.GIMMIEGOLD), { `haunted$gimmiegold` }, { `haunted$gimmiegold_color` }),
+                    SafariMob(MobIdentifier.ColoredShulker(DyeColor.PURPLE), { `haunted$hideonwall` }, { `haunted$hideonwall_color` }),
+                    SafariMob(MobIdentifier.PlayerSkin(SafariTextures.HIDEYHO), { `haunted$hideyho` }, { `haunted$hideyho_color` }),
+                    SafariMob(MobIdentifier.VanillaEntity(EntityType.WARDEN), { `haunted$doomspiral` }, { `haunted$doomspiral_color` })
+                )),
+                SafariBiome.ICY to Triple({ `icy$toggle` }, { `icy$only_in_biome` }, listOf(
+                    SafariMob(MobIdentifier.VanillaEntity(EntityType.SNOW_GOLEM), { `icy$strongarm` }, { `icy$strongarm_color` }),
+                    SafariMob(MobIdentifier.SpecificTropicalFish("SNOOPER", "WHITE", "WHITE"), { `icy$tepid` }, { `icy$tepid_color` }),
+                    SafariMob(MobIdentifier.VanillaEntity(EntityType.POLAR_BEAR), { `icy$polaris` }, { `icy$polaris_color` }),
+                    SafariMob(MobIdentifier.VanillaEntity(EntityType.GLOW_SQUID), { `icy$shuddersquid` }, { `icy$shuddersquid_color` }),
+                    SafariMob(MobIdentifier.VanillaEntity(EntityType.GOAT), { `icy$billygoat` }, { `icy$billygoat_color` }),
+                    SafariMob(MobIdentifier.TexturedItemDisplay(SafariTextures.MANTIS_SHRIMP), { `icy$mantis_shrimp` }, { `icy$mantis_shrimp_color` }),
+                    SafariMob(MobIdentifier.VanillaEntity(EntityType.DOLPHIN), { `icy$nozzlenose` }, { `icy$nozzlenose_color` }),
+                    SafariMob(MobIdentifier.TexturedItemDisplay(SafariTextures.TROODON), { `icy$troodon` }, { `icy$troodon_color` }),
+                    SafariMob(MobIdentifier.VanillaEntity(EntityType.RAVAGER), { `icy$wumpa` }, { `icy$wumpa_color` })
+                ))
+            )
+            Scheduler.schedule(2.client) {
+                val entity = level?.getEntity(id) ?: return@schedule
+                processAndCacheEntity(entity)
+            }
+        }
+
+        on<PacketEvent.Receive, ClientboundSetEntityDataPacket> {
+            Scheduler.schedule(2.client) {
+                val entity = level?.getEntity(id) ?: return@schedule
+                processAndCacheEntity(entity)
+            }
+        }
+
+        on<WorldRenderEvent.Extract> {
+            val player = player ?: return@on
+            val playerBiome = getCritterSafariBiome(player.x, player.z)
+            val iterator = cachedEntities.iterator()
+
+            while (iterator.hasNext()) {
+                val entry = iterator.next()
+                val e = entry.key
+                val mob = entry.value
+
+                if (!e.isAlive) {
+                    iterator.remove()
+                    continue
+                }
+
+                val mobBiome = getCritterSafariBiome(e.x, e.z)
+                if (mobBiome == SafariBiome.OUTSIDE) continue
+
+                val biomeConfig = safariRegistry[mobBiome] ?: continue
+                val (isBiomeEnabled, isOnlyInBiome, _) = biomeConfig
+
+                if (!isBiomeEnabled()) continue
+                if (!mob.isEnabled()) continue
+
+                if (isOnlyInBiome() && playerBiome != mobBiome) continue
+
+                val renderBox = when (e) {
+                    is Display -> {
+                        AABB(e.x - 0.3, e.y - 0.45, e.z - 0.3, e.x + 0.3, e.y + 0.15, e.z + 0.3)
+                    }
+                    is ArmorStand -> {
+                        AABB(e.x - 0.3, e.y + 1.35, e.z - 0.3, e.x + 0.3, e.y + 1.95, e.z + 0.3)
+                    }
+                    else -> {
+                        e.renderBoundingBox
+                    }
+                }
+                extractFrameBox(renderBox, mob.color().rgb, 2f, false)}
+        }
+
+        on<LocationEvent.Server.Connect> {
+            cachedEntities.clear()
+        }
+    }
+}
