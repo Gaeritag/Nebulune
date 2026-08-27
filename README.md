@@ -11,6 +11,9 @@ Get Athen at: https://modrinth.com/mod/athen
 
 This mod has been abandoned by its original owner because they no longer have enough time for the project. I am not very experienced in Java development, but I will do my best to keep the mod up to date. I will publish new releases as soon as I can following an Athen update. Please be patient with me! If you need anything, my Discord is **gaeritag**.
 
+* Stable Releases: Nebulune releases work out-of-the-box with the standard release versions of Athen.
+* Betas: If you are using Nebulune betas, you need to download the specific version of Athen found in the `libs/` folder, since that is the exact build the beta uses to compile.
+
 ## Branches
 
 ``master`` - main branch for athen development, no cheats. check it out [here](https://modrinth.com/mod/athen)<br>
