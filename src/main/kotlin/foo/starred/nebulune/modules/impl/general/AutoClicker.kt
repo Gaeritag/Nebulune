@@ -3,7 +3,6 @@
 package foo.starred.nebulune.modules.impl.general
 
 import com.mojang.serialization.Codec
-import foo.starred.athen.Athen
 import foo.starred.athen.annotations.Load
 import foo.starred.athen.api.messaging.impl.MessagingAPI.mod
 import foo.starred.athen.api.storage.JsonStore
@@ -13,11 +12,11 @@ import foo.starred.athen.events.TickEvent
 import foo.starred.athen.events.core.runWhen
 import foo.starred.athen.mixin.accessors.KeyMappingAccessor
 import foo.starred.athen.modules.Module
+import foo.starred.nebulune.utils.command
 import foo.starred.nebulune.utils.leftClick
 import foo.starred.nebulune.utils.rightClick
 import foo.starred.snowbird.api.*
 import foo.starred.snowbird.handlers.parser.parse
-import foo.starred.snowbird.kommand.ICommand
 import net.minecraft.client.KeyMapping
 import net.minecraft.world.phys.BlockHitResult
 import tech.thatgravyboat.skyblockapi.api.datatype.DataTypes
@@ -28,7 +27,7 @@ object AutoClicker : Module(
     "Auto clicker",
     "Automatically clicks for you!",
     Category.GENERAL
-), ICommand {
+) {
     private val left by config.group("Left clicker")
     private val `left$enabled` by left.switch("Enable left clicker")
     private val `left$key` by left.keybind("Left key")
@@ -101,7 +100,7 @@ object AutoClicker : Module(
             KeyMapping.set((client.options.keyAttack as KeyMappingAccessor).boundKey, false)
         }.runWhen(breaking.state)
 
-        command(Athen.modId) {
+        command {
             "ac" / "add" / "left" {
                 val h = fn() ?: return@invoke "Hold an item to whitelist.".mod()
                 if (h in set1.value) return@invoke "$h is already in left whitelist!".mod()

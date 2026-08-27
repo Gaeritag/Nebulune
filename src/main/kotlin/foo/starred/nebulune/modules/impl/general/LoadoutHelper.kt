@@ -16,13 +16,12 @@ import foo.starred.athen.events.core.runWhen
 import foo.starred.athen.mixin.accessors.KeyMappingAccessor
 import foo.starred.athen.modules.impl.general.LoadoutKeybinds
 import foo.starred.athen.utils.guiClick
-import foo.starred.nebulune.Nebulune
+import foo.starred.nebulune.utils.command
 import foo.starred.snowbird.api.client
 import foo.starred.snowbird.api.command
+import foo.starred.snowbird.api.data.Observable.Companion.and
 import foo.starred.snowbird.api.mainThread
-import foo.starred.snowbird.handlers.Observable.Companion.and
-import foo.starred.snowbird.handlers.time.client
-import foo.starred.snowbird.kommand.ICommand
+import foo.starred.snowbird.api.scheduling.scheduler.extensions.clientTicks
 import foo.starred.snowbird.utils.stripped
 import net.minecraft.client.KeyMapping
 import net.minecraft.network.protocol.game.ClientboundContainerClosePacket
@@ -30,7 +29,7 @@ import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket
 import net.minecraft.network.protocol.game.ServerboundContainerClosePacket
 
 @Load
-object LoadoutHelper : ICommand {
+object LoadoutHelper {
     val autoClose by LoadoutKeybinds.config.switch("Auto close after use")
     private val autoEquip = LoadoutKeybinds.config.switch("Auto equip").unique("autoEquip")
     private val _unused by LoadoutKeybinds.config.information("Automatically equips the loadout slot without opening the gui. Use at your own risk.")
@@ -66,7 +65,7 @@ object LoadoutHelper : ICommand {
     private var start: Long = 0
 
     init {
-        command(Nebulune.modId) {
+        command {
             "loadout" / int("slot", 1, 9) {
                 if (!LoadoutKeybinds.enabled) return@int "Enable loadout keybinds!".mod(MessagePrefixType.ERROR)
                 if (!autoEquip.value) return@int "Enable auto equip in loadout keybinds!".mod(MessagePrefixType.ERROR)
@@ -155,7 +154,7 @@ object LoadoutHelper : ICommand {
     fun close(i: Int? = null) {
         val player = client.player ?: return
 
-        Scheduler.schedule((i ?: (closeDelay + (0..delayVariance).random())).client) {
+        Scheduler.schedule((i ?: (closeDelay + (0..delayVariance).random())).clientTicks) {
             player.closeContainer()
         }
     }

@@ -16,7 +16,7 @@ import foo.starred.nebulune.utils.getSkinTexture
 import foo.starred.nebulune.utils.safari.*
 import foo.starred.snowbird.api.level
 import foo.starred.snowbird.api.player
-import foo.starred.snowbird.handlers.time.client
+import foo.starred.snowbird.api.scheduling.scheduler.extensions.clientTicks
 import net.minecraft.core.BlockPos
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket
 import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket
@@ -289,14 +289,14 @@ object SafariESP : Module(
 
     init {
         on<PacketEvent.Receive, ClientboundAddEntityPacket> {
-            Scheduler.schedule(2.client) {
+            Scheduler.schedule(2.clientTicks) {
                 val entity = level?.getEntity(id) ?: return@schedule
                 processAndCacheEntity(entity)
             }
         }
 
         on<PacketEvent.Receive, ClientboundSetEntityDataPacket> {
-            Scheduler.schedule(2.client) {
+            Scheduler.schedule(2.clientTicks) {
                 val entity = level?.getEntity(id) ?: return@schedule
                 processAndCacheEntity(entity)
             }

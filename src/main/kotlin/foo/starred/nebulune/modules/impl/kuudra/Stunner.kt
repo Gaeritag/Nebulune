@@ -6,7 +6,7 @@ import foo.starred.athen.annotations.Load
 import foo.starred.athen.api.scheduling.Scheduler
 import foo.starred.athen.modules.impl.kuudra.StunHelper
 import foo.starred.snowbird.api.client
-import foo.starred.snowbird.handlers.time.client
+import foo.starred.snowbird.api.scheduling.scheduler.extensions.clientTicks
 
 @Load
 object Stunner {
@@ -19,7 +19,7 @@ object Stunner {
         val player = client.player ?: return
         val menu = player.containerMenu ?: return
 
-        Scheduler.schedule(`autoClose$delay`.client) {
+        Scheduler.schedule(`autoClose$delay`.clientTicks) {
             if (menu == player.containerMenu) player.closeContainer()
         }
     }

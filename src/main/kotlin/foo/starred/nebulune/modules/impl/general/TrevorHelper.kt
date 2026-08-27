@@ -18,8 +18,8 @@ import foo.starred.athen.utils.render.renderBoundingBox
 import foo.starred.athen.utils.render.renderPos
 import foo.starred.nebulune.utils.extractTracer
 import foo.starred.snowbird.api.command
+import foo.starred.snowbird.api.scheduling.scheduler.extensions.clientTicks
 import foo.starred.snowbird.handlers.parser.parse
-import foo.starred.snowbird.handlers.time.client
 import foo.starred.snowbird.utils.alert
 import foo.starred.snowbird.utils.stripped
 import foo.starred.snowbird.utils.toDurationFromMillis
@@ -122,7 +122,7 @@ object TrevorHelper : Module(
 
             if (!autoAccept) return@on
             if (message.siblings.getOrNull(0)?.stripped() == "Accept the trapper's task to hunt the animal?") {
-                Scheduler.schedule((acceptDelay + (0..2).random()).client) {
+                Scheduler.schedule((acceptDelay + (0..2).random()).clientTicks) {
                     (message.siblings[3].style.clickEvent as? ClickEvent.RunCommand)?.command?.command()
                 }
 

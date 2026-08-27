@@ -11,8 +11,8 @@ import foo.starred.athen.modules.Module
 import foo.starred.athen.utils.etherwarp
 import foo.starred.nebulune.utils.rightClick
 import foo.starred.snowbird.api.client
-import foo.starred.snowbird.handlers.time.client
-import foo.starred.snowbird.handlers.time.start
+import foo.starred.snowbird.api.scheduling.scheduler.extensions.clientTicks
+import foo.starred.snowbird.api.scheduling.scheduler.extensions.start
 import net.minecraft.client.KeyMapping
 import net.minecraft.world.InteractionHand
 
@@ -42,10 +42,10 @@ object EtherwarpHelper : Module(
 
             if (!a) {
                 KeyMapping.set((client.options.keyShift as KeyMappingAccessor).boundKey, true)
-                Scheduler.schedule(ints.random().client.start) {
+                Scheduler.schedule(ints.random().clientTicks.start) {
                     action()
 
-                    Scheduler.schedule(1.client.start) { KeyMapping.set((client.options.keyShift as KeyMappingAccessor).boundKey, false) }
+                    Scheduler.schedule(1.clientTicks.start) { KeyMapping.set((client.options.keyShift as KeyMappingAccessor).boundKey, false) }
                 }
 
                 return@on cancel()

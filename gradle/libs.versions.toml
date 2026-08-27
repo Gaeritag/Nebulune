@@ -15,11 +15,13 @@ fabric-api-26-2 = "0.158.0+26.2"
 modmenu-26-1 = "3rsoV1bk"
 modmenu-26-2 = "njXb639R"
 
-athen-26-1 = "0.3.0+26.1"
-athen-26-2 = "0.3.0+26.2"
+athen-26-1 = "0.3.0b+26.1"
+athen-26-2 = "0.3.0b+26.2"
 
-snowbird-26-1 = "014+26.1"
-snowbird-26-2 = "014+26.2"
+kommand = "1.0.1"
+
+snowbird-26-1 = "016+26.1"
+snowbird-26-2 = "016+26.2"
 
 cascade-26-1 = "035+26.1"
 cascade-26-2 = "035+26.2"
@@ -55,6 +57,7 @@ athen-26-2 = { module = "foo.starred:athen", version.ref = "athen-26-2" }
 skyblock-api = { module = "tech.thatgravyboat:skyblock-api", version.ref = "skyblock-api" }
 classgraph = { module = "io.github.classgraph:classgraph", version.ref = "classgraph" }
 autoupdate = { module = "moe.nea:libautoupdate", version.ref = "autoupdate" }
+kommand = { module = "foo.starred:kommand", version.ref = "kommand" }
 hypixel-modapi = { module = "net.hypixel:mod-api", version.ref = "hypixel-modapi" }
 hypixel-modapi-fabric = { module = "maven.modrinth:hypixel-mod-api", version.ref = "hypixel-modapi-fabric" }
 

@@ -7,8 +7,8 @@ import foo.starred.athen.config.Category
 import foo.starred.athen.events.MessageEvent
 import foo.starred.athen.modules.Module
 import foo.starred.snowbird.api.command
-import foo.starred.snowbird.handlers.time.client
-import foo.starred.snowbird.handlers.time.start
+import foo.starred.snowbird.api.scheduling.scheduler.extensions.clientTicks
+import foo.starred.snowbird.api.scheduling.scheduler.extensions.start
 import foo.starred.snowbird.utils.colorCoded
 import net.minecraft.network.chat.ClickEvent
 import tech.thatgravyboat.skyblockapi.utils.text.TextColor
@@ -43,7 +43,7 @@ object AutoConversation : Module(
             if (a.size > 1 && !multi) return@on
             if (delay == 0) return@on a.first().command()
 
-            Scheduler.schedule((delay + (0..3).random()).client.start) {
+            Scheduler.schedule((delay + (0..3).random()).clientTicks.start) {
                 a.first().command()
             }
         }

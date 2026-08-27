@@ -11,7 +11,7 @@ import foo.starred.athen.modules.impl.kuudra.KuudraInfo
 import foo.starred.athen.ui.themes.Catppuccin
 import foo.starred.athen.utils.render.renderPos
 import foo.starred.nebulune.utils.extractTracer
-import foo.starred.snowbird.handlers.Observable.Companion.and
+import foo.starred.snowbird.api.data.Observable.Companion.and
 import java.awt.Color
 
 @Load

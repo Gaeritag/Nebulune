@@ -11,8 +11,8 @@ import foo.starred.athen.modules.Module
 import foo.starred.nebulune.utils.rightClick
 import foo.starred.snowbird.api.client
 import foo.starred.snowbird.api.held
-import foo.starred.snowbird.handlers.time.client
-import foo.starred.snowbird.handlers.time.start
+import foo.starred.snowbird.api.scheduling.scheduler.extensions.clientTicks
+import foo.starred.snowbird.api.scheduling.scheduler.extensions.start
 import foo.starred.snowbird.utils.stripped
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.item.Items
@@ -42,19 +42,19 @@ object FishingHelper : Module(
 
             val a = (`delay$pull` + if (`variance$pull` > 0) (0..`variance$pull`).random() else 0).coerceAtLeast(0)
 
-            Scheduler.schedule(a.client.start) {
+            Scheduler.schedule(a.clientTicks.start) {
                 rightClick()
 
                 if (!recast) return@schedule
 
                 val b = 2 + `delay$recast` + if (`variance$recast` > 0) (0..`variance$recast`).random() else 0
-                Scheduler.schedule(b.client.start) {
+                Scheduler.schedule(b.clientTicks.start) {
                     rightClick()
                 }
             }
         }
 
-        Scheduler.repeat((15 * 20).client.start) {
+        Scheduler.repeat((15 * 20).clientTicks.start) {
             if (!enabled) return@repeat
             if (!recast) return@repeat
             if (!`recast$check`) return@repeat

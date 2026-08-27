@@ -12,8 +12,8 @@ import foo.starred.athen.modules.Module
 import foo.starred.nebulune.mixin.accessors.InventoryAccessor
 import foo.starred.nebulune.utils.rightClick
 import foo.starred.snowbird.api.client
-import foo.starred.snowbird.handlers.time.client
-import foo.starred.snowbird.handlers.time.start
+import foo.starred.snowbird.api.scheduling.scheduler.extensions.clientTicks
+import foo.starred.snowbird.api.scheduling.scheduler.extensions.start
 import foo.starred.snowbird.utils.stripped
 import net.minecraft.world.item.Items
 
@@ -38,7 +38,7 @@ object AutoPearl : Module(
 
             cancel()
             (player.inventory as InventoryAccessor).selectedSlot = fn() ?: return@on
-            Scheduler.schedule(click.client.start, ::rightClick)
+            Scheduler.schedule(click.clientTicks.start, ::rightClick)
         }
     }
 

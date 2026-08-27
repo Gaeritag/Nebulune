@@ -16,7 +16,7 @@ import kotlin.time.Duration.Companion.seconds
 
 @Priority
 object UpdateNotifier {
-    private const val GITHUB_API = "https://api.github.com/repos/skies-starred/Nebulune/releases"
+    private const val GITHUB_API = "https://api.github.com/repos/Gaeritag/Nebulune/releases"
     private val versionRegex = Regex("""(\d+)\.(\d+)\.(\d+)(?:-r(\d+))?""") // https://regex101.com/r/An6dOq/1
     private var times: Int = 0
     private var latestVersion: Version? = null
@@ -69,7 +69,7 @@ object UpdateNotifier {
 
     private fun latest() {
         GITHUB_API.request {
-            onSuccess<JsonArray> { array ->
+            success<JsonArray> { array ->
                 latestVersion = array.mapNotNull { it.asJsonObject["tag_name"]?.asString?.v() }.maxOrNull()
                 fn()
             }

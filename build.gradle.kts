@@ -28,6 +28,10 @@ repositories {
     strictMaven("https://maven.teamresourceful.com/repository/maven-public/", "tech.thatgravyboat", "com.terraformersmc", "earth.terrarium", "com.teamresourceful", "me.owdding")
     strictMaven("https://repo.nea.moe/releases", "moe.nea")
 
+    flatDir {
+        dirs("libs")
+    }
+
     maven("https://maven.starred.foo/releases")
     maven("https://maven.starred.foo/snapshots")
 }
@@ -45,7 +49,13 @@ dependencies {
 
     runtimeOnly("devauth".global)
 
-    implementation("athen".versioned) { isTransitive = false }
+    dependencies {
+        if (stonecutter.current.project == "26.1") {
+            implementation(files(rootProject.file("libs/athen-0.3.0b+26.1.jar")))
+        } else {
+            implementation(files(rootProject.file("libs/athen-0.3.0b+26.2.jar")))
+        }
+    }
     implementation("modmenu".versioned)
     implementation("fabric-api".versioned)
     implementation("fabric-loader".global)
@@ -53,10 +63,11 @@ dependencies {
     implementation("hypixel-modapi".global)
     implementation("hypixel-modapi-fabric".global)
 
-    implementation("classgraph".global)
-    implementation("autoupdate".global)
-    implementation("snowbird".versioned)
-    implementation("cascade".versioned)
+    shadow("classgraph".global)
+    shadow("autoupdate".global)
+    shadow("kommand".global)
+    shadow("snowbird".versioned)
+    shadow("cascade".versioned)
 
     implementation("skyblock-api".global) {
         capabilities { requireCapability("tech.thatgravyboat:skyblock-api-$ver") }

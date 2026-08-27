@@ -4,34 +4,19 @@ package foo.starred.nebulune
 
 import foo.starred.athen.Athen
 import foo.starred.athen.annotations.AnnotationLoader
-import foo.starred.athen.api.messaging.impl.MessagingAPI.mod
 import foo.starred.athen.api.scheduling.Scheduler
-import foo.starred.athen.config.ui.ConfigUI
-import foo.starred.snowbird.handlers.time.server
-import foo.starred.snowbird.kommand.ICommand
+import foo.starred.snowbird.api.scheduling.scheduler.extensions.serverTicks
 import net.fabricmc.api.ClientModInitializer
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.time.Duration.Companion.milliseconds
 
-object Nebulune : ClientModInitializer, ICommand {
+object Nebulune : ClientModInitializer {
     const val modVersion: String = /*$ mod_version*/ "0.3.0"
     const val modId: String = /*$ mod_id*/ "nebulune"
 
     override fun onInitializeClient() {
         AnnotationLoader.load("foo.starred.nebulune")
         Athen.LOGGER.info("Nebulune loaded.")
-
-        command(modId) {
-            executes {
-                ConfigUI.open()
-                "Opening Config GUI...".mod()
-            }
-
-            "config" {
-                ConfigUI.open()
-                "Opening Config GUI...".mod()
-            }
-        }
     }
 
     @JvmStatic
@@ -42,6 +27,6 @@ object Nebulune : ClientModInitializer, ICommand {
         Scheduler.schedule(ms.milliseconds) { check() }
 
         if (ms < 15) return check()
-        Scheduler.schedule(((ms / 50).coerceAtLeast(1)).server) { check() }
+        Scheduler.schedule(((ms / 50).coerceAtLeast(1)).serverTicks) { check() }
     }
 }

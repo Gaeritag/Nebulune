@@ -12,15 +12,14 @@ import foo.starred.athen.api.storage.JsonStore
 import foo.starred.athen.config.Category
 import foo.starred.athen.events.InputEvent
 import foo.starred.athen.modules.Module
-import foo.starred.nebulune.Nebulune
 import foo.starred.nebulune.mixin.accessors.InventoryAccessor
+import foo.starred.nebulune.utils.command
 import foo.starred.nebulune.utils.leftClick
 import foo.starred.snowbird.api.client
 import foo.starred.snowbird.api.lie
+import foo.starred.snowbird.api.scheduling.scheduler.extensions.clientTicks
+import foo.starred.snowbird.api.scheduling.scheduler.extensions.start
 import foo.starred.snowbird.handlers.parser.parse
-import foo.starred.snowbird.handlers.time.client
-import foo.starred.snowbird.handlers.time.start
-import foo.starred.snowbird.kommand.ICommand
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.resources.Identifier
 import net.minecraft.world.phys.BlockHitResult
@@ -32,7 +31,7 @@ object AutoSuperboom : Module(
     "Auto superboom",
     "Automatically swaps to and uses the superboom if clicking on a breakable wall.",
     Category.DUNGEONS
-), ICommand {
+) {
     private val _unused by config.information("Use the command <red>\"/nebulune superboom [add|remove]\"<r> while looking at a block to add/remove it to the breakable blocks list!")
 
     private val minDelay by config.slider("Minimum delay", 1, 1, 5, "ticks")
@@ -50,7 +49,7 @@ object AutoSuperboom : Module(
     private val set = setOf("SUPERBOOM_TNT", "INFINITE_SUPERBOOM_TNT")
 
     init {
-        command(Nebulune.modId) {
+        command {
             "superboom" / "add" {
                 val h = client.hitResult as? BlockHitResult ?: return@invoke "Not looking at a block!".mod()
                 val b = client.level?.getBlockState(h.blockPos)?.block ?: return@invoke
@@ -119,16 +118,16 @@ object AutoSuperboom : Module(
 
             cancel()
 
-            Scheduler.schedule((minDelay..maxDelay.coerceAtLeast(minDelay)).random().client.start) {
+            Scheduler.schedule((minDelay..maxDelay.coerceAtLeast(minDelay)).random().clientTicks.start) {
                 acc.selectedSlot = t
 
-                Scheduler.schedule(1.client.start) {
+                Scheduler.schedule(1.clientTicks.start) {
                     leftClick()
 
                     if (!swapBack) return@schedule
                     val b = (`swapBack$minDelay`..`swapBack$maxDelay`.coerceAtLeast(`swapBack$minDelay`)).random()
 
-                    Scheduler.schedule(b.client.start) {
+                    Scheduler.schedule(b.clientTicks.start) {
                         acc.selectedSlot = if (`swapBack$type` == 0) s else (`swapBack$custom`.coerceIn(1, 9) - 1)
                     }
                 }

@@ -9,7 +9,7 @@ import foo.starred.athen.events.GuiEvent
 import foo.starred.athen.events.PacketEvent
 import foo.starred.athen.modules.Module
 import foo.starred.snowbird.api.client
-import foo.starred.snowbird.handlers.time.client
+import foo.starred.snowbird.api.scheduling.scheduler.extensions.clientTicks
 import foo.starred.snowbird.utils.send
 import foo.starred.snowbird.utils.stripped
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
@@ -43,7 +43,7 @@ object ChestCloser : Module(
             val r = (minDelay..maxDelay.coerceAtLeast(minDelay)).random()
             if (r == 0) return@on ServerboundContainerClosePacket(containerId).send()
 
-            Scheduler.schedule(r.client) {
+            Scheduler.schedule(r.clientTicks) {
                 client.player?.closeContainer()
             }
         }

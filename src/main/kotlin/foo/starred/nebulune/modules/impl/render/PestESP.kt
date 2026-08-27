@@ -14,7 +14,7 @@ import foo.starred.athen.ui.themes.Catppuccin
 import foo.starred.athen.utils.render.renderPos
 import foo.starred.nebulune.utils.extractTracer
 import foo.starred.snowbird.api.level
-import foo.starred.snowbird.handlers.time.client
+import foo.starred.snowbird.api.scheduling.scheduler.extensions.clientTicks
 import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EquipmentSlot
@@ -38,7 +38,7 @@ object PestESP : Module(
 
     init {
         on<PacketEvent.Receive, ClientboundSetEntityDataPacket> {
-            Scheduler.schedule(2.client) {
+            Scheduler.schedule(2.clientTicks) {
                 val entity = level?.getEntity(id) as? ArmorStand ?: return@schedule
                 if (!entity.hasItemInSlot(EquipmentSlot.HEAD)) return@schedule
                 if (entity in entities) return@schedule
