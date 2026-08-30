@@ -20,7 +20,7 @@
     ]
   },
   "mixins": [
-    "nebulune.mixins.json"
+    "${id}.mixins.json"
   ],
   "accessWidener": "${accessWidener}",
   "depends": {
