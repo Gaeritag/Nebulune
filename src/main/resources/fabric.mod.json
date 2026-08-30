@@ -5,7 +5,8 @@
   "name": "${name}",
   "description": "A very awesome addon for a very awesome Hypixel SkyBlock mod.",
   "authors": [
-    "Starred"
+    "Starred",
+    "Gaeritag"
   ],
   "license": "BSD 3-Clause",
   "icon": "assets/nebulune/icon.png",
