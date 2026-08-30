@@ -2,13 +2,11 @@ package foo.starred.nebulune.modules.impl.render
 
 import foo.starred.athen.annotations.Load
 import foo.starred.athen.annotations.OnlyIn
+import foo.starred.athen.api.location.LocationAPI
 import foo.starred.athen.api.location.SkyBlockIsland
 import foo.starred.athen.api.rendering.level.impl.extensions.impl.extractFrameBox
 import foo.starred.athen.api.rendering.level.impl.extensions.impl.extractStyledBox
-import foo.starred.athen.api.scheduling.Scheduler
 import foo.starred.athen.config.Category
-import foo.starred.athen.events.LocationEvent
-import foo.starred.athen.events.PacketEvent
 import foo.starred.athen.events.WorldRenderEvent
 import foo.starred.athen.modules.Module
 import foo.starred.athen.utils.render.renderBoundingBox
@@ -16,11 +14,6 @@ import foo.starred.nebulune.utils.getSkinTexture
 import foo.starred.nebulune.utils.safari.*
 import foo.starred.snowbird.api.level
 import foo.starred.snowbird.api.player
-import foo.starred.snowbird.api.scheduling.scheduler.extensions.clientTicks
-import net.minecraft.core.BlockPos
-import net.minecraft.network.protocol.game.ClientboundAddEntityPacket
-import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket
-import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket
 import net.minecraft.world.entity.Display
 import net.minecraft.world.entity.Entity
 //? if >= 26.2
@@ -40,7 +33,6 @@ import net.minecraft.world.level.block.ShulkerBoxBlock
 import net.minecraft.world.phys.AABB
 import tech.thatgravyboat.skyblockapi.utils.extentions.getTexture
 import java.awt.Color
-import java.util.concurrent.ConcurrentHashMap
 
 @Load
 @OnlyIn(islands = [SkyBlockIsland.SAFARI])
@@ -149,8 +141,14 @@ object SafariESP : Module(
     val `icy$wumpa` by icyGroup.switch("Wumpa")
     val `icy$wumpa_color` by icyGroup.colorPicker("Color", Color(100, 90, 90))
 
-    private val safariRegistry: Map<SafariBiome, Triple<() -> Boolean, () -> Boolean, List<SafariMob>>> = mapOf(
-        SafariBiome.CAVERN to Triple({ `cavern$toggle` }, { `cavern$only_in_biome` }, listOf(
+    private class BiomeConfig(
+        val isEnabled: () -> Boolean,
+        val isOnlyInBiome: () -> Boolean,
+        val mobs: List<SafariMob>
+    )
+
+    private val safariRegistry: Map<SafariBiome, BiomeConfig> = mapOf(
+        SafariBiome.CAVERN to BiomeConfig({ `cavern$toggle` }, { `cavern$only_in_biome` }, listOf(
             SafariMob(MobIdentifier.SpecificTropicalFish("CLAYFISH", "GRAY", "BROWN"), { `cavern$cavernrnfish` }, { `cavern$cavernrnfish_color` }),
             SafariMob(MobIdentifier.TexturedItemDisplay(SafariTextures.FLITTER), { `cavern$flitter` }, { `cavern$flitter_color` }),
             SafariMob(MobIdentifier.TexturedHead(SafariTextures.SHYWORM), { `cavern$shyworm` }, { `cavern$shyworm_color` }),
@@ -162,7 +160,7 @@ object SafariESP : Module(
             SafariMob(MobIdentifier.VanillaEntity(EntityType.SNIFFER), { `cavern$snoozle` }, { `cavern$snoozle_color` }),
             SafariMob(MobIdentifier.VanillaEntity(EntityType.VEX), { `cavern$gemzie` }, { `cavern$gemzie_color` })
         )),
-        SafariBiome.FOREST to Triple({ `forest$toggle` }, { `forest$only_in_biome` }, listOf(
+        SafariBiome.FOREST to BiomeConfig({ `forest$toggle` }, { `forest$only_in_biome` }, listOf(
             SafariMob(MobIdentifier.VanillaEntity(EntityType.FOX), { `forest$foxtrot` }, { `forest$foxtrot_color` }),
             SafariMob(MobIdentifier.SpecificParrot(Parrot.Variant.BLUE), { `forest$bluebird` }, { `forest$bluebird_color` }),
             SafariMob(MobIdentifier.VanillaEntity(EntityType.BEE), { `forest$honeybug` }, { `forest$honeybug_color` }),
@@ -173,7 +171,7 @@ object SafariESP : Module(
             SafariMob(MobIdentifier.SpecificParrot(Parrot.Variant.GREEN), { `forest$parakeet` }, { `forest$parakeet_color` }),
             SafariMob(MobIdentifier.SpecificParrot(Parrot.Variant.RED_BLUE), { `forest$macaw` }, { `forest$macaw_color` })
         )),
-        SafariBiome.HAUNTED to Triple({ `haunted$toggle` }, { `haunted$only_in_biome` }, listOf(
+        SafariBiome.HAUNTED to BiomeConfig({ `haunted$toggle` }, { `haunted$only_in_biome` }, listOf(
             SafariMob(MobIdentifier.VanillaEntity(EntityType.CAVE_SPIDER), { `haunted$areita` }, { `haunted$areita_color` }),
             SafariMob(MobIdentifier.VanillaEntity(EntityType.BAT), { `haunted$bloodbat` }, { `haunted$bloodbat_color` }),
             SafariMob(MobIdentifier.VanillaEntity(EntityType.INTERACTION), { `haunted$duplico` }, { `haunted$duplico_color` }),
@@ -185,7 +183,7 @@ object SafariESP : Module(
             SafariMob(MobIdentifier.PlayerSkin(SafariTextures.HIDEYHO), { `haunted$hideyho` }, { `haunted$hideyho_color` }),
             SafariMob(MobIdentifier.VanillaEntity(EntityType.WARDEN), { `haunted$doomspiral` }, { `haunted$doomspiral_color` })
         )),
-        SafariBiome.ICY to Triple({ `icy$toggle` }, { `icy$only_in_biome` }, listOf(
+        SafariBiome.ICY to BiomeConfig({ `icy$toggle` }, { `icy$only_in_biome` }, listOf(
             SafariMob(MobIdentifier.VanillaEntity(EntityType.SNOW_GOLEM), { `icy$strongarm` }, { `icy$strongarm_color` }),
             SafariMob(MobIdentifier.SpecificTropicalFish("SNOOPER", "WHITE", "WHITE"), { `icy$tepid` }, { `icy$tepid_color` }),
             SafariMob(MobIdentifier.VanillaEntity(EntityType.POLAR_BEAR), { `icy$polaris` }, { `icy$polaris_color` }),
@@ -198,38 +196,11 @@ object SafariESP : Module(
         ))
     )
 
-    private val cachedFloorDrops = ConcurrentHashMap<Int, Entity>()
-    private val cachedEntities = ConcurrentHashMap<Entity, SafariMob>()
-
-    private fun processAndCacheEntity(e: Entity) {
-        val mobBiome = getCritterSafariBiome(e.x, e.z)
-        if (mobBiome == SafariBiome.OUTSIDE) {
-            cachedEntities.remove(e)
-            return
-        }
-        val biomeConfig = safariRegistry[mobBiome]
-        if (biomeConfig == null) {
-            cachedEntities.remove(e)
-            return
-        }
-        val mobsInBiome = biomeConfig.third
-        for (mob in mobsInBiome) {
-            if (isMatchingEntity(e, mob.identifier)) {
-                cachedEntities[e] = mob
-                return
-            }
-        }
-        if (e is Display.ItemDisplay && e.itemStack.`is`(Items.STRING)) {
-            cachedFloorDrops[e.id] = e
-            return
-        }
-        cachedEntities.remove(e)
-    }
-
     private fun isMatchingEntity(e: Entity, identifier: MobIdentifier): Boolean {
         return when (identifier) {
             is MobIdentifier.VanillaEntity -> {
-                e.type == identifier.type && !(e.type == EntityType.SILVERFISH && (e.isInvisible || e.passengers.isNotEmpty()))
+                if (e.type != identifier.type) return false
+                !(e.type == EntityType.SILVERFISH && (e.isInvisible || e.passengers.isNotEmpty()))
             }
             is MobIdentifier.ColoredShulker -> {
                 when (e) {
@@ -254,11 +225,10 @@ object SafariESP : Module(
                 e is Display.ItemDisplay && e.itemStack.getTexture() == identifier.texture
             }
             is MobIdentifier.TexturedBlockDisplay -> {
-               e is Display.BlockDisplay && e.blockState.block.name.string == identifier.texture
+                e is Display.BlockDisplay && e.blockState.block.name.string == identifier.texture
             }
             is MobIdentifier.PlayerSkin -> {
-                e is Player &&
-                        e.getSkinTexture() == identifier.texture
+                e is Player && e.getSkinTexture() == identifier.texture
             }
             is MobIdentifier.SpecificTropicalFish -> {
                 e is TropicalFish &&
@@ -272,63 +242,32 @@ object SafariESP : Module(
         }
     }
 
-    fun shouldForceRender(e: Entity): Boolean {
-        val mob = cachedEntities[e] ?: return false
-        val biome = getCritterSafariBiome(e.x, e.z)
-        if (biome == SafariBiome.OUTSIDE) return false
-
-        val biomeConfig = safariRegistry[biome] ?: return false
-        if (!biomeConfig.first()) return false
-
-        if (biomeConfig.second()) {
-            val player = player ?: return false
-            if (getCritterSafariBiome(player.x, player.z) != biome) return false
-        }
-        return mob.isEnabled()
+    fun shouldForceRender(): Boolean {
+        return LocationAPI.island.value == SkyBlockIsland.SAFARI
     }
 
     init {
-        on<PacketEvent.Receive, ClientboundAddEntityPacket> {
-            Scheduler.schedule(2.clientTicks) {
-                val entity = level?.getEntity(id) ?: return@schedule
-                processAndCacheEntity(entity)
-            }
-        }
+        on<WorldRenderEvent.Entity.Post> {
+            val entity = this.entity ?: return@on
 
-        on<PacketEvent.Receive, ClientboundSetEntityDataPacket> {
-            Scheduler.schedule(2.clientTicks) {
-                val entity = level?.getEntity(id) ?: return@schedule
-                processAndCacheEntity(entity)
-            }
-        }
-
-        on<WorldRenderEvent.Extract> {
-            val player = player ?: return@on
-            val playerBiome = getCritterSafariBiome(player.x, player.z)
-            val iterator = cachedEntities.iterator()
-
-            if (`floorDrop$toggle`) {
-                val stringClusters = mutableMapOf<BlockPos, Int>()
-                val floorDropIterator = cachedFloorDrops.values.iterator()
-
-                while (floorDropIterator.hasNext()) {
-                    val e = floorDropIterator.next()
-                    if (!e.isAlive || e.isRemoved) {
-                        floorDropIterator.remove()
-                        continue
-                    }
-
-                    if (`floorDrop$only_in_biome`) {
-                        val dropBiome = getCritterSafariBiome(e.x, e.z)
-                        if (playerBiome != dropBiome) continue
-                    }
-
-                    val pos = e.blockPosition()
-                    stringClusters[pos] = stringClusters.getOrDefault(pos, 0) + 1
+            if (`floorDrop$toggle` && entity is Display.ItemDisplay && entity.itemStack.`is`(Items.STRING)) {
+                if (`floorDrop$only_in_biome`) {
+                    val p = player ?: return@on
+                    val mobBiome = getCritterSafariBiome(entity.x, entity.z)
+                    val playerBiome = getCritterSafariBiome(p.x, p.z)
+                    if (playerBiome != mobBiome) return@on
                 }
 
-                for ((pos, count) in stringClusters) {
-                    if (count >= 3) {
+                val pos = entity.blockPosition()
+                val searchBox = AABB(pos)
+
+                val stringDisplays = level?.getEntitiesOfClass(Display.ItemDisplay::class.java, searchBox) {
+                    it.itemStack.`is`(Items.STRING) && it.blockPosition() == pos
+                } ?: emptyList()
+
+                if (stringDisplays.size >= 3) {
+                    val minId = stringDisplays.minOfOrNull { it.id }
+                    if (entity.id == minId) {
                         val blockBox = AABB(
                             pos.x.toDouble(), pos.y + 1.0, pos.z.toDouble(),
                             pos.x + 1.0, pos.y + 1.0, pos.z + 1.0
@@ -336,62 +275,43 @@ object SafariESP : Module(
                         extractStyledBox(blockBox, `floorDrop$color`.rgb, depth = false)
                     }
                 }
+                return@on
             }
 
-            while (iterator.hasNext()) {
-                val entry = iterator.next()
-                val e = entry.key
-                val mob = entry.value
+            val mobBiome = getCritterSafariBiome(entity.x, entity.z)
+            if (mobBiome == SafariBiome.OUTSIDE) return@on
 
-                if (!e.isAlive || e.isRemoved) {
-                    iterator.remove()
-                    continue
-                }
+            val biomeConfig = safariRegistry[mobBiome] ?: return@on
+            if (!biomeConfig.isEnabled()) return@on
 
-                val mobBiome = getCritterSafariBiome(e.x, e.z)
-                if (mobBiome == SafariBiome.OUTSIDE) continue
-
-                val biomeConfig = safariRegistry[mobBiome] ?: continue
-                val (isBiomeEnabled, isOnlyInBiome, _) = biomeConfig
-
-                if (!isBiomeEnabled()) continue
-                if (!mob.isEnabled()) continue
-
-                if (isOnlyInBiome() && playerBiome != mobBiome) continue
-
-                val renderBox = if (e is Display) {
-                    val isShulkerDisplay = when (e) {
-                        is Display.BlockDisplay -> e.blockState.block is ShulkerBoxBlock
-                        is Display.ItemDisplay -> Block.byItem(e.itemStack.item) is ShulkerBoxBlock
-                        else -> false
-                    }
-
-                    if (isShulkerDisplay) {
-                        AABB(e.x - 0.5, e.y, e.z - 0.5, e.x + 0.5, e.y + 1.0, e.z + 0.5)
-                    } else {
-                        AABB(e.x - 0.3, e.y - 0.45, e.z - 0.3, e.x + 0.3, e.y + 0.15, e.z + 0.3)
-                    }
-                }
-                else if (e is ArmorStand) {
-                    AABB(e.x - 0.3, e.y + 1.35, e.z - 0.3, e.x + 0.3, e.y + 1.95, e.z + 0.3)
-                }
-                else {
-                    e.renderBoundingBox
-                }
-
-                extractFrameBox(renderBox, mob.color().rgb, 2f, false)
+            if (biomeConfig.isOnlyInBiome()) {
+                val p = player ?: return@on
+                val playerBiome = getCritterSafariBiome(p.x, p.z)
+                if (playerBiome != mobBiome) return@on
             }
-        }
 
-        on<PacketEvent.Receive, ClientboundRemoveEntitiesPacket> {
-            val idsToRemove = entityIds
-            cachedFloorDrops.keys.removeIf { it in idsToRemove }
-            cachedEntities.keys.removeIf { it.id in idsToRemove }
-        }
+            val mob = biomeConfig.mobs.firstOrNull { isMatchingEntity(entity, it.identifier) } ?: return@on
+            if (!mob.isEnabled()) return@on
 
-        on<LocationEvent.Server.Connect> {
-            cachedFloorDrops.clear()
-            cachedEntities.clear()
+            val renderBox = if (entity is Display) {
+                val isShulkerDisplay = when (entity) {
+                    is Display.BlockDisplay -> entity.blockState.block is ShulkerBoxBlock
+                    is Display.ItemDisplay -> Block.byItem(entity.itemStack.item) is ShulkerBoxBlock
+                    else -> false
+                }
+
+                if (isShulkerDisplay) {
+                    AABB(entity.x - 0.5, entity.y, entity.z - 0.5, entity.x + 0.5, entity.y + 1.0, entity.z + 0.5)
+                } else {
+                    AABB(entity.x - 0.3, entity.y - 0.45, entity.z - 0.3, entity.x + 0.3, entity.y + 0.15, entity.z + 0.3)
+                }
+            } else if (entity is ArmorStand) {
+                AABB(entity.x - 0.3, entity.y + 1.35, entity.z - 0.3, entity.x + 0.3, entity.y + 1.95, entity.z + 0.3)
+            } else {
+                entity.renderBoundingBox
+            }
+
+            extractFrameBox(renderBox, mob.color().rgb, 2f, false)
         }
     }
 }
