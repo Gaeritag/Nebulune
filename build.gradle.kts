@@ -47,7 +47,8 @@ fletchingTable {
 dependencies {
     minecraft("com.mojang:minecraft:$ver")
 
-    runtimeOnly("devauth".global)
+    localRuntime("devauth".global)
+    compileOnly("entityculling".versioned)
 
     dependencies {
         if (stonecutter.current.project == "26.1") {
@@ -69,7 +70,7 @@ dependencies {
     shadow("snowbird".versioned)
     shadow("cascade".versioned)
 
-    implementation("skyblock-api".global) {
+    shadow("skyblock-api".global) {
         capabilities { requireCapability("tech.thatgravyboat:skyblock-api-$ver") }
     }
 }

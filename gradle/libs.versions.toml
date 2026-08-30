@@ -15,6 +15,9 @@ fabric-api-26-2 = "0.158.0+26.2"
 modmenu-26-1 = "3rsoV1bk"
 modmenu-26-2 = "njXb639R"
 
+entityculling-26-1 = "DhN0G638"
+entityculling-26-2 = "iiF6U3Ne"
+
 athen-26-1 = "0.3.1b+26.1"
 athen-26-2 = "0.3.1b+26.2"
 
@@ -50,6 +53,9 @@ cascade-26-2 = { module = "foo.starred:cascade", version.ref = "cascade-26-2" }
 
 modmenu-26-1 = { module = "maven.modrinth:modmenu", version.ref = "modmenu-26-1" }
 modmenu-26-2 = { module = "maven.modrinth:modmenu", version.ref = "modmenu-26-2" }
+
+entityculling-26-1 = { module = "maven.modrinth:entityculling", version.ref = "entityculling-26-1" }
+entityculling-26-2 = { module = "maven.modrinth:entityculling", version.ref = "entityculling-26-2" }
 
 athen-26-1 = { module = "foo.starred:athen", version.ref = "athen-26-1" }
 athen-26-2 = { module = "foo.starred:athen", version.ref = "athen-26-2" }
