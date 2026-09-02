@@ -8,8 +8,8 @@ import foo.starred.athen.events.DungeonEvent
 import foo.starred.athen.events.TickEvent
 import foo.starred.athen.events.core.runWhen
 import foo.starred.athen.modules.Module
-import foo.starred.athen.modules.impl.dungeon.terminals.solver.TerminalSolver
-import foo.starred.athen.modules.impl.dungeon.terminals.solver.base.Click
+import foo.starred.athen.modules.impl.dungeon.terminals.solver.TerminalSolvers
+import foo.starred.athen.modules.impl.dungeon.terminals.solver.data.TerminalClick
 import foo.starred.athen.modules.impl.dungeon.terminals.solver.impl.*
 import foo.starred.nebulune.accessors.ITerminalAccessor
 import foo.starred.snowbird.api.client
@@ -45,7 +45,7 @@ object AutoTerms : Module(
         TerminalType.MELODY to MelodySolver
     )
 
-    private val list = mutableListOf<Click>()
+    private val list = mutableListOf<TerminalClick>()
 
     private var last0: Int? = null
     private var last1: Long = 0
@@ -84,7 +84,7 @@ object AutoTerms : Module(
         if (clicks.isEmpty()) return
 
         val pick = pick(clicks, type) ?: return
-        val final = if (type == TerminalType.RUBIX) Click(pick.slot, if (pick.button > 0) 0 else 1) else pick
+        val final = if (type == TerminalType.RUBIX) TerminalClick(pick.slot, if (pick.button > 0) 0 else 1) else pick
         if (last0 == final.slot && type != TerminalType.RUBIX) return
 
         if (list.any { it.slot == final.slot }) return
@@ -92,7 +92,7 @@ object AutoTerms : Module(
         last0 = final.slot
         id = TerminalAPI.id
 
-        val fcLeft = TerminalSolver.fcDelay - (System.currentTimeMillis() - TerminalAPI.open)
+        val fcLeft = TerminalSolvers.firstClick - (System.currentTimeMillis() - TerminalAPI.open)
         val delay = maxOf(next(), if (fcLeft > 0) fcLeft else 0L)
         next = System.currentTimeMillis() + delay
 
@@ -100,7 +100,7 @@ object AutoTerms : Module(
     }
 
     private fun fn() {
-        if (System.currentTimeMillis() - TerminalAPI.open < TerminalSolver.fcDelay) return
+        if (System.currentTimeMillis() - TerminalAPI.open < TerminalSolvers.firstClick) return
 
         val correct = MelodySolver.correct ?: return
         val button = MelodySolver.button ?: return
@@ -108,7 +108,7 @@ object AutoTerms : Module(
         if (System.currentTimeMillis() - last1 < 250) return
 
         last1 = System.currentTimeMillis()
-        click(Click(button * 9 + 16, 0))
+        click(TerminalClick(button * 9 + 16, 0))
     }
 
     private fun reset() {
@@ -119,7 +119,7 @@ object AutoTerms : Module(
         list.clear()
     }
 
-    private fun pick(clicks: List<Click>, type: TerminalType): Click? {
+    private fun pick(clicks: List<TerminalClick>, type: TerminalType): TerminalClick? {
         if (type == TerminalType.NUMBERS) return clicks.firstOrNull()
         return when (order) {
             0 -> clicks.firstOrNull()
@@ -143,7 +143,7 @@ object AutoTerms : Module(
         return if (lo >= hi) lo else Random.nextLong(lo, hi + 1)
     }
 
-    private fun click(c: Click) {
+    private fun click(c: TerminalClick) {
         last0 = c.slot
         TerminalAPI.terminal?.impl?.click(c.slot, c.button)
     }

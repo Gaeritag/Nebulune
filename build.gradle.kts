@@ -52,9 +52,9 @@ dependencies {
 
     dependencies {
         if (stonecutter.current.project == "26.1") {
-            implementation(files(rootProject.file("libs/athen-0.3.1b+26.1.jar")))
+            implementation(files(rootProject.file("libs/athen-0.3.2b+26.1.jar")))
         } else {
-            implementation(files(rootProject.file("libs/athen-0.3.1b+26.2.jar")))
+            implementation(files(rootProject.file("libs/athen-0.3.2b+26.2.jar")))
         }
     }
     implementation("modmenu".versioned)

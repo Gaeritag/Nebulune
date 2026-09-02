@@ -8,8 +8,8 @@ import foo.starred.athen.events.DungeonEvent
 import foo.starred.athen.events.TickEvent
 import foo.starred.athen.events.core.runWhen
 import foo.starred.athen.modules.Module
-import foo.starred.athen.modules.impl.dungeon.terminals.solver.TerminalSolver
-import foo.starred.athen.modules.impl.dungeon.terminals.solver.base.Click
+import foo.starred.athen.modules.impl.dungeon.terminals.solver.TerminalSolvers
+import foo.starred.athen.modules.impl.dungeon.terminals.solver.data.TerminalClick
 import foo.starred.athen.modules.impl.dungeon.terminals.solver.impl.*
 import foo.starred.nebulune.accessors.ITerminalAccessor
 import foo.starred.snowbird.api.client
@@ -41,10 +41,10 @@ object HoverTerms : Module(
             if (type == TerminalType.MELODY) return@on
 
             val now = System.currentTimeMillis()
-            if (now - TerminalAPI.open < TerminalSolver.fcDelay) return@on
+            if (now - TerminalAPI.open < TerminalSolvers.firstClick) return@on
             val solver = solvers[type] as? ITerminalAccessor ?: return@on
 
-            val uiScale = 3f * TerminalSolver.`ui$scale`
+            val uiScale = 3f * TerminalSolvers.`ui$scale`
             val mx = client.mouseHandler.xpos().toFloat() / uiScale
             val my = client.mouseHandler.ypos().toFloat() / uiScale
 
@@ -52,12 +52,12 @@ object HoverTerms : Module(
             val int1 = solver.`nebulune$int1`()
 
             val sp = solver.`nebulune$float`()
-            val pad = TerminalSolver.`ui$padding`
+            val pad = TerminalSolvers.`ui$padding`
             val slots = type.slots
             val gridW = int0 * sp + 2 * pad
             val gridH = (slots / 9 - 2) * sp + 2 * pad
-            val headerH = if (TerminalSolver.`ui$hideHeader`) 0f else 20f
-            val padding = if (TerminalSolver.`ui$hideHeader`) 0f else 6f
+            val headerH = if (TerminalSolvers.`ui$hideHeader`) 0f else 20f
+            val padding = if (TerminalSolvers.`ui$hideHeader`) 0f else 6f
 
             val ox = client.window.width / uiScale / 2 - gridW / 2
             val oy = client.window.height / uiScale / 2 - (gridH + headerH + padding) / 2
@@ -80,7 +80,7 @@ object HoverTerms : Module(
             if (now < time) return@on
 
             slot0 = -1
-            val final = if (type == TerminalType.RUBIX) Click(c.slot, if (c.button > 0) 0 else 1) else c
+            val final = if (type == TerminalType.RUBIX) TerminalClick(c.slot, if (c.button > 0) 0 else 1) else c
             type.impl.click(final.slot, final.button)
         }.runWhen(TerminalAPI.opened)
 
