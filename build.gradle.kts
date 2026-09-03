@@ -64,13 +64,13 @@ dependencies {
     implementation("hypixel-modapi".global)
     implementation("hypixel-modapi-fabric".global)
 
-    shadow("classgraph".global)
-    shadow("autoupdate".global)
-    shadow("kommand".global)
-    shadow("snowbird".versioned)
-    shadow("cascade".versioned)
+    implementation("classgraph".global)
+    implementation("autoupdate".global)
+    implementation("kommand".global)
+    implementation("snowbird".versioned)
+    implementation("cascade".versioned)
 
-    shadow("skyblock-api".global) {
+    implementation("skyblock-api".global) {
         capabilities { requireCapability("tech.thatgravyboat:skyblock-api-$ver") }
     }
 }
