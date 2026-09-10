@@ -85,7 +85,7 @@ object TrevorHelper : Module(
             reset()
         }
 
-        on<WorldRenderEvent.Entity.Post> {
+        on<WorldRenderEvent.Entity> {
             if (!mobEsp) return@on
 
             val rarity = rarity ?: return@on

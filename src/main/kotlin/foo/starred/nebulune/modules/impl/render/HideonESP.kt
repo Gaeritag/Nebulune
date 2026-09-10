@@ -27,7 +27,7 @@ object HideonESP : Module(
     private val tracer by config.switch("Show tracer")
 
     init {
-        on<WorldRenderEvent.Entity.Post> {
+        on<WorldRenderEvent.Entity> {
             val r = renderState as? ShulkerRenderState ?: return@on
             val e = entity ?: return@on
             if (r.color != DyeColor.GREEN) return@on

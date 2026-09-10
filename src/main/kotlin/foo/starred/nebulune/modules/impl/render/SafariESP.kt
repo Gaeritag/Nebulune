@@ -247,7 +247,7 @@ object SafariESP : Module(
     }
 
     init {
-        on<WorldRenderEvent.Entity.Post> {
+        on<WorldRenderEvent.Entity> {
             val entity = this.entity ?: return@on
 
             if (`floorDrop$toggle` && entity is Display.ItemDisplay && entity.itemStack.`is`(Items.STRING)) {
