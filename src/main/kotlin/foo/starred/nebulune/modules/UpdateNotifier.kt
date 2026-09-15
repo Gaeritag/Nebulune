@@ -52,7 +52,7 @@ object UpdateNotifier {
 
         mainThread {
             "<aqua>Update available: <red>${latest.display()}".parse().showTitle()
-            "<hover:<${Catppuccin.Mocha.Mauve.argb}>Click to view release!><click:url:https://github.com/skies-starred/Nebulune/releases/tag/${latest.tag}><yellow>Update available for <${Catppuccin.Mocha.Green.argb}>Nebulune: <red>${current.display()} <gray>-> <aqua>${latest.display()}".mod()
+            "<hover:<${Catppuccin.Mocha.Mauve.argb}>Click to view release!><click:url:https://github.com/Gaeritag/Nebulune/releases/${latest.tag}><yellow>Update available for <${Catppuccin.Mocha.Green.argb}>Nebulune: <red>${current.display()} <gray>-> <aqua>${latest.display()}".mod()
         }
     }
 
