@@ -68,11 +68,11 @@ object TrevorHelper : Module(
     }
 
     private val colors by config.group("Colors")
-    private val `color$trackable` by colors.colorPicker("Trackable color", Color(Catppuccin.Mocha.Text.argb, true))
-    private val `color$untrackable` by colors.colorPicker("Untrackable color", Color(Catppuccin.Mocha.Green.argb, true))
-    private val `color$undetected` by colors.colorPicker("Undetected color", Color(Catppuccin.Mocha.Blue.argb, true))
-    private val `color$endangered` by colors.colorPicker("Endangered color", Color(Catppuccin.Mocha.Mauve.argb, true))
-    private val `color$elusive` by colors.colorPicker("Elusive color", Color(Catppuccin.Mocha.Yellow.argb, true))
+    private val `color$trackable` by colors.colorPicker("Trackable color", Catppuccin.Mocha.Text.argb)
+    private val `color$untrackable` by colors.colorPicker("Untrackable color", Catppuccin.Mocha.Green.argb)
+    private val `color$undetected` by colors.colorPicker("Undetected color", Catppuccin.Mocha.Blue.argb)
+    private val `color$endangered` by colors.colorPicker("Endangered color", Catppuccin.Mocha.Mauve.argb)
+    private val `color$elusive` by colors.colorPicker("Elusive color", Catppuccin.Mocha.Yellow.argb)
 
     private val animals = setOf(Cow::class, Pig::class, Sheep::class, Chicken::class, Rabbit::class, Horse::class)
     private val startRegex = Regex("\\[NPC] Trevor: You can find your (?<type>\\w+) animal near the .*")
@@ -95,8 +95,8 @@ object TrevorHelper : Module(
             val max = if (entity is Horse) entity.serverMaxHealth / 2f else entity.serverMaxHealth
             if (max != rarity.hp) return@on
 
-            extractFrameBox(entity.renderBoundingBox, rarity.color.rgb, depth = false)
-            if (`esp$tracer`) extractTracer(entity.renderPos, rarity.color.rgb)
+            extractFrameBox(entity.renderBoundingBox, rarity.color, depth = false)
+            if (`esp$tracer`) extractTracer(entity.renderPos, rarity.color)
         }
 
         on<MessageEvent.Chat.Receive> {
@@ -145,7 +145,7 @@ object TrevorHelper : Module(
         val hp: Float
             get() = if (MayorCandidates.DERPY.isActive) derpy else normal
 
-        val color: Color
+        val color: Int
             get() = when (this) {
                 Trackable -> `color$trackable`
                 Untrackable -> `color$untrackable`

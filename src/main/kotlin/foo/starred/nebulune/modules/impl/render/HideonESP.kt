@@ -22,7 +22,7 @@ object HideonESP : Module(
     "ESP for Hideons",
     Category.RENDER
 ) {
-    private val color by config.colorPicker("Color", Color(Catppuccin.Mocha.Mauve.argb, true))
+    private val color by config.colorPicker("Color", Catppuccin.Mocha.Mauve.argb)
     private val lineWidth by config.slider("Line width", 2f, 1f, 10f)
     private val tracer by config.switch("Show tracer")
 
@@ -32,8 +32,8 @@ object HideonESP : Module(
             val e = entity ?: return@on
             if (r.color != DyeColor.GREEN) return@on
 
-            extractFrameBox(e.renderBoundingBox, color.rgb, lineWidth, false)
-            if (tracer) extractTracer(e.renderPos, color.rgb, lineWidth)
+            extractFrameBox(e.renderBoundingBox, color, lineWidth, false)
+            if (tracer) extractTracer(e.renderPos, color, lineWidth)
         }
     }
 }

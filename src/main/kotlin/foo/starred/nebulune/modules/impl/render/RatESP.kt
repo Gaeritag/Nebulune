@@ -33,7 +33,7 @@ object RatESP : Module(
 
     private val tracer by config.switch("Tracer")
     private val thickness by config.slider("Thickness", 2, 1, 10)
-    private val color by config.colorPicker("Color", Color(Catppuccin.Mocha.Peach.rgba))
+    private val color by config.colorPicker("Color", Catppuccin.Mocha.Peach.rgba)
     private val entities = mutableSetOf<Entity>()
 
     init {
@@ -57,8 +57,8 @@ object RatESP : Module(
                 }
 
                 val p = e.renderPos.add(-0.5, 0.0, -0.5)
-                extractFrameBox(AABB.unitCubeFromLowerCorner(p), color.rgb, thickness.toFloat(), false)
-                if (tracer) extractTracer(p, color.rgb, thickness.toFloat(), false)
+                extractFrameBox(AABB.unitCubeFromLowerCorner(p), color, thickness.toFloat(), false)
+                if (tracer) extractTracer(p, color, thickness.toFloat(), false)
             }
         }
 

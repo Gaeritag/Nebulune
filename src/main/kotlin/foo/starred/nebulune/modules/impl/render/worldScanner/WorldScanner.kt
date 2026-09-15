@@ -36,7 +36,7 @@ object WorldScanner: Module(
         val expandable: ConfigGroupBuilder,
         val enable: () -> Boolean,
         val highlightStyle: () -> Int,
-        val color: () -> Color,
+        val color: () -> Int,
         val tracer: () -> Boolean,
         val displayName: () -> Boolean,
         val displayScale: () -> Float,
@@ -46,7 +46,7 @@ object WorldScanner: Module(
 
     fun createStructureEspConfig(
         group: ConfigGroupBuilder,
-        defaultColor: Color,
+        defaultColor: Int,
     ): StructureEspConfig {
         val key = group.key
 
@@ -88,45 +88,45 @@ object WorldScanner: Module(
     }
 
     private val grotto by config.group("Fairy Grotto")
-    val grottoConfig = createStructureEspConfig(grotto, Color(255, 85, 255))
+    val grottoConfig = createStructureEspConfig(grotto, Color(255, 85, 255).rgb)
     val grottoConfigShowNumberOfBlocks by grotto.switch("Show Number of Blocks", true)
     val grottoConfigShowNumberOfBlocksBackgroundOpacity by grotto.slider("Text Background Opacity", 0.5f, 0f, 1f, double = true)
 
     private val sapphire by config.group("Sapphire Crystal")
-    val sapphireConfig = createStructureEspConfig(sapphire, Color(85, 255, 255))
+    val sapphireConfig = createStructureEspConfig(sapphire, Color(85, 255, 255).rgb)
 
     private val amber by config.group("Amber Crystal")
-    val amberConfig = createStructureEspConfig(amber, Color(255, 170, 0))
+    val amberConfig = createStructureEspConfig(amber, Color(255, 170, 0).rgb)
 
     private val amethyst by config.group("Amethyst Crystal")
-    val amethystConfig = createStructureEspConfig(amethyst, Color(170, 0, 170))
+    val amethystConfig = createStructureEspConfig(amethyst, Color(170, 0, 170).rgb)
 
     private val jade by config.group("Jade Crystal")
-    val jadeConfig = createStructureEspConfig(jade, Color(0, 170, 0))
+    val jadeConfig = createStructureEspConfig(jade, Color(0, 170, 0).rgb)
 
     private val topaz by config.group("Topaz Crystal")
-    val topazConfig = createStructureEspConfig(topaz, Color(255, 255, 85))
+    val topazConfig = createStructureEspConfig(topaz, Color(255, 255, 85).rgb)
 
     private val corleone by config.group("Corleone")
-    val corleoneConfig = createStructureEspConfig(corleone, Color(85, 255, 85))
+    val corleoneConfig = createStructureEspConfig(corleone, Color(85, 255, 85).rgb)
 
     private val goldenDragon by config.group("Golden Dragon")
-    val goldenDragonConfig = createStructureEspConfig(goldenDragon, Color(255, 255, 255))
+    val goldenDragonConfig = createStructureEspConfig(goldenDragon, Color(255, 255, 255).rgb)
 
     private val keyGuardian by config.group("Key Guardian")
-    val keyGuardianConfig = createStructureEspConfig(keyGuardian, Color(170, 0, 170))
+    val keyGuardianConfig = createStructureEspConfig(keyGuardian, Color(170, 0, 170).rgb)
 
     private val xalx by config.group("Xalx")
-    val xalxConfig = createStructureEspConfig(xalx, Color(80, 110, 0))
+    val xalxConfig = createStructureEspConfig(xalx, Color(80, 110, 0).rgb)
 
     private val pete by config.group("Pete")
-    val peteConfig = createStructureEspConfig(pete, Color(110, 42, 0))
+    val peteConfig = createStructureEspConfig(pete, Color(110, 42, 0).rgb)
 
     private val odawa by config.group("Odawa")
-    val odawaConfig = createStructureEspConfig(odawa, Color(170, 170, 170))
+    val odawaConfig = createStructureEspConfig(odawa, Color(170, 170, 170).rgb)
 
     private val wormFishing by config.group("Worm Fishing")
-    val wormFishingConfig = createStructureEspConfig(wormFishing, Color(255, 85, 85))
+    val wormFishingConfig = createStructureEspConfig(wormFishing, Color(255, 85, 85).rgb)
 
     private val grottos = mutableListOf<Triple<Pair<Int, Int>, BlockPos, Int>>()
     private val structures = mutableListOf<Pair<Structure, Triple<Int, Int, Int>>>()
@@ -157,11 +157,11 @@ object WorldScanner: Module(
                     val aabb = AABB(blockPos)
                     val color = grottoConfig.color()
 
-                    extractStyledBox(aabb, color.rgb, grottoConfig.highlightStyle(), depth = false)
-                    if (grottoConfig.tracer()) extractTracer(center, grottoConfig.color().rgb, 2f, false)
+                    extractStyledBox(aabb, color, grottoConfig.highlightStyle(), depth = false)
+                    if (grottoConfig.tracer()) extractTracer(center, grottoConfig.color(), 2f, false)
                     if (grottoConfig.displayName()) extractText("Fairy Grotto",
                         center.add(0.0, 10.0, 0.0),
-                        grottoConfig.color().rgb,
+                        grottoConfig.color(),
                         Color(0, 0, 0, (255 * grottoConfig.displayBackgroundOpacity()).toInt()).rgb,
                         grottoConfig.displayScale(),
                         depth = false,
@@ -171,7 +171,7 @@ object WorldScanner: Module(
                     if (grottoConfigShowNumberOfBlocks) extractText(
                         grotto.third.toString(),
                         center,
-                        grottoConfig.color().rgb,
+                        grottoConfig.color(),
                         Color(0, 0, 0, (255 * grottoConfigShowNumberOfBlocksBackgroundOpacity).toInt()).rgb,
                         grottoConfig.displayScale(),
                         depth = false,
@@ -188,10 +188,10 @@ object WorldScanner: Module(
                 val blockPos = BlockPos(pos.first, pos.second, pos.third)
                 val aabb = AABB(blockPos)
                 val color = structureConfig.color()
-                extractStyledBox(aabb, color.rgb, structureConfig.highlightStyle(), depth = false)
+                extractStyledBox(aabb, color, structureConfig.highlightStyle(), depth = false)
                 //~ if >= 26.2 'blockPos.center' -> 'Vec3.atCenterOf(blockPos)' {
-                if (structureConfig.tracer()) extractTracer(blockPos.center, structureConfig.color().rgb, 2f, false)
-                if (structureConfig.displayName()) extractText(structure.first.displayName, blockPos.center, structureConfig.color().rgb, Color(0, 0, 0, (255 * structureConfig.displayBackgroundOpacity()).toInt()).rgb, structureConfig.displayScale(), depth = false, shadow = true, increase = true)
+                if (structureConfig.tracer()) extractTracer(blockPos.center, structureConfig.color(), 2f, false)
+                if (structureConfig.displayName()) extractText(structure.first.displayName, blockPos.center, structureConfig.color(), Color(0, 0, 0, (255 * structureConfig.displayBackgroundOpacity()).toInt()).rgb, structureConfig.displayScale(), depth = false, shadow = true, increase = true)
                 //~ }
             }
         }

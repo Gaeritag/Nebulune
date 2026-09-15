@@ -16,6 +16,8 @@ import foo.starred.athen.events.core.runWhen
 import foo.starred.athen.mixin.accessors.KeyMappingAccessor
 import foo.starred.athen.modules.impl.general.WardrobeKeybinds
 import foo.starred.athen.utils.guiClick
+import foo.starred.nebulune.accessors.IWardrobeSlot
+import foo.starred.nebulune.mixin.accessors.WardrobeKeybindsAccessor
 import foo.starred.nebulune.utils.command
 import foo.starred.snowbird.api.client
 import foo.starred.snowbird.api.command
@@ -31,6 +33,11 @@ import net.minecraft.world.item.Items
 
 @Load
 object WardrobeHelper {
+
+    @Suppress("UNCHECKED_CAST")
+    private val wrappedSlots: List<IWardrobeSlot>
+        get() = (WardrobeKeybinds as WardrobeKeybindsAccessor).`nebulune$getSlots`() as List<IWardrobeSlot>
+
     val autoClose by WardrobeKeybinds.config.switch("Auto close after use")
     private val autoEquip = WardrobeKeybinds.config.switch("Auto equip").unique("autoEquip")
     private val _unused by WardrobeKeybinds.config.information("Automatically equips the wardrobe slot without opening the gui. Use at your own risk.")
@@ -58,7 +65,7 @@ object WardrobeHelper {
             client.options.keyShift
         )
 
-    private var slot0: WardrobeKeybinds.WardrobeSlot? = null
+    private var slot0: IWardrobeSlot? = null
     private var swapping: Boolean = false
     private var inMenu: Boolean = false
     private var id: Int = -1
@@ -72,7 +79,7 @@ object WardrobeHelper {
                 if (!autoEquip.value) return@int "Enable auto equip in wardrobe keybinds!".mod(MessagePrefixType.ERROR)
 
                 val int = int("slot")
-                val slot = WardrobeKeybinds.wardrobeSlots.find { it.idx == 35 + int } ?: return@int
+                val slot = wrappedSlots.find { it.idx == 35 + int } ?: return@int
 
                 slot0 = slot
                 swapping = true
@@ -92,7 +99,7 @@ object WardrobeHelper {
             if (!moveEquip && swapping) for (a in all) if ((a as KeyMappingAccessor).boundKey.value == key) return@on cancel()
             if (swapping) return@on
 
-            val slot = WardrobeKeybinds.wardrobeSlots.find { it.value == key } ?: return@on
+            val slot = wrappedSlots.find { it.value.value == key } ?: return@on
 
             slot0 = slot
             swapping = true

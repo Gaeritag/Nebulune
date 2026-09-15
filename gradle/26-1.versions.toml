@@ -1,0 +1,28 @@
+[versions]
+minecraft = "26.1"
+compatibility = "26.1.x"
+fabric-api = "0.155.2+26.1.2"
+
+modmenu = "3rsoV1bk"
+caxton = "paJOxYlD"
+entityculling = "DhN0G638"
+exordium = "IK5p5vrB"
+iris = "YEGDGnJM"
+
+athen = "0.3.3b+26.1"
+snowbird = "024+26.1"
+cascade = "040+26.1"
+
+[libraries]
+minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
+fabric-api = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabric-api" }
+
+athen = { module = "foo.starred:athen", version.ref = "athen" }
+snowbird = { module = "foo.starred:snowbird", version.ref = "snowbird" }
+cascade = { module = "foo.starred:cascade", version.ref = "cascade" }
+
+modmenu = { module = "maven.modrinth:modmenu", version.ref = "modmenu" }
+caxton = { module = "maven.modrinth:caxton", version.ref = "caxton" }
+entityculling = { module = "maven.modrinth:entityculling", version.ref = "entityculling" }
+exordium = { module = "maven.modrinth:exordium", version.ref = "exordium" }
+iris = { module = "maven.modrinth:iris", version.ref = "iris" }

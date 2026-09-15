@@ -17,7 +17,7 @@ import java.awt.Color
 @Load
 object KuudraHighlight {
     private val tracer = KuudraInfo.config.switch("Tracer", false).unique("tracer")
-    private val `tracer$color` by KuudraInfo.config.colorPicker("Tracer color", Color(Catppuccin.Mocha.Peach.argb, true))
+    private val `tracer$color` by KuudraInfo.config.colorPicker("Tracer color", Catppuccin.Mocha.Peach.argb)
     private val `tracer$width` by KuudraInfo.config.slider("Tracer width", 2f, 1f, 10f)
     private val `tracer$depth` by KuudraInfo.config.switch("Tracer depth")
 
@@ -25,7 +25,7 @@ object KuudraHighlight {
         on<WorldRenderEvent.Extract> {
             if (!KuudraAPI.inRun) return@on
             val k = KuudraAPI.kuudra ?: return@on
-            extractTracer(k.renderPos, `tracer$color`.rgb, `tracer$width`, `tracer$depth`)
+            extractTracer(k.renderPos, `tracer$color`, `tracer$width`, `tracer$depth`)
         }.runWhen(KuudraInfo.observable and tracer.state)
     }
 }

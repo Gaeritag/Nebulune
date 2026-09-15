@@ -8,13 +8,19 @@ import foo.starred.athen.events.InputEvent
 import foo.starred.athen.events.core.runWhen
 import foo.starred.athen.mixin.accessors.KeyMappingAccessor
 import foo.starred.athen.modules.Module
-import foo.starred.athen.utils.etherwarp
+import foo.starred.athen.utils.customData
+import foo.starred.athen.utils.id
 import foo.starred.nebulune.utils.rightClick
 import foo.starred.snowbird.api.client
 import foo.starred.snowbird.api.scheduling.scheduler.extensions.clientTicks
 import foo.starred.snowbird.api.scheduling.scheduler.extensions.start
 import net.minecraft.client.KeyMapping
 import net.minecraft.world.InteractionHand
+import net.minecraft.world.item.ItemStack
+//? if >= 26.3 {
+/*import net.minecraft.world.entity.LivingEntity
+import net.minecraft.world.item.component.SwingAnimation
+*///?}
 
 @Load
 @OnlyIn(skyblock = true)
@@ -27,6 +33,10 @@ object EtherwarpHelper : Module(
     private val shift by config.switch("Shift automatically")
 
     private val ints = intArrayOf(2, 3, 4)
+
+    fun ItemStack.etherwarp(): Boolean {
+        return customData()?.getBoolean("ethermerge")?.orElse(false) == true || id() == "ETHERWARP_CONDUIT"
+    }
 
     init {
         on<InputEvent.Mouse.Press> {
@@ -58,6 +68,13 @@ object EtherwarpHelper : Module(
 
     private fun action() {
         rightClick()
+
+        //? if >= 26.3 {
+        /*val p = client.player ?: return
+        if (p.isSwinging) return
+        val swingState = p.swingState
+        swingState.startIfAble(InteractionHand.MAIN_HAND, SwingAnimation.DEFAULT, SwingAnimation.DEFAULT.duration)
+        *///?} else {
         with(client.player ?: return) {
             if (swinging && swingTime >= 0) return
 
@@ -65,5 +82,6 @@ object EtherwarpHelper : Module(
             swingTime = -1
             swinging = true
         }
+        //?}
     }
 }

@@ -19,5 +19,5 @@ sealed class MobIdentifier {
 data class SafariMob(
     val identifier: MobIdentifier,
     val isEnabled: () -> Boolean,
-    val color: () -> Color
+    val color: () -> Int
 )

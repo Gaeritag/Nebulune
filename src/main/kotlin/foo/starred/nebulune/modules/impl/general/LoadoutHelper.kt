@@ -2,6 +2,7 @@
 
 package foo.starred.nebulune.modules.impl.general
 
+import com.mojang.blaze3d.platform.InputConstants
 import foo.starred.athen.annotations.Load
 import foo.starred.athen.api.messaging.enums.MessagePrefixType
 import foo.starred.athen.api.messaging.impl.MessagingAPI.mod
@@ -20,6 +21,7 @@ import foo.starred.nebulune.utils.command
 import foo.starred.snowbird.api.client
 import foo.starred.snowbird.api.command
 import foo.starred.snowbird.api.data.Observable.Companion.and
+import foo.starred.snowbird.api.inputs.impl.KeyboardInputState
 import foo.starred.snowbird.api.mainThread
 import foo.starred.snowbird.api.scheduling.scheduler.extensions.clientTicks
 import foo.starred.snowbird.utils.stripped
@@ -30,6 +32,46 @@ import net.minecraft.network.protocol.game.ServerboundContainerClosePacket
 
 @Load
 object LoadoutHelper {
+
+    class SlotWrapper(val obj: Any) {
+        private fun getField(name: String): Any? {
+            return try {
+                val f = obj.javaClass.getDeclaredField(name)
+                f.isAccessible = true
+                f.get(obj)
+            } catch (e: Exception) {
+                null
+            }
+        }
+
+        private fun getMethod(name: String): Any? {
+            return try {
+                val m = obj.javaClass.getDeclaredMethod(name)
+                m.isAccessible = true
+                m.invoke(obj)
+            } catch (e: Exception) {
+                null
+            }
+        }
+
+        val index: Int get() = getField("index") as? Int ?: -1
+        val idx: Int get() = getField("idx") as? Int ?: -1
+        val value: InputConstants.Key get() = getMethod("getValue") as? InputConstants.Key ?: InputConstants.UNKNOWN
+        val equipped: Boolean get() = getMethod("getEquipped") as? Boolean ?: false
+    }
+
+    private val wrappedSlots: List<SlotWrapper>
+        get() {
+            return try {
+                val field = LoadoutKeybinds::class.java.getDeclaredField("slots")
+                field.isAccessible = true
+                val list = field.get(LoadoutKeybinds) as? List<*> ?: return emptyList()
+                list.filterNotNull().map { SlotWrapper(it) }
+            } catch (e: Exception) {
+                emptyList()
+            }
+        }
+
     val autoClose by LoadoutKeybinds.config.switch("Auto close after use")
     private val autoEquip = LoadoutKeybinds.config.switch("Auto equip").unique("autoEquip")
     private val _unused by LoadoutKeybinds.config.information("Automatically equips the loadout slot without opening the gui. Use at your own risk.")
@@ -57,7 +99,7 @@ object LoadoutHelper {
             client.options.keyShift
         )
 
-    private var slot0: LoadoutKeybinds.LoadoutSlot? = null
+    private var slot0: SlotWrapper? = null
     private var swapping: Boolean = false
     private var inMenu: Boolean = false
     private var id: Int = -1
@@ -71,7 +113,7 @@ object LoadoutHelper {
                 if (!autoEquip.value) return@int "Enable auto equip in loadout keybinds!".mod(MessagePrefixType.ERROR)
 
                 val int = int("slot")
-                val slot = LoadoutKeybinds.slots.find { it.index == int - 1 } ?: return@int
+                val slot = wrappedSlots.find { it.index == int - 1 } ?: return@int
 
                 slot0 = slot
                 swapping = true
@@ -86,12 +128,16 @@ object LoadoutHelper {
             //~ if >= 26.2 'client.screen' -> 'client.gui.screen()'
             if (client.screen != null) return@on
 
-            val key = keyEvent.key
+            val key = KeyboardInputState.vanilla(keyEvent.key)
 
-            if (!moveEquip && swapping) for (a in all) if ((a as KeyMappingAccessor).boundKey.value == key) return@on cancel()
+            if (!moveEquip && swapping) {
+                for (a in all) {
+                    if ((a as KeyMappingAccessor).boundKey == key) return@on cancel()
+                }
+            }
             if (swapping) return@on
 
-            val slot = LoadoutKeybinds.slots.find { it.value == key } ?: return@on
+            val slot = wrappedSlots.find { it.value == key } ?: return@on
 
             slot0 = slot
             swapping = true
@@ -137,7 +183,7 @@ object LoadoutHelper {
             if (wait-- > 0) return@on
 
             val player = client.player ?: return@on
-            val menu = player.containerMenu ?: return@on
+            val menu = player.containerMenu
             val slot = slot0 ?: return@on
 
             if (menu.containerId != id) return@on

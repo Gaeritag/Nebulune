@@ -16,6 +16,8 @@ import foo.starred.nebulune.utils.command
 import foo.starred.nebulune.utils.leftClick
 import foo.starred.nebulune.utils.rightClick
 import foo.starred.snowbird.api.*
+import foo.starred.snowbird.api.inputs.impl.GenericInputState
+import foo.starred.snowbird.api.inputs.impl.KeyboardInputState
 import foo.starred.snowbird.handlers.parser.parse
 import net.minecraft.client.KeyMapping
 import net.minecraft.world.phys.BlockHitResult
@@ -69,8 +71,8 @@ object AutoClicker : Module(
             val c = !a || h in set2.value
             if (!b && !c) return@on
 
-            val d = b && `left$enabled` && `left$key`.fn0()
-            val e = c && `right$enabled` && `right$key`.fn0()
+            val d = b && `left$enabled` && `left$key`.value.fn0()
+            val e = c && `right$enabled` && `right$key`.value.fn0()
 
             val h0 = client.hitResult as? BlockHitResult
             if (h0 != null && !lv.getBlockState(h0.blockPos).isAir && d && breaking.value) {
@@ -96,7 +98,7 @@ object AutoClicker : Module(
         }
 
         on<InputEvent.Keyboard.Release> {
-            if (keyEvent.key() != `left$key`) return@on
+            if (keyEvent.key() != `left$key`.value) return@on
             KeyMapping.set((client.options.keyAttack as KeyMappingAccessor).boundKey, false)
         }.runWhen(breaking.state)
 
@@ -168,8 +170,8 @@ object AutoClicker : Module(
     }
 
     private fun Int.fn0(): Boolean {
-        if (!bound) return false
-        return pressed
+        if (!GenericInputState.bound(this)) return false
+        return GenericInputState.pressed(KeyboardInputState.vanilla(this))
     }
 
     private fun Int.fn1(): Int {

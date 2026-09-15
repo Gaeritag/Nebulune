@@ -32,7 +32,7 @@ object PestESP : Module(
 ) {
     private val tracer by config.switch("Tracer")
     private val thickness by config.slider("Thickness", 2, 1, 10)
-    private val color by config.colorPicker("ESP color", Color(Catppuccin.Mocha.Peach.rgba))
+    private val color by config.colorPicker("ESP color", Catppuccin.Mocha.Peach.rgba)
     private val depthTest by config.switch("Depth test")
     private val entities = mutableSetOf<Entity>()
 
@@ -60,8 +60,8 @@ object PestESP : Module(
                 }
 
                 val p = e.renderPos.add(-0.5, 1.0, -0.5)
-                extractFrameBox(AABB.unitCubeFromLowerCorner(p), color.rgb, thickness.toFloat(), depthTest)
-                if (tracer) extractTracer(p, color.rgb, thickness.toFloat(), depthTest)
+                extractFrameBox(AABB.unitCubeFromLowerCorner(p), color, thickness.toFloat(), depthTest)
+                if (tracer) extractTracer(p, color, thickness.toFloat(), depthTest)
             }
         }
 

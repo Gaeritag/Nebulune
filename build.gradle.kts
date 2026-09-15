@@ -1,92 +1,68 @@
-@file:Suppress("UnstableApiUsage")
-
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.loom)
-    alias(libs.plugins.ksp)
-    alias(libs.plugins.fletchingTable)
     `maven-publish`
 }
 
-val ver = stonecutter.current.version
-val modId = project.property("mod.id").toString()
-val modName = project.property("mod.name").toString()
-val modVer = project.property("mod.version").toString()
+val catalogs = extensions.getByType<VersionCatalogsExtension>()
+val minecraft = stonecutter.current.version
+val lib = catalogs.named("libs${minecraft.replace(".", "")}")
+val mod = catalogs.named("mod")
 
-version = "$modVer+$ver"
-base.archivesName = modId
+version = "${mod("version")}+$minecraft"
+group = mod("group")
+base.archivesName = mod("id")
 
 repositories {
-    fun strictMaven(url: String, vararg groups: String) = maven(url) { content { groups.forEach(::includeGroupAndSubgroups) } }
-
-    strictMaven("https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1", "me.djtheredstoner")
-    strictMaven("https://repo.hypixel.net/repository/Hypixel", "net.hypixel")
-    strictMaven("https://api.modrinth.com/maven", "maven.modrinth")
-    strictMaven("https://maven.parchmentmc.org/", "org.parchmentmc")
-    strictMaven("https://maven.teamresourceful.com/repository/maven-public/", "tech.thatgravyboat", "com.terraformersmc", "earth.terrarium", "com.teamresourceful", "me.owdding")
-    strictMaven("https://repo.nea.moe/releases", "moe.nea")
-
-    flatDir {
-        dirs("libs")
-    }
+    maven("https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1")
+    maven("https://repo.hypixel.net/repository/Hypixel")
+    maven("https://api.modrinth.com/maven")
+    maven("https://maven.teamresourceful.com/repository/maven-public/")
 
     maven("https://maven.starred.foo/releases")
     maven("https://maven.starred.foo/snapshots")
-}
 
-fletchingTable {
-    mixins.create("main", Action {
-        mixin("default", "$modId.mixins.json") {
-            env("CLIENT")
-        }
-    })
+    flatDir {
+        dirs(rootProject.file("libs"))
+    }
 }
 
 dependencies {
-    minecraft("com.mojang:minecraft:$ver")
+    minecraft(lib["minecraft"])
 
-    localRuntime("devauth".global)
-    compileOnly("entityculling".versioned)
+    localRuntime(libs.devauth)
+    compileOnly(lib["entityculling"])
 
-    dependencies {
-        if (stonecutter.current.project == "26.1") {
-            implementation(files(rootProject.file("libs/athen-0.3.2b+26.1.jar")))
-        } else {
-            implementation(files(rootProject.file("libs/athen-0.3.2b+26.2.jar")))
-        }
+    compileOnly(lib["caxton"])
+    compileOnly(lib["exordium"])
+    compileOnly(lib["iris"])
+
+    implementation(lib["modmenu"])
+    implementation(lib["fabric-api"])
+    implementation(libs.fabric.loader)
+    implementation(libs.fabric.language.kotlin)
+    implementation(libs.hypixel.modapi)
+    implementation(libs.hypixel.modapi.fabric)
+
+    implementation(libs.classgraph)
+    implementation(libs.kommand)
+    implementation(lib["snowbird"])
+    implementation(lib["cascade"])
+
+    implementation(libs.skyblock.api) {
+        capabilities { requireCapability("tech.thatgravyboat:skyblock-api-$minecraft") }
     }
-    implementation("modmenu".versioned)
-    implementation("fabric-api".versioned)
-    implementation("fabric-loader".global)
-    implementation("fabric-language-kotlin".global)
-    implementation("hypixel-modapi".global)
-    implementation("hypixel-modapi-fabric".global)
 
-    implementation("classgraph".global)
-    implementation("autoupdate".global)
-    implementation("kommand".global)
-    implementation("snowbird".versioned)
-    implementation("cascade".versioned)
-
-    implementation("skyblock-api".global) {
-        capabilities { requireCapability("tech.thatgravyboat:skyblock-api-$ver") }
-    }
+    implementation(lib["athen"])
 }
 
 loom {
     fabricModJsonPath = rootProject.file("src/main/resources/fabric.mod.json")
-    accessWidenerPath = rootProject.file("src/main/resources/$modId.accesswidener")
+    accessWidenerPath = rootProject.file("src/main/resources/accesswideners/$minecraft.accesswidener")
 
     runConfigs.named("client") {
         generateRunConfig = true
-        jvmArguments.addAll(
-            "-Ddevauth.enabled=true",
-            "-Ddevauth.account=main",
-            "-XX:+AllowEnhancedClassRedefinition",
-            "-XX:+IgnoreUnrecognizedVMOptions",
-        )
+        jvmArguments.addAll("-Ddevauth.enabled=true", "-Ddevauth.account=main", "-XX:+AllowEnhancedClassRedefinition", "-XX:+IgnoreUnrecognizedVMOptions",)
     }
 
     runConfigs.named("server") {
@@ -94,21 +70,12 @@ loom {
     }
 }
 
-tasks.withType<JavaCompile>().configureEach {
-    options.release.set(25)
-}
-
 java {
-    toolchain.languageVersion = JavaLanguageVersion.of(25)
     withSourcesJar()
 }
 
 kotlin {
-    jvmToolchain(25)
-
     compilerOptions {
-        jvmTarget.set(JvmTarget.valueOf("JVM_25"))
-
         freeCompilerArgs.addAll("-Xcontext-sensitive-resolution", "-Xcollection-literals", "-Xskip-prerelease-check")
         optIn.add("kotlin.time.ExperimentalTime")
     }
@@ -116,7 +83,7 @@ kotlin {
 
 tasks {
     processResources {
-        val r = mapOf("id" to modId, "name" to modName, "version" to modVer, "minecraft" to project.property("mod.mc_dep"), "accessWidener" to "$modId.accesswidener")
+        val r = mapOf("id" to mod("id"), "name" to mod("name"), "version" to mod("version"), "minecraft" to lib("compatibility"), "tweaker" to mod("tweaker"), "accessWidener" to "accesswideners/$minecraft.accesswidener")
 
         inputs.properties(r)
         filesMatching("fabric.mod.json") { expand(r) }
@@ -126,20 +93,22 @@ tasks {
         description = "Builds and collects mod jars."
         group = "build"
         from(jar, kotlinSourcesJar)
-        into(rootProject.layout.buildDirectory.file("libs/${project.property("mod.version")}"))
+        into(rootProject.layout.buildDirectory.file("libs/${mod("version")}"))
         dependsOn("build")
     }
 }
-
-val String.global: Provider<MinimalExternalModuleDependency>
-    get() = extensions.getByType<VersionCatalogsExtension>().named("libs").findLibrary(this).get()
-
-val String.versioned: Provider<MinimalExternalModuleDependency>
-    get() = extensions.getByType<VersionCatalogsExtension>().named("libs").findLibrary("$this-${ver.replace(".", "_")}").get()
 
 fun DependencyHandlerScope.shadow(dep: Any, config: ExternalModuleDependency.() -> Unit = {}) {
     val d = create((dep as? Provider<*>)?.get() ?: dep) as ExternalModuleDependency
     d.config()
     include(d)
     implementation(d)
+}
+
+operator fun VersionCatalog.get(name: String): Provider<MinimalExternalModuleDependency> {
+    return findLibrary(name).get()
+}
+
+operator fun VersionCatalog.invoke(name: String): String {
+    return findVersion(name).get().requiredVersion
 }
