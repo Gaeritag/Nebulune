@@ -152,8 +152,8 @@ object WardrobeHelper {
             if (menu.containerId != id) return@on
 
             val mcSlot = menu.slots.getOrNull(slot.idx)?.takeIf { !it.item.isEmpty } ?: return@on
-            //~ if >= 26.2 'Items.LIME_DYE' -> 'Items.DYE.lime()'
-            if (mcSlot.item.item != Items.LIME_DYE) return@on
+            //~ if >= 26.2 'Items.GRAY_DYE' -> 'Items.DYE.gray()'
+            if (mcSlot.item.item != Items.GRAY_DYE) return@on
 
             if (!slot.equipped) guiClick(id, slot.idx)
 
