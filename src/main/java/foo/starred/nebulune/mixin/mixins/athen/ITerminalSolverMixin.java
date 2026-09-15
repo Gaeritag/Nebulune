@@ -14,8 +14,8 @@ import foo.starred.nebulune.accessors.ITerminalAccessor;
 import foo.starred.nebulune.modules.impl.dungeons.AutoTerms;
 import foo.starred.nebulune.modules.impl.dungeons.HoverTerms;
 import foo.starred.nebulune.modules.impl.dungeons.QueueTerms;
-import foo.starred.snowbird.api.ClientKt;
 import kotlin.Unit;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.item.ItemStack;
@@ -168,7 +168,7 @@ public abstract class ITerminalSolverMixin implements ITerminalAccessor {
         ConfigSoundOption sound = TerminalSolvers.INSTANCE.getClicks();
 
         if (TerminalSimulator.INSTANCE.getS().getValue()) {
-            var client = ClientKt.getClient();
+            var client = Minecraft.getInstance();
             //~ if >= 26.2 'client.screen' -> 'client.gui.screen()'
             var screen = client.screen;
             if (!(screen instanceof ITerminalSim sim)) return;
@@ -204,8 +204,8 @@ public abstract class ITerminalSolverMixin implements ITerminalAccessor {
             if (!TerminalAPI.INSTANCE.getOpened().getValue()) return Unit.INSTANCE;
             if (id != TerminalAPI.INSTANCE.getId()) return Unit.INSTANCE;
 
-            //~ if >= 26.2 'ClientKt.getClient().screen' -> 'ClientKt.getClient().gui.screen()'
-            var menu = ClientKt.getClient().screen;
+            //~ if >= 26.2 'Minecraft.getInstance().screen' -> 'Minecraft.getInstance().gui.screen()'
+            var menu = Minecraft.getInstance().screen;
             if (!(menu instanceof AbstractContainerScreen<?> a)) return Unit.INSTANCE;
             var items = a.getMenu().getItems().subList(0, getType().getSlots());
 
