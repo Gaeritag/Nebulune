@@ -24,6 +24,7 @@ import foo.starred.snowbird.api.command
 import foo.starred.snowbird.api.data.Observable.Companion.and
 import foo.starred.snowbird.api.mainThread
 import foo.starred.snowbird.api.scheduling.scheduler.extensions.clientTicks
+import foo.starred.snowbird.api.text.parser.impl.parse
 import foo.starred.snowbird.utils.stripped
 import net.minecraft.client.KeyMapping
 import net.minecraft.network.protocol.game.ClientboundContainerClosePacket
@@ -49,10 +50,10 @@ object WardrobeHelper {
     private val delayVariance by WardrobeKeybinds.config.slider("Max delay variety", 1, 0, 5, "ticks")
 
     private val hud = WardrobeKeybinds.config.hud("Display text") {
-        if (it) return@hud sizedText("Equipping §7[§c2§7]")
+        if (it) return@hud sizedText("Equipping <gray>[<red>2<gray>]".parse())
         if (!swapping) return@hud null
         val slot = slot0 ?: return@hud null
-        sizedText("Equipping §7[§c${(slot.idx - 36) + 1}§7]")
+        sizedText("Equipping <gray>[<red>${(slot.idx - 36) + 1}<gray>]".parse())
     }
 
     private val all: List<KeyMapping>

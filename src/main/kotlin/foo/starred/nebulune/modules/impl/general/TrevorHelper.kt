@@ -19,7 +19,7 @@ import foo.starred.athen.utils.render.renderPos
 import foo.starred.nebulune.utils.extractTracer
 import foo.starred.snowbird.api.command
 import foo.starred.snowbird.api.scheduling.scheduler.extensions.clientTicks
-import foo.starred.snowbird.handlers.parser.parse
+import foo.starred.snowbird.api.text.parser.impl.parse
 import foo.starred.snowbird.utils.alert
 import foo.starred.snowbird.utils.stripped
 import foo.starred.snowbird.utils.toDurationFromMillis

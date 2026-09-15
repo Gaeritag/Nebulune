@@ -7,7 +7,7 @@ import foo.starred.athen.api.scheduling.Scheduler
 import foo.starred.athen.modules.impl.ModSettings
 import foo.starred.snowbird.api.client
 import foo.starred.snowbird.api.lie
-import foo.starred.snowbird.handlers.parser.parse
+import foo.starred.snowbird.api.text.parser.impl.parse
 import kotlin.time.Duration.Companion.minutes
 
 @Load
