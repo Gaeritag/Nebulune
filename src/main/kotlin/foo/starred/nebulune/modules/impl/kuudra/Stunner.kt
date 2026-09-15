@@ -17,7 +17,7 @@ object Stunner {
     fun fn() {
         if (!autoClose) return
         val player = client.player ?: return
-        val menu = player.containerMenu ?: return
+        val menu = player.containerMenu
 
         Scheduler.schedule(`autoClose$delay`.clientTicks) {
             if (menu == player.containerMenu) player.closeContainer()

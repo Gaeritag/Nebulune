@@ -146,7 +146,7 @@ object WardrobeHelper {
             if (wait-- > 0) return@on
 
             val player = client.player ?: return@on
-            val menu = player.containerMenu ?: return@on
+            val menu = player.containerMenu
             val slot = slot0 ?: return@on
 
             if (menu.containerId != id) return@on

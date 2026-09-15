@@ -6,7 +6,7 @@ import net.minecraft.client.KeyMapping
 import net.minecraft.world.entity.player.Player
 
 fun rightClick() {
-    val options = client.options ?: return
+    val options = client.options
     val key = (options.keyUse as KeyMappingAccessor).boundKey
     KeyMapping.set(key, true)
     KeyMapping.click(key)
@@ -14,7 +14,7 @@ fun rightClick() {
 }
 
 fun leftClick() {
-    val options = client.options ?: return
+    val options = client.options
     val key = (options.keyAttack as KeyMappingAccessor).boundKey
     KeyMapping.set(key, true)
     KeyMapping.click(key)
