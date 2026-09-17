@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.loom)
+    alias(libs.plugins.ksp)
     alias(libs.plugins.fletchingTable)
     `maven-publish`
 }
