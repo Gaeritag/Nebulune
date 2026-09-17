@@ -1,3 +1,5 @@
+import net.fabricmc.loom.task.ValidateAccessWidenerTask
+
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.loom)
@@ -50,7 +52,6 @@ dependencies {
     implementation(libs.kommand)
     implementation(lib["snowbird"])
     implementation(lib["cascade"])
-    implementation(lib["updater"])
 
     implementation(libs.skyblock.api) {
         capabilities { requireCapability("tech.thatgravyboat:skyblock-api-$minecraft") }
@@ -69,11 +70,20 @@ fletchingTable {
 
 loom {
     fabricModJsonPath = rootProject.file("src/main/resources/fabric.mod.json")
-    accessWidenerPath = rootProject.file("src/main/resources/accesswideners/$minecraft.accesswidener")
+    val awFile = sc.process(
+        rootProject.file("src/main/resources/${mod("id")}.classtweaker"),
+        "build/${mod("tweaker")}"
+    )
+
+    if (awFile.exists()) {
+        accessWidenerPath = awFile
+    } else {
+        println("Accesswidener source not found at src/main/resources/${mod("id")}.classtweaker")
+    }
 
     runConfigs.named("client") {
         generateRunConfig = true
-        jvmArguments.addAll("-Ddevauth.enabled=true", "-Ddevauth.account=main", "-XX:+AllowEnhancedClassRedefinition", "-XX:+IgnoreUnrecognizedVMOptions",)
+        jvmArguments.addAll("-Ddevauth.enabled=true", "-Ddevauth.account=main", "-XX:+AllowEnhancedClassRedefinition", "-XX:+IgnoreUnrecognizedVMOptions")
     }
 
     runConfigs.named("server") {
@@ -94,10 +104,17 @@ kotlin {
 
 tasks {
     processResources {
-        val r = mapOf("id" to mod("id"), "name" to mod("name"), "version" to mod("version"), "minecraft" to lib("compatibility"), "tweaker" to mod("tweaker"), "accessWidener" to "accesswideners/$minecraft.accesswidener")
+        val r = mapOf(
+            "id" to mod("id"),
+            "name" to mod("name"),
+            "version" to mod("version"),
+            "minecraft" to lib("compatibility"),
+            "tweaker" to mod("tweaker")
+        )
 
         inputs.properties(r)
         filesMatching("fabric.mod.json") { expand(r) }
+        exclude("${mod("id")}.classtweaker")
     }
 
     register<Copy>("buildAndCollect") {
@@ -107,6 +124,10 @@ tasks {
         into(rootProject.layout.buildDirectory.file("libs/${mod("version")}"))
         dependsOn("build")
     }
+}
+
+tasks.withType<ValidateAccessWidenerTask>().configureEach {
+    dependsOn("stonecutterPrepare")
 }
 
 fun DependencyHandlerScope.shadow(dep: Any, config: ExternalModuleDependency.() -> Unit = {}) {

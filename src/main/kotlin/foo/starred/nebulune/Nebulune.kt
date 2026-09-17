@@ -6,7 +6,6 @@ import foo.starred.athen.Athen
 import foo.starred.athen.annotations.AnnotationLoader
 import foo.starred.athen.api.scheduling.Scheduler
 import foo.starred.snowbird.api.scheduling.scheduler.extensions.serverTicks
-import foo.starred.updater.logic.source.impl.GitHubUpdateSource
 import net.fabricmc.api.ClientModInitializer
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.time.Duration.Companion.milliseconds
@@ -18,7 +17,6 @@ object Nebulune : ClientModInitializer {
     override fun onInitializeClient() {
         AnnotationLoader.load("foo.starred.nebulune")
         Athen.LOGGER.info("Nebulune loaded.")
-        GitHubUpdateSource("Gaeritag/Nebulune", id = modId).init(modVersion)
     }
 
     @JvmStatic
