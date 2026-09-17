@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.loom)
+    alias(libs.plugins.fletchingTable)
     `maven-publish`
 }
 
@@ -55,6 +56,14 @@ dependencies {
     }
 
     implementation(lib["athen"])
+}
+
+fletchingTable {
+    mixins.create("main", Action {
+        mixin("default", "${mod("id")}.mixins.json") {
+            env("CLIENT")
+        }
+    })
 }
 
 loom {

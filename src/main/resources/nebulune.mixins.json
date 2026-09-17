@@ -2,10 +2,7 @@
   "required": false,
   "package": "foo.starred.nebulune.mixin",
   "compatibilityLevel": "JAVA_21",
-  "mixins": [
-    "accessors.WardrobeKeybindsAccessor",
-    "mixins.athen.WardrobeSlotMixin"
-  ],
+  "mixins": [],
   "injectors": {
     "defaultRequire": 1
   }
