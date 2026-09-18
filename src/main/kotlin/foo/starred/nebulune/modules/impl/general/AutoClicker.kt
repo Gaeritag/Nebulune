@@ -17,7 +17,6 @@ import foo.starred.nebulune.utils.leftClick
 import foo.starred.nebulune.utils.rightClick
 import foo.starred.snowbird.api.*
 import foo.starred.snowbird.api.inputs.impl.GenericInputState
-import foo.starred.snowbird.api.inputs.impl.KeyboardInputState
 import foo.starred.snowbird.handlers.parser.parse
 import net.minecraft.client.KeyMapping
 import net.minecraft.world.phys.BlockHitResult
@@ -71,8 +70,8 @@ object AutoClicker : Module(
             val c = !a || h in set2.value
             if (!b && !c) return@on
 
-            val d = b && `left$enabled` && `left$key`.value.fn0()
-            val e = c && `right$enabled` && `right$key`.value.fn0()
+            val d = b && `left$enabled` && GenericInputState.pressed(`left$key`)
+            val e = c && `right$enabled` && GenericInputState.pressed(`right$key`)
 
             val h0 = client.hitResult as? BlockHitResult
             if (h0 != null && !lv.getBlockState(h0.blockPos).isAir && d && breaking.value) {
@@ -81,7 +80,7 @@ object AutoClicker : Module(
             }
 
             if (d) {
-                l += `left$cps`.fn1()
+                l += `left$cps`.fn0()
                 if (l >= 20) {
                     leftClick()
                     l -= 20
@@ -89,7 +88,7 @@ object AutoClicker : Module(
             }
 
             if (e) {
-                r += `right$cps`.fn1()
+                r += `right$cps`.fn0()
                 if (r >= 20) {
                     rightClick()
                     r -= 20
@@ -169,12 +168,7 @@ object AutoClicker : Module(
         return held?.getData(DataTypes.UUID)?.toString() ?: held?.getData(DataTypes.SKYBLOCK_ID)?.skyblockId ?: held?.hoverName?.string
     }
 
-    private fun Int.fn0(): Boolean {
-        if (!GenericInputState.bound(this)) return false
-        return GenericInputState.pressed(KeyboardInputState.vanilla(this))
-    }
-
-    private fun Int.fn1(): Int {
+    private fun Int.fn0(): Int {
         val a = jitter * 2
         return (this + (-a..a).random()).coerceIn(1, 20)
     }
