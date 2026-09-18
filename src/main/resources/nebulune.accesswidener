@@ -1,0 +1,5 @@
+accessWidener v2 official
+#? if >= 26.3 {
+#accessible field net/minecraft/world/entity/LivingEntity swingState Lnet/minecraft/world/entity/LivingEntity$SwingState;
+#accessible field net/minecraft/world/entity/LivingEntity$SwingState animation F
+#?}

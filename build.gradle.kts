@@ -71,15 +71,15 @@ fletchingTable {
 
 loom {
     fabricModJsonPath = rootProject.file("src/main/resources/fabric.mod.json")
-    val awFile = sc.process(
-        rootProject.file("src/main/resources/${mod("id")}.classtweaker"),
+    val accessWidenerFile = sc.process(
+        rootProject.file("src/main/resources/${mod("id")}.accesswidener"),
         "build/${mod("tweaker")}"
     )
 
-    if (awFile.exists()) {
-        accessWidenerPath = awFile
+    if (accessWidenerFile.exists()) {
+        accessWidenerPath = accessWidenerFile
     } else {
-        println("Accesswidener source not found at src/main/resources/${mod("id")}.classtweaker")
+        println("No accessWidener file for $minecraft")
     }
 
     runConfigs.named("client") {
