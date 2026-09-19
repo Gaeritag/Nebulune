@@ -50,15 +50,15 @@ dependencies {
 
     implementation(libs.classgraph)
     implementation(libs.kommand)
-    implementation(lib["snowbird"])
-    implementation(lib["cascade"])
-    implementation(lib["updater"])
+    implementation(libs.snowbird.find())
+    implementation(libs.cascade.find())
+    implementation(libs.updater.find())
 
     implementation(libs.skyblock.api) {
         capabilities { requireCapability("tech.thatgravyboat:skyblock-api-$minecraft") }
     }
 
-    implementation(lib["athen"])
+    implementation(libs.athen.find())
 }
 
 fletchingTable {
@@ -136,6 +136,10 @@ fun DependencyHandlerScope.shadow(dep: Any, config: ExternalModuleDependency.() 
     d.config()
     include(d)
     implementation(d)
+}
+
+fun Provider<MinimalExternalModuleDependency>.find(): String {
+    return "${get()}+$minecraft"
 }
 
 operator fun VersionCatalog.get(name: String): Provider<MinimalExternalModuleDependency> {

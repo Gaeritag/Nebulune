@@ -11,7 +11,12 @@ fabric-language-kotlin = "1.13.13+kotlin.2.4.10"
 
 skyblock-api = "4.2.24"
 classgraph = "4.8.184"
-kommand = "1.0.2"
+
+kommand = "2026.09.1"
+snowbird = "2026.09.1"
+cascade = "2026.09.3"
+updater = "2026.09.1"
+athen = "0.3.4b"
 
 hypixel-modapi = "1.0.2"
 hypixel-modapi-fabric = "1.0.2+build.1+mc26.1"
@@ -24,7 +29,12 @@ devauth = { module = "me.djtheredstoner:DevAuth-fabric", version.ref = "devauth"
 
 skyblock-api = { module = "tech.thatgravyboat:skyblock-api", version.ref = "skyblock-api" }
 classgraph = { module = "io.github.classgraph:classgraph", version.ref = "classgraph" }
+
 kommand = { module = "foo.starred:kommand", version.ref = "kommand" }
+snowbird = { module = "foo.starred:snowbird", version.ref = "snowbird" }
+cascade = { module = "foo.starred:cascade", version.ref = "cascade" }
+updater = { module = "foo.starred:updater", version.ref = "updater" }
+athen = { module = "foo.starred:athen", version.ref = "athen" }
 
 hypixel-modapi = { module = "net.hypixel:mod-api", version.ref = "hypixel-modapi" }
 hypixel-modapi-fabric = { module = "maven.modrinth:hypixel-mod-api", version.ref = "hypixel-modapi-fabric" }

@@ -9,19 +9,9 @@ entityculling = "iiF6U3Ne"
 exordium = "IK5p5vrB"
 iris = "oaD6KQls"
 
-athen = "0.3.3b+26.3"
-snowbird = "024+26.3"
-cascade = "040+26.3"
-updater = "1.0.8+26.3"
-
 [libraries]
 minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
 fabric-api = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabric-api" }
-
-athen = { module = "foo.starred:athen", version.ref = "athen" }
-snowbird = { module = "foo.starred:snowbird", version.ref = "snowbird" }
-cascade = { module = "foo.starred:cascade", version.ref = "cascade" }
-updater = { module = "foo.starred:updater", version.ref = "updater" }
 
 modmenu = { module = "maven.modrinth:modmenu", version.ref = "modmenu" }
 caxton = { module = "maven.modrinth:caxton", version.ref = "caxton" }
