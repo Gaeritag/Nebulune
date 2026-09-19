@@ -138,9 +138,9 @@ public abstract class ITerminalSolverMixin implements ITerminalAccessor {
     }
 
     @ModifyVariable(method = "header(Lnet/minecraft/client/gui/GuiGraphicsExtractor;FFFFFLorg/joml/Matrix3x2f;Lnet/minecraft/client/gui/navigation/ScreenRectangle;)V", at = @At(value = "STORE", ordinal = 0), ordinal = 0)
-    private String nebulune$modifyTitleText(String titleText) {
-        if (!QueueTerms.INSTANCE.getEnabled()) return titleText;
-        return titleText + " - " + QueueTerms.INSTANCE.getClicks().size() + QueueTerms.INSTANCE.getClicks().size();
+    private String nebulune$modifyTitleText(String title) {
+        if (!QueueTerms.INSTANCE.getEnabled()) return title;
+        return title + " - " + QueueTerms.INSTANCE.getClicks().size() + QueueTerms.INSTANCE.getClicks().size();
     }
 
     @Inject(method = "update", at = @At(value = "INVOKE", target = "Lfoo/starred/athen/modules/impl/dungeon/terminals/solver/base/ITerminalSolver;compute(Ljava/util/List;)V", shift = At.Shift.AFTER))
