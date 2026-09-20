@@ -8,6 +8,8 @@ import foo.starred.athen.api.scheduling.Scheduler
 import foo.starred.athen.config.Category
 import foo.starred.athen.events.EntityEvent
 import foo.starred.athen.modules.Module
+import foo.starred.athen.utils.customData
+import foo.starred.athen.utils.id
 import foo.starred.nebulune.utils.rightClick
 import foo.starred.snowbird.api.client
 import foo.starred.snowbird.api.held
@@ -15,7 +17,9 @@ import foo.starred.snowbird.api.player
 import foo.starred.snowbird.api.scheduling.scheduler.extensions.clientTicks
 import foo.starred.snowbird.api.scheduling.scheduler.extensions.start
 import foo.starred.snowbird.utils.stripped
+import net.minecraft.client.player.LocalPlayer
 import net.minecraft.world.entity.projectile.FishingHook
+import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
 
 @Load
@@ -41,6 +45,8 @@ object FishingHelper : Module(
         on<EntityEvent.Load> {
             val e = entity as? FishingHook ?: return@on
             if (e.owner != player) return@on
+            val p = client.player ?: return@on
+            if (p.mainHandItem.id() == "SOUL_WHIP" || p.mainHandItem.id() == "FLAMING_FLAY") return@on
             bobber = e
         }
 
