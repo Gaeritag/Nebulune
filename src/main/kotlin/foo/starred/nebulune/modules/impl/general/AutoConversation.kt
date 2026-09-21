@@ -6,11 +6,12 @@ import foo.starred.athen.api.scheduling.Scheduler
 import foo.starred.athen.config.Category
 import foo.starred.athen.events.MessageEvent
 import foo.starred.athen.modules.Module
-import foo.starred.snowbird.api.command
 import foo.starred.snowbird.api.scheduling.scheduler.extensions.clientTicks
 import foo.starred.snowbird.api.scheduling.scheduler.extensions.start
 import foo.starred.snowbird.utils.colorCoded
+import net.minecraft.client.Minecraft
 import net.minecraft.network.chat.ClickEvent
+import net.minecraft.network.protocol.common.ServerboundCustomClickActionPacket
 import tech.thatgravyboat.skyblockapi.utils.text.TextColor
 
 @Load
@@ -27,25 +28,34 @@ object AutoConversation : Module(
     init {
         on<MessageEvent.Chat.Receive> {
             if (!stripped.startsWith("[NPC] ") && !stripped.startsWith("Select an option: ")) return@on
-            val a = mutableListOf<String>()
+            val a = mutableListOf<ClickEvent.Custom>()
             val b = green
 
-            val c = message.style
-            val d = (c.clickEvent as? ClickEvent.RunCommand)?.command
-            if (d != null && (!b || c.color?.value == TextColor.GREEN)) a.add(d)
+            val queue = mutableListOf(message)
+            var i = 0
 
-            for (s in message.siblings) {
-                val e = s.style.takeIf { !b || (it.color?.value == TextColor.GREEN || s.colorCoded().substringAfterLast("[").startsWith("§a")) } ?: continue
-                a.add((e.clickEvent as? ClickEvent.RunCommand)?.command ?: continue)
+            while (i < queue.size) {
+                val current = queue[i++]
+                queue.addAll(current.siblings)
+
+                val clickEvent = current.style.clickEvent as? ClickEvent.Custom ?: continue
+                if (!b || current.style.color?.value == TextColor.GREEN || current.colorCoded().contains("§a")) {
+                    a.add(clickEvent)
+                }
             }
 
             if (a.isEmpty()) return@on
             if (a.size > 1 && !multi) return@on
-            if (delay == 0) return@on a.first().command()
+            if (delay == 0) return@on a.first().sendClickPacket()
 
             Scheduler.schedule((delay + (0..3).random()).clientTicks.start) {
-                a.first().command()
+                a.first().sendClickPacket()
             }
         }
+    }
+
+    private fun ClickEvent.Custom.sendClickPacket() {
+        val packet = ServerboundCustomClickActionPacket(this.id(), this.payload())
+        Minecraft.getInstance().connection?.send(packet)
     }
 }
