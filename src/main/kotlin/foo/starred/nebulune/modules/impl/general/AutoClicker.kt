@@ -45,6 +45,11 @@ object AutoClicker : Module(
     private val breaker by customisation.switch("Block dungeon breaker", true)
     private val whitelist by customisation.switch("Whitelist mode")
 
+    private val requirement by config.group("Requirement") 
+    private val `require$enabled` by requirement.switch("Require key") 
+    private val `require$key` by requirement.keybind("Required key") 
+    private val `require$reverse` by requirement.switch("Reverse required key")
+
     private val json = JsonStore("features/autoClicker")
     private val set1 = json.mutableSet("left", Codec.STRING)
     private val set2 = json.mutableSet("right", Codec.STRING)
@@ -69,6 +74,12 @@ object AutoClicker : Module(
             val b = !a || h in set1.value
             val c = !a || h in set2.value
             if (!b && !c) return@on
+
+            if (`require$enabled`) {
+                val pressed = GenericInputState.pressed(`require$key`)
+                val allowed = if (`require$reverse`) !pressed else pressed
+                if (!allowed) return@on
+            }
 
             val d = b && `left$enabled` && GenericInputState.pressed(`left$key`)
             val e = c && `right$enabled` && GenericInputState.pressed(`right$key`)
