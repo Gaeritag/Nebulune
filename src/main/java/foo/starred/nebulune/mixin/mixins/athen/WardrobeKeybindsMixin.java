@@ -12,11 +12,11 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(WardrobeKeybinds.class)
+@Mixin(value = WardrobeKeybinds.class, remap = false)
 public class WardrobeKeybindsMixin {
     @Inject(method = "fn", at = @At("TAIL"))
     private void nebulune$fn(KBusCancellableTrait $this$fn, InputConstants.Key key, CallbackInfo ci) {
         LocalPlayer player = Minecraft.getInstance().player;
-        if (player != null && WardrobeHelper.INSTANCE.getAutoClose()) WardrobeHelper.close(1);
+        if (player != null && WardrobeHelper.INSTANCE.getAutoClose()) WardrobeHelper.close();
     }
 }
