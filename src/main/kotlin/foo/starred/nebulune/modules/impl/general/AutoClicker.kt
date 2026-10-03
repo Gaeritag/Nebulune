@@ -17,7 +17,7 @@ import foo.starred.nebulune.utils.leftClick
 import foo.starred.nebulune.utils.rightClick
 import foo.starred.snowbird.api.*
 import foo.starred.snowbird.api.inputs.impl.GenericInputState
-import foo.starred.snowbird.handlers.parser.parse
+import foo.starred.snowbird.api.text.parser.impl.parse
 import net.minecraft.client.KeyMapping
 import net.minecraft.world.phys.BlockHitResult
 import tech.thatgravyboat.skyblockapi.api.datatype.DataTypes
