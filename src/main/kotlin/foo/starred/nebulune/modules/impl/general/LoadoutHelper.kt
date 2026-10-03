@@ -28,6 +28,7 @@ import foo.starred.snowbird.api.scheduling.scheduler.extensions.clientTicks
 import foo.starred.snowbird.api.text.parser.impl.parse
 import foo.starred.snowbird.utils.stripped
 import net.minecraft.client.KeyMapping
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import net.minecraft.network.protocol.game.ClientboundContainerClosePacket
 import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket
 import net.minecraft.network.protocol.game.ServerboundContainerClosePacket
@@ -88,7 +89,7 @@ object LoadoutHelper {
         if (false) { TextPrimitive.text { wrapper = CascadeTextWrapper; text = "Equipping <gray>[<red>2<gray>]".parse() }; return@hud }
         if (!swapping) return@hud
         val slot = slot0 ?: return@hud
-        TextPrimitive.text { wrapper = CascadeTextWrapper; text = "Equipping <gray>[<red>${(slot.idx - 14) + 1}<gray>]".parse() }
+        TextPrimitive.text { wrapper = CascadeTextWrapper; text = "Equipping <gray>[<red>${slot.index + 1}<gray>]".parse() }
     }
 
     private val all: List<KeyMapping>
@@ -175,12 +176,27 @@ object LoadoutHelper {
         }.runWhen(LoadoutKeybinds.observable and autoEquip.state)
 
         on<GuiEvent.Open.Container> {
-            if (resetOpen) reset()
+            if (resetOpen && swapping) reset()
         }.runWhen(LoadoutKeybinds.observable and autoEquip.state)
+
+        on<GuiEvent.Slots.Input.Click> {
+            if (!autoClose) return@on
+            //~ if >= 26.2 'client.screen' -> 'client.gui.screen()'
+            val screen = client.screen as? AbstractContainerScreen<*> ?: return@on
+            val stripped = screen.title.stripped()
+            if ("Loadout" !in stripped) return@on
+
+            if (wrappedSlots.any { it.idx == slotId }) {
+                close()
+            }
+        }.runWhen(LoadoutKeybinds.observable)
 
         on<TickEvent.Client.Start> {
             if (!swapping) return@on
-            if (System.currentTimeMillis() - start > 2000) return@on reset()
+            if (System.currentTimeMillis() - start > 2000) {
+                if (inMenu || id != -1) close(0)
+                return@on reset()
+            }
             if (!inMenu) return@on
             if (wait-- > 0) return@on
 
@@ -199,11 +215,17 @@ object LoadoutHelper {
     }
 
     @JvmStatic
+    @JvmOverloads
     fun close(i: Int? = null) {
         val player = client.player ?: return
+        val delay = (i ?: (closeDelay + (0..delayVariance).random())).coerceAtLeast(0)
 
-        Scheduler.schedule((i ?: (closeDelay + (0..delayVariance).random())).clientTicks) {
+        if (delay == 0) {
             player.closeContainer()
+        } else {
+            Scheduler.schedule(delay.clientTicks) {
+                player.closeContainer()
+            }
         }
     }
 

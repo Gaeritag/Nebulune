@@ -12,11 +12,11 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(LoadoutKeybinds.class)
+@Mixin(value = LoadoutKeybinds.class, remap = false)
 public class LoadoutKeybindsMixin {
     @Inject(method = "fn", at = @At("TAIL"))
     private void nebulune$fn(KBusCancellableTrait $this$fn, InputConstants.Key key, CallbackInfo ci) {
         LocalPlayer player = Minecraft.getInstance().player;
-        if (player != null && LoadoutHelper.INSTANCE.getAutoClose()) LoadoutHelper.close(1);
+        if (player != null && LoadoutHelper.INSTANCE.getAutoClose()) LoadoutHelper.close();
     }
 }
