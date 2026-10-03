@@ -10,7 +10,7 @@ import foo.starred.athen.modules.Module
 import foo.starred.athen.utils.guiClick
 import foo.starred.kbus.extensions.runWhen
 import foo.starred.snowbird.api.client
-import foo.starred.snowbird.handlers.Observable
+import foo.starred.snowbird.api.data.Observable
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import net.minecraft.world.inventory.ContainerInput
 import net.minecraft.world.inventory.MenuType
