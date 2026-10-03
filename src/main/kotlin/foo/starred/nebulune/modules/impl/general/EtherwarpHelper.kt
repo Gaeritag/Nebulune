@@ -3,13 +3,13 @@ package foo.starred.nebulune.modules.impl.general
 import foo.starred.athen.annotations.Load
 import foo.starred.athen.annotations.OnlyIn
 import foo.starred.athen.api.scheduling.Scheduler
-import foo.starred.athen.config.Category
+import foo.starred.athen.config.dsl.impl.category.ConfigCategory
 import foo.starred.athen.events.InputEvent
-import foo.starred.athen.events.core.runWhen
 import foo.starred.athen.mixin.accessors.KeyMappingAccessor
 import foo.starred.athen.modules.Module
 import foo.starred.athen.utils.customData
 import foo.starred.athen.utils.id
+import foo.starred.kbus.extensions.runWhen
 import foo.starred.nebulune.utils.rightClick
 import foo.starred.snowbird.api.client
 import foo.starred.snowbird.api.scheduling.scheduler.extensions.clientTicks
@@ -27,7 +27,7 @@ import net.minecraft.world.item.component.SwingAnimation
 object EtherwarpHelper : Module(
     "Etherwarp helper",
     "Helper features for Etherwarp.",
-    Category.GENERAL
+    ConfigCategory.GENERAL
 ) {
     private val lcew = config.switch("Left click warp").unique("lcew")
     private val shift by config.switch("Shift automatically")
@@ -55,7 +55,12 @@ object EtherwarpHelper : Module(
                 Scheduler.schedule(ints.random().clientTicks.start) {
                     action()
 
-                    Scheduler.schedule(1.clientTicks.start) { KeyMapping.set((client.options.keyShift as KeyMappingAccessor).boundKey, false) }
+                    Scheduler.schedule(1.clientTicks.start) {
+                        KeyMapping.set(
+                            (client.options.keyShift as KeyMappingAccessor).boundKey,
+                            false
+                        )
+                    }
                 }
 
                 return@on cancel()

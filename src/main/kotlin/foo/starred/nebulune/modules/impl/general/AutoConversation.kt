@@ -3,7 +3,7 @@ package foo.starred.nebulune.modules.impl.general
 import foo.starred.athen.annotations.Load
 import foo.starred.athen.annotations.OnlyIn
 import foo.starred.athen.api.scheduling.Scheduler
-import foo.starred.athen.config.Category
+import foo.starred.athen.config.dsl.impl.category.ConfigCategory
 import foo.starred.athen.events.MessageEvent
 import foo.starred.athen.modules.Module
 import foo.starred.snowbird.api.scheduling.scheduler.extensions.clientTicks
@@ -19,7 +19,7 @@ import tech.thatgravyboat.skyblockapi.utils.text.TextColor
 object AutoConversation : Module(
     "Auto conversation",
     "Automatically has a conversation with NPCs!",
-    Category.GENERAL
+    ConfigCategory.GENERAL
 ) {
     private val multi by config.switch("Multi-option dialogues", true)
     private val green by config.switch("Check green color", true)

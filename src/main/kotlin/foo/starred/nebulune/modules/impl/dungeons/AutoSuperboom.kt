@@ -5,11 +5,11 @@ package foo.starred.nebulune.modules.impl.dungeons
 import com.mojang.serialization.Codec
 import foo.starred.athen.annotations.Load
 import foo.starred.athen.annotations.OnlyIn
-import foo.starred.athen.api.location.SkyBlockIsland
+import foo.starred.athen.api.location.island.impl.PresetSkyBlockIsland
 import foo.starred.athen.api.messaging.impl.MessagingAPI.mod
 import foo.starred.athen.api.scheduling.Scheduler
 import foo.starred.athen.api.storage.JsonStore
-import foo.starred.athen.config.Category
+import foo.starred.athen.config.dsl.impl.category.ConfigCategory
 import foo.starred.athen.events.InputEvent
 import foo.starred.athen.modules.Module
 import foo.starred.nebulune.mixin.accessors.InventoryAccessor
@@ -26,11 +26,11 @@ import net.minecraft.world.phys.BlockHitResult
 import tech.thatgravyboat.skyblockapi.api.remote.api.SkyBlockId.Companion.getSkyBlockId
 
 @Load
-@OnlyIn(islands = [SkyBlockIsland.THE_CATACOMBS])
+@OnlyIn(islands = [PresetSkyBlockIsland.THE_CATACOMBS])
 object AutoSuperboom : Module(
     "Auto superboom",
     "Automatically swaps to and uses the superboom if clicking on a breakable wall.",
-    Category.DUNGEONS
+    ConfigCategory.DUNGEONS
 ) {
     private val _unused by config.information("Use the command <red>\"/nebulune superboom [add|remove]\"<r> while looking at a block to add/remove it to the breakable blocks list!")
 

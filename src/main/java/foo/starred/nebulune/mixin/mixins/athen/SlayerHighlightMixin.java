@@ -8,8 +8,8 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 
 @Mixin(SlayerHighlight.class)
 public class SlayerHighlightMixin {
-    @ModifyArg(method = "fn", at = @At(value = "INVOKE", target = "Lfoo/starred/athen/api/rendering/level/impl/extensions/impl/BoxExtensionsKt;extractFrameBox$default(Lnet/minecraft/world/phys/AABB;IFZILjava/lang/Object;)V"), index = 4)
-    private int nebulune$r(int par5) {
-        return BossESP.INSTANCE.getDepth() ? par5 : par5 & ~8;
+    @ModifyArg(method = "fn", at = @At(value = "INVOKE", target = "Lfoo/starred/parallax/api/primitives/ParallaxBox;frame$default(Lfoo/starred/parallax/api/primitives/ParallaxBox;Lnet/minecraft/world/phys/AABB;IFZILjava/lang/Object;)V"), index = 4)
+    private boolean nebulune$r(boolean par5) {
+        return BossESP.INSTANCE.getDepth();
     }
 }

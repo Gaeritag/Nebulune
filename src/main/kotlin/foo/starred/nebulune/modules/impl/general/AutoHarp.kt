@@ -2,13 +2,13 @@ package foo.starred.nebulune.modules.impl.general
 
 import foo.starred.athen.annotations.Load
 import foo.starred.athen.annotations.OnlyIn
-import foo.starred.athen.api.location.SkyBlockIsland
-import foo.starred.athen.config.Category
+import foo.starred.athen.api.location.island.impl.PresetSkyBlockIsland
+import foo.starred.athen.config.dsl.impl.category.ConfigCategory
 import foo.starred.athen.events.GuiEvent
 import foo.starred.athen.events.TickEvent
-import foo.starred.athen.events.core.runWhen
 import foo.starred.athen.modules.Module
 import foo.starred.athen.utils.guiClick
+import foo.starred.kbus.extensions.runWhen
 import foo.starred.snowbird.api.client
 import foo.starred.snowbird.handlers.Observable
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
@@ -17,11 +17,11 @@ import net.minecraft.world.inventory.MenuType
 import net.minecraft.world.item.Items
 
 @Load
-@OnlyIn(islands = [SkyBlockIsland.THE_PARK, SkyBlockIsland.PRIVATE_ISLAND])
+@OnlyIn(islands = [PresetSkyBlockIsland.THE_PARK, PresetSkyBlockIsland.PRIVATE_ISLAND])
 object AutoHarp : Module(
     "Auto harp",
     "Automatically does Melody's Harp for you!",
-    Category.GENERAL
+    ConfigCategory.GENERAL
 ) {
     private var bool: Observable<Boolean> = Observable(false)
     private var hash: Int = 0

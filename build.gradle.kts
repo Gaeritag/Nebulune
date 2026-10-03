@@ -48,10 +48,12 @@ dependencies {
     implementation(libs.hypixel.modapi)
     implementation(libs.hypixel.modapi.fabric)
 
-    implementation(libs.classgraph)
+    implementation(libs.kbus)
     implementation(libs.kommand)
+    implementation(libs.klassgraph)
     implementation(libs.snowbird.find())
     implementation(libs.cascade.find())
+    implementation(libs.parallax.find())
     implementation(libs.updater.find())
 
     implementation(libs.skyblock.api) {

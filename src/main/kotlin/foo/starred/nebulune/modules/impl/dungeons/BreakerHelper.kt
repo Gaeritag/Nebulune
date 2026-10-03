@@ -3,8 +3,8 @@ package foo.starred.nebulune.modules.impl.dungeons
 import foo.starred.athen.annotations.Load
 import foo.starred.athen.annotations.OnlyIn
 import foo.starred.athen.api.dungeon.DungeonAPI
-import foo.starred.athen.api.location.SkyBlockIsland
-import foo.starred.athen.config.Category
+import foo.starred.athen.api.location.island.impl.PresetSkyBlockIsland
+import foo.starred.athen.config.dsl.impl.category.ConfigCategory
 import foo.starred.athen.events.LocationEvent
 import foo.starred.athen.events.PacketEvent
 import foo.starred.athen.events.PlayerEvent
@@ -19,11 +19,11 @@ import tech.thatgravyboat.skyblockapi.utils.extentions.getRawLore
 import tech.thatgravyboat.skyblockapi.utils.regex.RegexUtils.findThenNull
 
 @Load
-@OnlyIn(islands = [SkyBlockIsland.THE_CATACOMBS])
+@OnlyIn(islands = [PresetSkyBlockIsland.THE_CATACOMBS])
 object BreakerHelper : Module(
     "Breaker helper",
     "Utilities for the Dungeon Breaker.",
-    Category.DUNGEONS
+    ConfigCategory.DUNGEONS
 ) {
     private val preventSecrets by config.switch("Prevent mining secrets")
     private val zeroPing by config.switch("Instamine during fatigue")

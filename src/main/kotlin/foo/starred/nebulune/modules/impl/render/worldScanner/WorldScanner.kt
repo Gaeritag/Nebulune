@@ -2,17 +2,17 @@ package foo.starred.nebulune.modules.impl.render.worldScanner
 
 import foo.starred.athen.annotations.Load
 import foo.starred.athen.annotations.OnlyIn
-import foo.starred.athen.api.location.SkyBlockIsland
+import foo.starred.athen.api.location.island.impl.PresetSkyBlockIsland
 import foo.starred.athen.api.messaging.impl.MessagingAPI.mod
-import foo.starred.athen.api.rendering.level.impl.extensions.impl.extractStyledBox
-import foo.starred.athen.api.rendering.level.impl.extensions.impl.extractText
-import foo.starred.athen.config.Category
 import foo.starred.athen.config.dsl.impl.builders.group.ConfigGroupBuilder
+import foo.starred.athen.config.dsl.impl.category.ConfigCategory
 import foo.starred.athen.events.LocationEvent
 import foo.starred.athen.events.WorldRenderEvent
 import foo.starred.athen.modules.Module
 import foo.starred.nebulune.events.ClientChunkEvent
+import foo.starred.nebulune.utils.extractStyledBox
 import foo.starred.nebulune.utils.extractTracer
+import foo.starred.parallax.api.primitives.ParallaxText
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -20,17 +20,16 @@ import net.minecraft.core.BlockPos
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.chunk.LevelChunk
 import net.minecraft.world.phys.AABB
-import java.awt.Color
-
 //? if >= 26.2
 //import net.minecraft.world.phys.Vec3
+import java.awt.Color
 
 @Load
-@OnlyIn(islands = [SkyBlockIsland.CRYSTAL_HOLLOWS])
+@OnlyIn(islands = [PresetSkyBlockIsland.CRYSTAL_HOLLOWS])
 object WorldScanner: Module(
     "World Scanner",
     "Scan Crystal Hollow world for structures",
-    Category.RENDER
+    ConfigCategory.RENDER
 ) {
     data class StructureEspConfig(
         val expandable: ConfigGroupBuilder,
@@ -159,7 +158,7 @@ object WorldScanner: Module(
 
                     extractStyledBox(aabb, color, grottoConfig.highlightStyle(), depth = false)
                     if (grottoConfig.tracer()) extractTracer(center, grottoConfig.color(), 2f, false)
-                    if (grottoConfig.displayName()) extractText("Fairy Grotto",
+                    if (grottoConfig.displayName()) ParallaxText.string("Fairy Grotto",
                         center.add(0.0, 10.0, 0.0),
                         grottoConfig.color(),
                         Color(0, 0, 0, (255 * grottoConfig.displayBackgroundOpacity()).toInt()).rgb,
@@ -168,7 +167,7 @@ object WorldScanner: Module(
                         shadow = true,
                         increase = true
                     )
-                    if (grottoConfigShowNumberOfBlocks) extractText(
+                    if (grottoConfigShowNumberOfBlocks) ParallaxText.string(
                         grotto.third.toString(),
                         center,
                         grottoConfig.color(),
@@ -191,7 +190,7 @@ object WorldScanner: Module(
                 extractStyledBox(aabb, color, structureConfig.highlightStyle(), depth = false)
                 //~ if >= 26.2 'blockPos.center' -> 'Vec3.atCenterOf(blockPos)' {
                 if (structureConfig.tracer()) extractTracer(blockPos.center, structureConfig.color(), 2f, false)
-                if (structureConfig.displayName()) extractText(structure.first.displayName, blockPos.center, structureConfig.color(), Color(0, 0, 0, (255 * structureConfig.displayBackgroundOpacity()).toInt()).rgb, structureConfig.displayScale(), depth = false, shadow = true, increase = true)
+                if (structureConfig.displayName()) ParallaxText.string(structure.first.displayName, blockPos.center, structureConfig.color(), Color(0, 0, 0, (255 * structureConfig.displayBackgroundOpacity()).toInt()).rgb, structureConfig.displayScale(), depth = false, shadow = true, increase = true)
                 //~ }
             }
         }

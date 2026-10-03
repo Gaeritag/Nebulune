@@ -3,14 +3,14 @@ package foo.starred.nebulune.modules.impl.dungeons
 import foo.starred.athen.annotations.Load
 import foo.starred.athen.api.dungeon.terminals.TerminalAPI
 import foo.starred.athen.api.dungeon.terminals.TerminalType
-import foo.starred.athen.config.Category
+import foo.starred.athen.config.dsl.impl.category.ConfigCategory
 import foo.starred.athen.events.DungeonEvent
 import foo.starred.athen.events.TickEvent
-import foo.starred.athen.events.core.runWhen
 import foo.starred.athen.modules.Module
 import foo.starred.athen.modules.impl.dungeon.terminals.solver.TerminalSolvers
 import foo.starred.athen.modules.impl.dungeon.terminals.solver.data.TerminalClick
 import foo.starred.athen.modules.impl.dungeon.terminals.solver.impl.*
+import foo.starred.kbus.extensions.runWhen
 import foo.starred.nebulune.accessors.ITerminalAccessor
 import foo.starred.snowbird.api.client
 import kotlin.math.pow
@@ -21,7 +21,7 @@ import kotlin.random.Random
 object AutoTerms : Module(
     "Auto terms",
     "Automatically solves terminals!",
-    Category.DUNGEONS
+    ConfigCategory.DUNGEONS
 ) {
     private val rng = java.util.Random()
 
@@ -62,14 +62,21 @@ object AutoTerms : Module(
             if (TerminalType.MELODY.active && type == TerminalType.MELODY) return@on fn()
 
             if (list.isEmpty()) return@on
-            if (TerminalAPI.id != id) return@on list.clear()
+            if (TerminalAPI.id != id) {
+                list.clear()
+                return@on
+            }
+            if (System.currentTimeMillis() - TerminalAPI.open < TerminalSolvers.firstClick) return@on
             if (System.currentTimeMillis() < next) return@on
-            val next = list.removeFirst()
+            val nextClick = list.removeFirst()
 
-            val list = (solvers[type] as? ITerminalAccessor)?.`nebulune$getList`() ?: return@on list.clear()
-            if (list.none { it.slot == next.slot }) return@on
+            val currentList = (solvers[type] as? ITerminalAccessor)?.`nebulune$getList`() ?: run {
+                list.clear()
+                return@on
+            }
 
-            click(next)
+            if (currentList.none { it.slot == nextClick.slot }) return@on
+            click(nextClick)
         }.runWhen(TerminalAPI.opened)
     }
 
@@ -91,10 +98,6 @@ object AutoTerms : Module(
 
         last0 = final.slot
         id = TerminalAPI.id
-
-        val fcLeft = TerminalSolvers.firstClick - (System.currentTimeMillis() - TerminalAPI.open)
-        val delay = maxOf(next(), if (fcLeft > 0) fcLeft else 0L)
-        next = System.currentTimeMillis() + delay
 
         list.add(final)
     }
@@ -145,7 +148,27 @@ object AutoTerms : Module(
 
     private fun click(c: TerminalClick) {
         last0 = c.slot
-        TerminalAPI.terminal?.impl?.click(c.slot, c.button)
+        val solver = TerminalAPI.terminal?.impl ?: return
+        solver.click(c.slot, c.button)
+
+        val type = TerminalAPI.terminal ?: return
+        val currentList = (solvers[type] as? ITerminalAccessor)?.`nebulune$getList`() ?: return
+
+        if (type == TerminalType.RUBIX) {
+            val index = currentList.indexOfFirst { it.slot == c.slot }
+            if (index != -1) {
+                val current = currentList[index]
+                val nextButton = current.button + (if (c.button == 0) -1 else 1)
+                if (nextButton == 0) {
+                    currentList.removeAt(index)
+                } else {
+                    currentList[index] = TerminalClick(c.slot, nextButton)
+                }
+            }
+        } else {
+            currentList.removeIf { it.slot == c.slot }
+        }
+        onUpdate()
     }
 
     private val TerminalType.active: Boolean

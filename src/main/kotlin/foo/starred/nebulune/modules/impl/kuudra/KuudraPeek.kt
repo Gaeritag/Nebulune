@@ -5,9 +5,9 @@ import foo.starred.athen.annotations.OnlyIn
 import foo.starred.athen.api.kuudra.KuudraAPI
 import foo.starred.athen.api.kuudra.enums.KuudraPhase
 import foo.starred.athen.api.kuudra.enums.KuudraTier
-import foo.starred.athen.api.location.SkyBlockIsland
+import foo.starred.athen.api.location.island.impl.PresetSkyBlockIsland
 import foo.starred.athen.api.messaging.impl.MessagingAPI.mod
-import foo.starred.athen.config.Category
+import foo.starred.athen.config.dsl.impl.category.ConfigCategory
 import foo.starred.athen.events.TickEvent
 import foo.starred.athen.modules.Module
 import foo.starred.snowbird.api.client
@@ -15,11 +15,11 @@ import foo.starred.snowbird.api.text.parser.impl.parse
 import foo.starred.snowbird.utils.alert
 
 @Load
-@OnlyIn(islands = [SkyBlockIsland.KUUDRA])
+@OnlyIn(islands = [PresetSkyBlockIsland.KUUDRA])
 object KuudraPeek : Module(
     "Kuudra peek",
     "Tries to detect which direction Kuudra will peek from!",
-    Category.KUUDRA
+    ConfigCategory.KUUDRA
 ) {
     private val y by config.switch("Check Y level", true)
     private val first by config.switch("Only show first peek")

@@ -5,7 +5,7 @@ package foo.starred.nebulune.modules.impl.general
 import foo.starred.athen.annotations.Load
 import foo.starred.athen.annotations.OnlyIn
 import foo.starred.athen.api.scheduling.Scheduler
-import foo.starred.athen.config.Category
+import foo.starred.athen.config.dsl.impl.category.ConfigCategory
 import foo.starred.athen.events.EntityEvent
 import foo.starred.athen.modules.Module
 import foo.starred.athen.utils.customData
@@ -27,7 +27,7 @@ import net.minecraft.world.item.Items
 object FishingHelper : Module(
     "Fishing helper",
     "Helper features for fishing.",
-    Category.GENERAL
+    ConfigCategory.GENERAL
 ) {
     private val autoPull by config.switch("Auto pull", true)
     private val `delay$pull` by config.slider("Delay", 1, 0, 5, "ticks")

@@ -4,23 +4,25 @@ package foo.starred.nebulune.modules.impl.general
 
 import foo.starred.athen.annotations.Load
 import foo.starred.athen.annotations.OnlyIn
-import foo.starred.athen.api.location.SkyBlockIsland
-import foo.starred.athen.api.rendering.level.impl.extensions.impl.extractFrameBox
-import foo.starred.athen.api.rendering.ui.text.vanilla.extensions.sizedText
+import foo.starred.athen.api.location.island.impl.PresetSkyBlockIsland
 import foo.starred.athen.api.scheduling.Scheduler
-import foo.starred.athen.config.Category
+import foo.starred.athen.config.dsl.impl.category.ConfigCategory
+import foo.starred.athen.config.theme.impl.catppuccin.MochaColorScheme
 import foo.starred.athen.events.LocationEvent
 import foo.starred.athen.events.MessageEvent
 import foo.starred.athen.events.WorldRenderEvent
 import foo.starred.athen.modules.Module
-import foo.starred.athen.ui.themes.Catppuccin
 import foo.starred.athen.utils.render.renderBoundingBox
 import foo.starred.athen.utils.render.renderPos
+import foo.starred.cascade.primitives.impl.TextPrimitive
+import foo.starred.cascade.wrappers.text.impl.CascadeTextWrapper
 import foo.starred.nebulune.utils.extractTracer
+import foo.starred.parallax.api.primitives.ParallaxBox
 import foo.starred.snowbird.api.command
 import foo.starred.snowbird.api.scheduling.scheduler.extensions.clientTicks
 import foo.starred.snowbird.api.text.parser.impl.parse
 import foo.starred.snowbird.utils.alert
+import foo.starred.snowbird.utils.literal
 import foo.starred.snowbird.utils.stripped
 import foo.starred.snowbird.utils.toDurationFromMillis
 import net.minecraft.network.chat.ClickEvent
@@ -39,11 +41,11 @@ import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 @Load
-@OnlyIn(islands = [SkyBlockIsland.THE_BARN])
+@OnlyIn(islands = [PresetSkyBlockIsland.THE_BARN])
 object TrevorHelper : Module(
     "Trevor helper",
     "Helper features for Trevor the Trapper!",
-    Category.GENERAL
+    ConfigCategory.GENERAL
 ) {
     private val mobEsp by config.switch("Animal ESP")
     private val `esp$tracer` by config.switch("Show tracer")
@@ -60,19 +62,19 @@ object TrevorHelper : Module(
     private val `alert$sound` by config.sound("Alert sound")
 
     private val hud = config.hud("Cooldown timer") {
-        if (it) return@hud sizedText("Cooldown: §c12.4s")
-        if (cooldown <= 0) return@hud null
+        if (false) { TextPrimitive.text { wrapper = CascadeTextWrapper; text = "Cooldown: §c12.4s".literal() }; return@hud }
+        if (cooldown <= 0) return@hud
         val t = (cooldown - System.currentTimeMillis()).coerceAtLeast(0).toDurationFromMillis(secondsDecimals = 1)
 
-        sizedText("Cooldown: §c$t")
+        TextPrimitive.text { wrapper = CascadeTextWrapper; text = "Cooldown: §c$t".literal() }
     }
 
     private val colors by config.group("Colors")
-    private val `color$trackable` by colors.colorPicker("Trackable color", Catppuccin.Mocha.Text.argb)
-    private val `color$untrackable` by colors.colorPicker("Untrackable color", Catppuccin.Mocha.Green.argb)
-    private val `color$undetected` by colors.colorPicker("Undetected color", Catppuccin.Mocha.Blue.argb)
-    private val `color$endangered` by colors.colorPicker("Endangered color", Catppuccin.Mocha.Mauve.argb)
-    private val `color$elusive` by colors.colorPicker("Elusive color", Catppuccin.Mocha.Yellow.argb)
+    private val `color$trackable` by colors.colorPicker("Trackable color", MochaColorScheme.Text.argb)
+    private val `color$untrackable` by colors.colorPicker("Untrackable color", MochaColorScheme.Green.argb)
+    private val `color$undetected` by colors.colorPicker("Undetected color", MochaColorScheme.Blue.argb)
+    private val `color$endangered` by colors.colorPicker("Endangered color", MochaColorScheme.Mauve.argb)
+    private val `color$elusive` by colors.colorPicker("Elusive color", MochaColorScheme.Yellow.argb)
 
     private val animals = setOf(Cow::class, Pig::class, Sheep::class, Chicken::class, Rabbit::class, Horse::class)
     private val startRegex = Regex("\\[NPC] Trevor: You can find your (?<type>\\w+) animal near the .*")
@@ -95,7 +97,7 @@ object TrevorHelper : Module(
             val max = if (entity is Horse) entity.serverMaxHealth / 2f else entity.serverMaxHealth
             if (max != rarity.hp) return@on
 
-            extractFrameBox(entity.renderBoundingBox, rarity.color, depth = false)
+            ParallaxBox.frame(entity.renderBoundingBox, rarity.color, depth = false)
             if (`esp$tracer`) extractTracer(entity.renderPos, rarity.color)
         }
 

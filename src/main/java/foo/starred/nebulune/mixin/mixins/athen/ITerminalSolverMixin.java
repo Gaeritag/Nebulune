@@ -66,6 +66,9 @@ public abstract class ITerminalSolverMixin implements ITerminalAccessor {
     protected abstract void compute(List<ItemStack> list);
 
     @Shadow
+    public abstract void update(List<ItemStack> items);
+
+    @Shadow
     private boolean pending;
 
     @Override
@@ -101,7 +104,7 @@ public abstract class ITerminalSolverMixin implements ITerminalAccessor {
     }
 
     @Inject(method = "click(FFFFI)V", at = @At(value = "INVOKE", target = "Lfoo/starred/athen/modules/impl/dungeon/terminals/solver/base/ITerminalSolver;find(I)Lfoo/starred/athen/modules/impl/dungeon/terminals/solver/data/TerminalClick;", shift = At.Shift.AFTER), cancellable = true)
-    private void nebulune$click(float mx, float my, float width, float height, int mouseButton, CallbackInfo ci) {
+    private void nebulune$click(float mx, float my, float width, float height, int button, CallbackInfo ci) {
         if (!QueueTerms.INSTANCE.getEnabled()) return;
 
         float sp = getFloat();
@@ -124,7 +127,7 @@ public abstract class ITerminalSolverMixin implements ITerminalAccessor {
 
         TerminalClick c = find(slot);
         if (c == null) return;
-        if (c.getButton() != mouseButton && !(getType() == TerminalType.RUBIX && TerminalSolvers.INSTANCE.getRubix$left())) return;
+        if (c.getButton() != button && !(getType() == TerminalType.RUBIX && TerminalSolvers.INSTANCE.getRubix$left())) return;
 
         nebulune$adjust(c);
         ci.cancel();
@@ -167,6 +170,7 @@ public abstract class ITerminalSolverMixin implements ITerminalAccessor {
         QueueTerms.INSTANCE.setYearning(true);
         ConfigSoundOption sound = TerminalSolvers.INSTANCE.getClicks();
 
+        int button = click.getButton() == 0 ? 2 : click.getButton();
         if (TerminalSimulator.INSTANCE.getS().getValue()) {
             var client = Minecraft.getInstance();
             //~ if >= 26.2 'client.screen' -> 'client.gui.screen()'
@@ -180,22 +184,22 @@ public abstract class ITerminalSolverMixin implements ITerminalAccessor {
             var slot = slots.get(slotIndex);
             sim.slotClicked(slot, slotIndex, click.getButton(), click.getButton() == 0 ? ContainerInput.CLONE : ContainerInput.PICKUP);
             TerminalSolvers.INSTANCE.setLast(System.currentTimeMillis());
-            pending = true;
+            this.pending = true;
 
             if (sound.getEnabled()) sound.play(sound.getVolume(), sound.getPitch());
-            return;
         }
+        else {
+            if (sound.getEnabled()) sound.play(sound.getVolume(), sound.getPitch());
 
-        if (sound.getEnabled()) sound.play(sound.getVolume(), sound.getPitch());
-
-        PlayerUtilsKt.guiClick(
-                TerminalAPI.INSTANCE.getId(),
-                click.getSlot(),
-                click.getButton() == 0 ? 2 : click.getButton(),
-                click.getButton() == 0 ? ContainerInput.CLONE : ContainerInput.PICKUP
-        );
-        TerminalSolvers.INSTANCE.setLast(System.currentTimeMillis());
-        pending = true;
+            PlayerUtilsKt.guiClick(
+                    TerminalAPI.INSTANCE.getId(),
+                    click.getSlot(),
+                    button,
+                    click.getButton() == 0 ? ContainerInput.CLONE : ContainerInput.PICKUP
+            );
+            TerminalSolvers.INSTANCE.setLast(System.currentTimeMillis());
+            this.pending = true;
+        }
 
         int id = TerminalAPI.INSTANCE.getId();
         int timeout = QueueTerms.INSTANCE.getTimeout();
@@ -210,7 +214,8 @@ public abstract class ITerminalSolverMixin implements ITerminalAccessor {
             var items = a.getMenu().getItems().subList(0, getType().getSlots());
 
             QueueTerms.INSTANCE.getClicks().clear();
-            compute(items);
+            this.pending = false;
+            update(items);
             QueueTerms.INSTANCE.setYearning(false);
 
             resync();

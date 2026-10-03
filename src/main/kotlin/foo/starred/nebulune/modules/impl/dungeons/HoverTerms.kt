@@ -3,14 +3,14 @@ package foo.starred.nebulune.modules.impl.dungeons
 import foo.starred.athen.annotations.Load
 import foo.starred.athen.api.dungeon.terminals.TerminalAPI
 import foo.starred.athen.api.dungeon.terminals.TerminalType
-import foo.starred.athen.config.Category
+import foo.starred.athen.config.dsl.impl.category.ConfigCategory
 import foo.starred.athen.events.DungeonEvent
 import foo.starred.athen.events.TickEvent
-import foo.starred.athen.events.core.runWhen
 import foo.starred.athen.modules.Module
 import foo.starred.athen.modules.impl.dungeon.terminals.solver.TerminalSolvers
 import foo.starred.athen.modules.impl.dungeon.terminals.solver.data.TerminalClick
 import foo.starred.athen.modules.impl.dungeon.terminals.solver.impl.*
+import foo.starred.kbus.extensions.runWhen
 import foo.starred.nebulune.accessors.ITerminalAccessor
 import foo.starred.snowbird.api.client
 import kotlin.random.Random
@@ -19,7 +19,7 @@ import kotlin.random.Random
 object HoverTerms : Module(
     "Hover terms",
     "Clicks terminals based on where your cursor is hovering :eyes:",
-    Category.DUNGEONS
+    ConfigCategory.DUNGEONS
 ) {
     private val minDelay by config.slider("Min delay", 50, 0, 400, "ms")
     private val maxDelay by config.slider("Max delay", 120, 0, 400, "ms")

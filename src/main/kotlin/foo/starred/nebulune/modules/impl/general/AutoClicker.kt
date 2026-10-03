@@ -6,12 +6,12 @@ import com.mojang.serialization.Codec
 import foo.starred.athen.annotations.Load
 import foo.starred.athen.api.messaging.impl.MessagingAPI.mod
 import foo.starred.athen.api.storage.JsonStore
-import foo.starred.athen.config.Category
+import foo.starred.athen.config.dsl.impl.category.ConfigCategory
 import foo.starred.athen.events.InputEvent
 import foo.starred.athen.events.TickEvent
-import foo.starred.athen.events.core.runWhen
 import foo.starred.athen.mixin.accessors.KeyMappingAccessor
 import foo.starred.athen.modules.Module
+import foo.starred.kbus.extensions.runWhen
 import foo.starred.nebulune.utils.command
 import foo.starred.nebulune.utils.leftClick
 import foo.starred.nebulune.utils.rightClick
@@ -27,7 +27,7 @@ import tech.thatgravyboat.skyblockapi.api.datatype.getData
 object AutoClicker : Module(
     "Auto clicker",
     "Automatically clicks for you!",
-    Category.GENERAL
+    ConfigCategory.GENERAL
 ) {
     private val left by config.group("Left clicker")
     private val `left$enabled` by left.switch("Enable left clicker")

@@ -4,8 +4,8 @@ package foo.starred.nebulune.modules.impl.general
 
 import foo.starred.athen.annotations.Load
 import foo.starred.athen.annotations.OnlyIn
-import foo.starred.athen.api.location.SkyBlockIsland
-import foo.starred.athen.config.Category
+import foo.starred.athen.api.location.island.impl.PresetSkyBlockIsland
+import foo.starred.athen.config.dsl.impl.category.ConfigCategory
 import foo.starred.athen.events.GuiEvent
 import foo.starred.athen.events.PacketEvent
 import foo.starred.athen.events.TickEvent
@@ -20,11 +20,11 @@ import net.minecraft.world.inventory.ContainerInput
 import net.minecraft.world.item.Items
 
 @Load
-@OnlyIn(islands = [SkyBlockIsland.PRIVATE_ISLAND])
+@OnlyIn(islands = [PresetSkyBlockIsland.PRIVATE_ISLAND])
 object AutoExperiments : Module(
     "Auto experiments",
-    "Automatically does experiments for you!",
-    Category.GENERAL
+    "[DEPRECATED] -> use `https://github.com/skies-starred/AutoExperiments` Automatically does experiments for you!",
+    ConfigCategory.GENERAL
 ) {
     private val _unused0 by config.information("Please disable SkyHanni's experiment solver if you have it enabled!")
     private val minDelay by config.slider("Min click delay", 200, 100, 1000, "ms")

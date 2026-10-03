@@ -20,7 +20,7 @@ public class CameraMixin {
     }
 
     @Inject(method = "getMaxZoom", at = @At("HEAD"), cancellable = true)
-    private void nebulune$getMaxZoom(float maxZoom, CallbackInfoReturnable<Float> cir) {
-        if (CameraHelper.getClip()) cir.setReturnValue(maxZoom);
+    private void nebulune$getMaxZoom(float cameraDist, CallbackInfoReturnable<Float> cir) {
+        if (CameraHelper.getClip()) cir.setReturnValue(cameraDist);
     }
 }

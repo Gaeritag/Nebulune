@@ -3,15 +3,15 @@ package foo.starred.nebulune.modules.impl.render
 import foo.starred.athen.annotations.Load
 import foo.starred.athen.annotations.OnlyIn
 import foo.starred.athen.api.location.LocationAPI
-import foo.starred.athen.api.location.SkyBlockIsland
-import foo.starred.athen.api.rendering.level.impl.extensions.impl.extractFrameBox
-import foo.starred.athen.api.rendering.level.impl.extensions.impl.extractStyledBox
-import foo.starred.athen.config.Category
+import foo.starred.athen.api.location.island.impl.PresetSkyBlockIsland
+import foo.starred.athen.config.dsl.impl.category.ConfigCategory
 import foo.starred.athen.events.WorldRenderEvent
 import foo.starred.athen.modules.Module
 import foo.starred.athen.utils.render.renderBoundingBox
+import foo.starred.nebulune.utils.extractStyledBox
 import foo.starred.nebulune.utils.getSkinTexture
 import foo.starred.nebulune.utils.safari.*
+import foo.starred.parallax.api.primitives.ParallaxBox
 import foo.starred.snowbird.api.level
 import foo.starred.snowbird.api.player
 import net.minecraft.world.entity.Display
@@ -35,11 +35,11 @@ import tech.thatgravyboat.skyblockapi.utils.extentions.getTexture
 import java.awt.Color
 
 @Load
-@OnlyIn(islands = [SkyBlockIsland.SAFARI])
+@OnlyIn(islands = [PresetSkyBlockIsland.SAFARI])
 object SafariESP : Module(
     "Safari ESP",
     "ESP for Safari mobs",
-    Category.RENDER
+    ConfigCategory.RENDER
 ) {
     // FLOOR DROPS
     private val floorDropGroup by config.group("Floor Drops")
@@ -243,7 +243,7 @@ object SafariESP : Module(
     }
 
     fun shouldForceRender(): Boolean {
-        return LocationAPI.island.value == SkyBlockIsland.SAFARI
+        return LocationAPI.island.value == PresetSkyBlockIsland.SAFARI
     }
 
     init {
@@ -311,7 +311,7 @@ object SafariESP : Module(
                 entity.renderBoundingBox
             }
 
-            extractFrameBox(renderBox, mob.color(), 2f, false)
+            ParallaxBox.frame(renderBox, mob.color(), 2f, false)
         }
     }
 }

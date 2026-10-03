@@ -2,8 +2,8 @@ package foo.starred.nebulune.modules.impl.slayer
 
 import foo.starred.athen.annotations.Load
 import foo.starred.athen.annotations.OnlyIn
-import foo.starred.athen.api.location.SkyBlockIsland
-import foo.starred.athen.config.Category
+import foo.starred.athen.api.location.island.impl.PresetSkyBlockIsland
+import foo.starred.athen.config.dsl.impl.category.ConfigCategory
 import foo.starred.athen.ducks.entity.EntityDuck.Companion.attachedNames
 import foo.starred.athen.events.PlayerEvent
 import foo.starred.athen.events.TickEvent
@@ -21,11 +21,11 @@ import tech.thatgravyboat.skyblockapi.api.datatype.getData
 import kotlin.jvm.optionals.getOrNull
 
 @Load
-@OnlyIn(islands = [SkyBlockIsland.CRIMSON_ISLE])
+@OnlyIn(islands = [PresetSkyBlockIsland.CRIMSON_ISLE])
 object DaggerSwap : Module(
     "Dagger swap",
     "Automatically swaps to the correct dagger for blaze!",
-    Category.SLAYER
+    ConfigCategory.SLAYER
 ) {
     private val delay by config.slider("Delay", 1, 0, 10, "ticks")
     private val delayVariance by config.slider("Delay variance", 2, 0, 10, "ticks")

@@ -4,9 +4,9 @@ import foo.starred.athen.annotations.Load
 import foo.starred.athen.annotations.OnlyIn
 import foo.starred.athen.api.kuudra.KuudraAPI
 import foo.starred.athen.api.kuudra.enums.KuudraPhase
-import foo.starred.athen.api.location.SkyBlockIsland
+import foo.starred.athen.api.location.island.impl.PresetSkyBlockIsland
 import foo.starred.athen.api.scheduling.Scheduler
-import foo.starred.athen.config.Category
+import foo.starred.athen.config.dsl.impl.category.ConfigCategory
 import foo.starred.athen.events.InputEvent
 import foo.starred.athen.modules.Module
 import foo.starred.nebulune.mixin.accessors.InventoryAccessor
@@ -18,11 +18,11 @@ import foo.starred.snowbird.utils.stripped
 import net.minecraft.world.item.Items
 
 @Load
-@OnlyIn(islands = [SkyBlockIsland.KUUDRA])
+@OnlyIn(islands = [PresetSkyBlockIsland.KUUDRA])
 object AutoPearl : Module(
     "Auto pearl",
     "Automatically throws a pearl if you right click when holding a supply.",
-    Category.KUUDRA
+    ConfigCategory.KUUDRA
 ) {
     private val click by config.slider("Click delay", 1, 1, 2, "ticks")
 

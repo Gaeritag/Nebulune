@@ -28,7 +28,7 @@
     "fabric-api": "*",
     "fabric-language-kotlin": "*",
     "minecraft": "${minecraft}",
-    "athen": ">=0.3.4"
+    "athen": ">=0.3.5"
   },
   "custom": {
     "modmenu": {
