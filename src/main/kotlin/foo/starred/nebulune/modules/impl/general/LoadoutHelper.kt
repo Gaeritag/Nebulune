@@ -28,7 +28,6 @@ import foo.starred.snowbird.api.scheduling.scheduler.extensions.clientTicks
 import foo.starred.snowbird.api.text.parser.impl.parse
 import foo.starred.snowbird.utils.stripped
 import net.minecraft.client.KeyMapping
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import net.minecraft.network.protocol.game.ClientboundContainerClosePacket
 import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket
 import net.minecraft.network.protocol.game.ServerboundContainerClosePacket
@@ -178,18 +177,6 @@ object LoadoutHelper {
         on<GuiEvent.Open.Container> {
             if (resetOpen && swapping) reset()
         }.runWhen(LoadoutKeybinds.observable and autoEquip.state)
-
-        on<GuiEvent.Slots.Input.Click> {
-            if (!autoClose) return@on
-            //~ if >= 26.2 'client.screen' -> 'client.gui.screen()'
-            val screen = client.screen as? AbstractContainerScreen<*> ?: return@on
-            val stripped = screen.title.stripped()
-            if ("Loadout" !in stripped) return@on
-
-            if (wrappedSlots.any { it.idx == slotId }) {
-                close()
-            }
-        }.runWhen(LoadoutKeybinds.observable)
 
         on<TickEvent.Client.Start> {
             if (!swapping) return@on
