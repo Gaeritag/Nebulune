@@ -28,7 +28,6 @@ import foo.starred.snowbird.api.scheduling.scheduler.extensions.clientTicks
 import foo.starred.snowbird.api.text.parser.impl.parse
 import foo.starred.snowbird.utils.stripped
 import net.minecraft.client.KeyMapping
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import net.minecraft.network.protocol.game.ClientboundContainerClosePacket
 import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket
 import net.minecraft.network.protocol.game.ServerboundContainerClosePacket
@@ -139,18 +138,6 @@ object WardrobeHelper {
 
         on<GuiEvent.Open.Container> {
             if (resetOpen && swapping) reset()
-        }.runWhen(WardrobeKeybinds.observable and autoEquip.state)
-
-        on<GuiEvent.Slots.Input.Click> {
-            if (!autoClose) return@on
-            //~ if >= 26.2 'client.screen' -> 'client.gui.screen()'
-            val screen = client.screen as? AbstractContainerScreen<*> ?: return@on
-            val stripped = screen.title.stripped()
-            if ("Armor Sets" !in stripped && "Wardrobe" !in stripped) return@on
-
-            if (slotId in 0..44) {
-                close()
-            }
         }.runWhen(WardrobeKeybinds.observable and autoEquip.state)
 
         on<TickEvent.Client.Start> {
