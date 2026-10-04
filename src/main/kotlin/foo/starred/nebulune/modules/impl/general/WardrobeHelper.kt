@@ -5,17 +5,19 @@ package foo.starred.nebulune.modules.impl.general
 import foo.starred.athen.annotations.Load
 import foo.starred.athen.api.messaging.enums.MessagePrefixType
 import foo.starred.athen.api.messaging.impl.MessagingAPI.mod
+import foo.starred.athen.api.minecraft.text.measurer.VanillaFontMeasurer
+import foo.starred.athen.api.minecraft.text.renderer.VanillaFontRenderer
 import foo.starred.athen.api.scheduling.Scheduler
+import foo.starred.athen.api.scheduling.Ticking
 import foo.starred.athen.events.GuiEvent
 import foo.starred.athen.events.InputEvent
 import foo.starred.athen.events.PacketEvent
 import foo.starred.athen.events.TickEvent
 import foo.starred.athen.events.core.on
 import foo.starred.athen.mixin.accessors.KeyMappingAccessor
+import foo.starred.athen.modules.impl.general.LoadoutKeybinds
 import foo.starred.athen.modules.impl.general.WardrobeKeybinds
 import foo.starred.athen.utils.guiClick
-import foo.starred.cascade.primitives.impl.TextPrimitive
-import foo.starred.cascade.wrappers.text.impl.CascadeTextWrapper
 import foo.starred.kbus.extensions.runWhen
 import foo.starred.nebulune.accessors.IWardrobeSlot
 import foo.starred.nebulune.mixin.accessors.WardrobeKeybindsAccessor
@@ -49,11 +51,29 @@ object WardrobeHelper {
     private val closeDelay by WardrobeKeybinds.config.slider("Close delay", 1, 0, 8, "ticks")
     private val delayVariance by WardrobeKeybinds.config.slider("Max delay variety", 1, 0, 5, "ticks")
 
-    private val hud = WardrobeKeybinds.config.hud("Display text") {
-        if (false) { TextPrimitive.text { wrapper = CascadeTextWrapper; text = "Equipping <gray>[<red>2<gray>]".parse() }; return@hud }
-        if (!swapping) return@hud
-        val slot = slot0 ?: return@hud
-        TextPrimitive.text { wrapper = CascadeTextWrapper; text = "Equipping <gray>[<red>${(slot.idx - 36) + 1}<gray>]".parse() }
+    private val display = Ticking {
+        val slot = slot0 ?: return@Ticking null
+        "Equipping <gray>[<red>${(slot.idx - 36) + 1}<gray>]".parse().visualOrderText
+    }
+
+    private val render: Boolean
+        get() = swapping && slot0 != null
+
+    private val hud by WardrobeKeybinds.config.hud("Display text") {
+        val example = "Equipping <gray>[<red>2<gray>]".parse().visualOrderText
+
+        constrain {
+            VanillaFontMeasurer.constrain(example)
+        }
+
+        preview {
+            VanillaFontRenderer.extract(graphics, example, 0, 0)
+        }
+
+        render {
+            if (!render) return@render
+            VanillaFontRenderer.extract(graphics, display.value ?: return@render, 0, 0)
+        }
     }
 
     private val all: List<KeyMapping>
