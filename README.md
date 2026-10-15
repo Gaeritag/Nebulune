@@ -34,14 +34,19 @@ This mod has been abandoned by its original owner because they no longer have en
 
 ### General
 
+* Auto clicker
+* Auto conversation
 * Auto experiments
+* Auto harp
 * Etherwarp helper: left click etherwarp
 * Fishing helper
+* Loadout helper: auto close, auto equip, and auto equip while moving
 * Trevor helper: auto call, auto accept, and pelt esp
 * Wardrobe helper: auto close, auto equip, and auto equip while moving
 
 ### Kuudra
 
+* Auto pearl
 * Kuudra ESP
 * Kuudra Peek alert
 * Stun helper: auto close shop gui
@@ -49,9 +54,13 @@ This mod has been abandoned by its original owner because they no longer have en
 ### Render
 
 * Camera helper: camera clip and custom camera distance
+* Corpse ESP
 * Hideon ESP
+* Mob highlight: depth check and tracers
 * Pest ESP
 * Rat ESP
+* Safari ESP
+* World scanner: grotto and crystal hollows structures
 
 ### Slayers
 
