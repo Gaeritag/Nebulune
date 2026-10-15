@@ -26,7 +26,7 @@ class MessageAction(val message: String) : IMessageAction {
 
         var v = this.message
         for (i in match.groupValues.indices.reversed()) {
-            v = if (i == 0) text else v.replace("$$i", match.groupValues[i])
+            v = v.replace("$$i", if (i == 0) text else match.groupValues[i])
         }
 
         return MessageAction(v)
