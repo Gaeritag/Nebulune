@@ -2,7 +2,7 @@ package foo.starred.nebulune.utils
 
 import foo.starred.parallax.api.primitives.ParallaxBox
 import foo.starred.parallax.api.primitives.ParallaxLine
-import foo.starred.snowbird.api.client
+import foo.starred.kontext.abstraction.client.extension.client
 import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec3
 

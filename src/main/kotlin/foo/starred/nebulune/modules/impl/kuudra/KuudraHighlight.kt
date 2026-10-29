@@ -2,19 +2,19 @@
 
 package foo.starred.nebulune.modules.impl.kuudra
 
-import foo.starred.athen.annotations.Load
+import foo.starred.athen.annotations.impl.LoadableAthenModule
 import foo.starred.athen.api.kuudra.KuudraAPI
 import foo.starred.athen.config.theme.impl.catppuccin.MochaColorScheme
 import foo.starred.athen.events.WorldRenderEvent
 import foo.starred.athen.events.core.on
 import foo.starred.athen.modules.impl.kuudra.KuudraInfo
-import foo.starred.athen.utils.render.renderPos
+import foo.starred.kontext.api.entity.extension.renderVec3
 import foo.starred.kbus.extensions.runWhen
 import foo.starred.nebulune.utils.extractTracer
-import foo.starred.snowbird.api.data.Observable.Companion.and
+import foo.starred.kontext.api.data.Observable.Companion.and
 import java.awt.Color
 
-@Load
+@LoadableAthenModule
 object KuudraHighlight {
     private val tracer = KuudraInfo.config.switch("Tracer", false).unique("tracer")
     private val `tracer$color` by KuudraInfo.config.colorPicker("Tracer color", MochaColorScheme.Peach.argb)
@@ -25,7 +25,7 @@ object KuudraHighlight {
         on<WorldRenderEvent.Extract> {
             if (!KuudraAPI.inRun) return@on
             val k = KuudraAPI.kuudra ?: return@on
-            extractTracer(k.renderPos, `tracer$color`, `tracer$width`, `tracer$depth`)
+            extractTracer(k.renderVec3(), `tracer$color`, `tracer$width`, `tracer$depth`)
         }.runWhen(KuudraInfo.observable and tracer.state)
     }
 }

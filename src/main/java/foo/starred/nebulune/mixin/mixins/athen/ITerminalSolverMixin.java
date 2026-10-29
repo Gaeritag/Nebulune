@@ -8,7 +8,7 @@ import foo.starred.athen.modules.impl.dungeon.terminals.simulator.base.ITerminal
 import foo.starred.athen.modules.impl.dungeon.terminals.solver.TerminalSolvers;
 import foo.starred.athen.modules.impl.dungeon.terminals.solver.base.ITerminalSolver;
 import foo.starred.athen.modules.impl.dungeon.terminals.solver.data.TerminalClick;
-import foo.starred.athen.utils.PlayerUtilsKt;
+import foo.starred.kontext.abstraction.gui.MinecraftGui;
 import foo.starred.nebulune.Nebulune;
 import foo.starred.nebulune.accessors.ITerminalAccessor;
 import foo.starred.nebulune.modules.impl.dungeons.AutoTerms;
@@ -191,7 +191,7 @@ public abstract class ITerminalSolverMixin implements ITerminalAccessor {
         else {
             if (sound.getEnabled()) sound.play(sound.getVolume(), sound.getPitch());
 
-            PlayerUtilsKt.guiClick(
+            MinecraftGui.INSTANCE.click(
                     TerminalAPI.INSTANCE.getId(),
                     click.getSlot(),
                     button,

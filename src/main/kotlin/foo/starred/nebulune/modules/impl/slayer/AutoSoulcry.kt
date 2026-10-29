@@ -2,8 +2,8 @@
 
 package foo.starred.nebulune.modules.impl.slayer
 
-import foo.starred.athen.annotations.Load
-import foo.starred.athen.annotations.OnlyIn
+import foo.starred.athen.annotations.impl.AthenModuleScope
+import foo.starred.athen.annotations.impl.LoadableAthenModule
 import foo.starred.athen.api.location.island.impl.PresetSkyBlockIsland
 import foo.starred.athen.api.slayers.SlayerAPI
 import foo.starred.athen.api.slayers.enums.type.impl.SlayerBoss
@@ -11,17 +11,19 @@ import foo.starred.athen.config.dsl.impl.category.ConfigCategory
 import foo.starred.athen.events.PlayerEvent
 import foo.starred.athen.events.TickEvent
 import foo.starred.athen.modules.Module
-import foo.starred.athen.utils.enchants
 import foo.starred.kbus.extensions.runWhen
+import foo.starred.kontext.abstraction.client.extension.client
+import foo.starred.kontext.api.item.data.enchant.SkyBlockItemEnchant
+import foo.starred.kontext.api.item.extension.get
+import foo.starred.kontext.api.item.resolver.impl.SkyBlockEnchantKontextItemDataResolver
 import foo.starred.nebulune.utils.rightClick
-import foo.starred.snowbird.api.client
 import net.minecraft.world.phys.EntityHitResult
 import tech.thatgravyboat.skyblockapi.api.datatype.DataTypes
 import tech.thatgravyboat.skyblockapi.api.datatype.getData
 import tech.thatgravyboat.skyblockapi.api.profile.StatsAPI
 
-@Load
-@OnlyIn(islands = [PresetSkyBlockIsland.THE_END])
+@LoadableAthenModule
+@AthenModuleScope(islands = [PresetSkyBlockIsland.THE_END])
 object AutoSoulcry : Module(
     "Auto soulcry",
     "Automatically uses the soulcry ability of your katana!",
@@ -52,7 +54,8 @@ object AutoSoulcry : Module(
             if (hitbox && (client.hitResult as? EntityHitResult)?.entity != slayer.entity) return@on
             if (player.cooldowns.isOnCooldown(item)) return@on
 
-            val m = if ("ultimate_wise" in item.enchants()) 100 else 200
+            val enchants = item.get<SkyBlockEnchantKontextItemDataResolver, List<SkyBlockItemEnchant>>()
+            val m = if (enchants?.any { it.id == "ultimate_wise" } == true) 100 else 200
             if (mana && (StatsAPI.mana + StatsAPI.overflowMana) < m) return@on reset()
 
             if (tick == -1) return@on ::tick.set((minDelay..maxDelay.coerceAtLeast(minDelay)).random())
@@ -72,7 +75,8 @@ object AutoSoulcry : Module(
             if (item.getData(DataTypes.ID) !in ids) return@on
             if (player.cooldowns.isOnCooldown(item)) return@on
 
-            val m = if ("ultimate_wise" in item.enchants()) 100 else 200
+            val enchants = item.get<SkyBlockEnchantKontextItemDataResolver, List<SkyBlockItemEnchant>>()
+            val m = if (enchants?.any { it.id == "ultimate_wise" } == true) 100 else 200
             if (mana && (StatsAPI.mana + StatsAPI.overflowMana) < m) return@on
 
             rightClick()

@@ -1,6 +1,6 @@
 package foo.starred.nebulune.modules.impl.dungeons
 
-import foo.starred.athen.annotations.Load
+import foo.starred.athen.annotations.impl.LoadableAthenModule
 import foo.starred.athen.api.dungeon.terminals.TerminalAPI
 import foo.starred.athen.api.dungeon.terminals.TerminalType
 import foo.starred.athen.config.dsl.impl.category.ConfigCategory
@@ -12,12 +12,12 @@ import foo.starred.athen.modules.impl.dungeon.terminals.solver.data.TerminalClic
 import foo.starred.athen.modules.impl.dungeon.terminals.solver.impl.*
 import foo.starred.kbus.extensions.runWhen
 import foo.starred.nebulune.accessors.ITerminalAccessor
-import foo.starred.snowbird.api.client
+import foo.starred.kontext.abstraction.client.extension.client
 import kotlin.math.pow
 import kotlin.math.sqrt
 import kotlin.random.Random
 
-@Load
+@LoadableAthenModule
 object AutoTerms : Module(
     "Auto terms",
     "Automatically solves terminals!",

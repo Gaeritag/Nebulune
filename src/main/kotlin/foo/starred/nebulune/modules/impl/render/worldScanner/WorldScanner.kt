@@ -1,7 +1,7 @@
 package foo.starred.nebulune.modules.impl.render.worldScanner
 
-import foo.starred.athen.annotations.Load
-import foo.starred.athen.annotations.OnlyIn
+import foo.starred.athen.annotations.impl.LoadableAthenModule
+import foo.starred.athen.annotations.impl.AthenModuleScope
 import foo.starred.athen.api.location.island.impl.PresetSkyBlockIsland
 import foo.starred.athen.api.messaging.impl.MessagingAPI.mod
 import foo.starred.athen.config.dsl.impl.builders.group.ConfigGroupBuilder
@@ -27,8 +27,8 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 import kotlinx.coroutines.cancelChildren
 
-@Load
-@OnlyIn(islands = [PresetSkyBlockIsland.CRYSTAL_HOLLOWS])
+@LoadableAthenModule
+@AthenModuleScope(islands = [PresetSkyBlockIsland.CRYSTAL_HOLLOWS])
 object WorldScanner: Module(
     "World Scanner",
     "Scan Crystal Hollow world for structures",

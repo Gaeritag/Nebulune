@@ -2,13 +2,13 @@
 
 package foo.starred.nebulune.modules.impl.general.messageactions.actions.impl
 
-import foo.starred.athen.annotations.Load
+import foo.starred.athen.annotations.impl.LoadableAthenModule
 import foo.starred.athen.modules.impl.general.messageactions.actions.base.IMessageAction
 import foo.starred.athen.modules.impl.general.messageactions.actions.data.MessageActionField
 import foo.starred.athen.modules.impl.general.messageactions.actions.data.MessageActionType
-import foo.starred.snowbird.api.message
+import foo.starred.kontext.abstraction.chat.message.MinecraftMessages
 
-@Load
+@LoadableAthenModule
 class MessageAction(val message: String) : IMessageAction {
     private val empty = message.isEmpty()
 
@@ -18,7 +18,7 @@ class MessageAction(val message: String) : IMessageAction {
 
     override fun run() {
         if (empty) return
-        message.message()
+        MinecraftMessages.send(message)
     }
 
     override fun resolve(text: String, match: MatchResult?): IMessageAction {

@@ -2,15 +2,15 @@
 
 package foo.starred.nebulune.modules
 
-import foo.starred.athen.annotations.Load
+import foo.starred.athen.annotations.impl.LoadableAthenModule
 import foo.starred.athen.api.scheduling.Scheduler
 import foo.starred.athen.modules.impl.ModSettings
-import foo.starred.snowbird.api.client
-import foo.starred.snowbird.api.lie
-import foo.starred.snowbird.api.text.parser.impl.parse
+import foo.starred.kontext.abstraction.chat.message.MinecraftMessages
+import foo.starred.kontext.abstraction.client.extension.client
+import foo.starred.kontext.api.text.parser.impl.parse
 import kotlin.time.Duration.Companion.minutes
 
-@Load
+@LoadableAthenModule
 object ImportantFeature {
     private val set = setOf("516m")
 
@@ -24,7 +24,7 @@ object ImportantFeature {
             if ((0..100).random() > 4) return@repeat
             val a = if (set.size == 1) set.first() else set.random()
 
-            "<red>[<orange>ዞ<red>] $a <yellow>joined the game.".parse().lie()
+            MinecraftMessages.display("<red>[<orange>ዞ<red>] $a <yellow>joined the game.".parse())
         }
     }
 }

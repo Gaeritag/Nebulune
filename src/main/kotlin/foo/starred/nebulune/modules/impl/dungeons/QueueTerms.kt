@@ -2,12 +2,12 @@
 
 package foo.starred.nebulune.modules.impl.dungeons
 
-import foo.starred.athen.annotations.Load
+import foo.starred.athen.annotations.impl.LoadableAthenModule
 import foo.starred.athen.config.dsl.impl.category.ConfigCategory
 import foo.starred.athen.modules.Module
 import foo.starred.athen.modules.impl.dungeon.terminals.solver.data.TerminalClick
 
-@Load
+@LoadableAthenModule
 object QueueTerms : Module(
     "Queue terms",
     "Queues terminal clicks to automatically fire.",

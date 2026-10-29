@@ -1,7 +1,7 @@
 package foo.starred.nebulune.modules.impl.dungeons
 
-import foo.starred.athen.annotations.Load
-import foo.starred.athen.annotations.OnlyIn
+import foo.starred.athen.annotations.impl.LoadableAthenModule
+import foo.starred.athen.annotations.impl.AthenModuleScope
 import foo.starred.athen.api.dungeon.DungeonAPI
 import foo.starred.athen.api.location.island.impl.PresetSkyBlockIsland
 import foo.starred.athen.config.dsl.impl.category.ConfigCategory
@@ -9,7 +9,7 @@ import foo.starred.athen.events.LocationEvent
 import foo.starred.athen.events.PacketEvent
 import foo.starred.athen.events.PlayerEvent
 import foo.starred.athen.modules.Module
-import foo.starred.snowbird.api.client
+import foo.starred.kontext.abstraction.client.extension.client
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket
 import net.minecraft.world.effect.MobEffects
 import net.minecraft.world.item.ItemStack
@@ -18,8 +18,8 @@ import tech.thatgravyboat.skyblockapi.api.remote.api.SkyBlockId.Companion.getSky
 import tech.thatgravyboat.skyblockapi.utils.extentions.getRawLore
 import tech.thatgravyboat.skyblockapi.utils.regex.RegexUtils.findThenNull
 
-@Load
-@OnlyIn(islands = [PresetSkyBlockIsland.THE_CATACOMBS])
+@LoadableAthenModule
+@AthenModuleScope(islands = [PresetSkyBlockIsland.THE_CATACOMBS])
 object BreakerHelper : Module(
     "Breaker helper",
     "Utilities for the Dungeon Breaker.",

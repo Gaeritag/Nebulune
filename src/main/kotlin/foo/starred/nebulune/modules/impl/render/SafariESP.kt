@@ -1,7 +1,7 @@
 package foo.starred.nebulune.modules.impl.render
 
-import foo.starred.athen.annotations.Load
-import foo.starred.athen.annotations.OnlyIn
+import foo.starred.athen.annotations.impl.AthenModuleScope
+import foo.starred.athen.annotations.impl.LoadableAthenModule
 import foo.starred.athen.api.location.LocationAPI
 import foo.starred.athen.api.location.island.impl.PresetSkyBlockIsland
 import foo.starred.athen.api.scheduling.Scheduler
@@ -9,14 +9,13 @@ import foo.starred.athen.config.dsl.impl.category.ConfigCategory
 import foo.starred.athen.events.LocationEvent
 import foo.starred.athen.events.WorldRenderEvent
 import foo.starred.athen.modules.Module
-import foo.starred.athen.utils.render.renderBoundingBox
+import foo.starred.kontext.abstraction.client.extension.client
+import foo.starred.kontext.api.entity.extension.renderAABB
+import foo.starred.kontext.api.scheduling.scheduler.extensions.clientTicks
 import foo.starred.nebulune.utils.extractStyledBox
 import foo.starred.nebulune.utils.getSkinTexture
 import foo.starred.nebulune.utils.safari.*
 import foo.starred.parallax.api.primitives.ParallaxBox
-import foo.starred.snowbird.api.level
-import foo.starred.snowbird.api.player
-import foo.starred.snowbird.api.scheduling.scheduler.extensions.clientTicks
 import net.minecraft.core.BlockPos
 import net.minecraft.world.entity.Display
 import net.minecraft.world.entity.Entity
@@ -39,8 +38,8 @@ import tech.thatgravyboat.skyblockapi.utils.extentions.getTexture
 import java.awt.Color
 import java.util.concurrent.ConcurrentHashMap
 
-@Load
-@OnlyIn(islands = [PresetSkyBlockIsland.SAFARI])
+@LoadableAthenModule
+@AthenModuleScope(islands = [PresetSkyBlockIsland.SAFARI])
 object SafariESP : Module(
     "Safari ESP",
     "ESP for Safari mobs",
@@ -261,8 +260,8 @@ object SafariESP : Module(
                 floorDrops.clear()
                 return@repeat
             }
-            val lvl = level ?: return@repeat
-            val p = player ?: return@repeat
+            val lvl = client.level ?: return@repeat
+            val p = client.player ?: return@repeat
             val pBiome = if (`floorDrop$only_in_biome`) getCritterSafariBiome(p.x, p.z) else null
 
             val counts = HashMap<BlockPos, Int>()
@@ -280,7 +279,7 @@ object SafariESP : Module(
 
         Scheduler.repeat(20.clientTicks) {
             if (mobCache.isEmpty()) return@repeat
-            val lvl = level ?: return@repeat
+            val lvl = client.level ?: return@repeat
             mobCache.entries.removeIf { lvl.getEntity(it.key)?.isAlive != true }
         }
 
@@ -324,7 +323,7 @@ object SafariESP : Module(
             val mobBiome = getCritterSafariBiome(entity.x, entity.z)
             val biomeConfig = safariRegistry[mobBiome] ?: return@on
             if (biomeConfig.isOnlyInBiome()) {
-                val p = player ?: return@on
+                val p = client.player ?: return@on
                 val playerBiome = getCritterSafariBiome(p.x, p.z)
                 if (playerBiome != mobBiome) return@on
             }
@@ -344,7 +343,7 @@ object SafariESP : Module(
             } else if (entity is ArmorStand) {
                 AABB(entity.x - 0.3, entity.y + 1.35, entity.z - 0.3, entity.x + 0.3, entity.y + 1.95, entity.z + 0.3)
             } else {
-                entity.renderBoundingBox
+                entity.renderAABB()
             }
 
             ParallaxBox.frame(renderBox, mob.color(), 2f, false)

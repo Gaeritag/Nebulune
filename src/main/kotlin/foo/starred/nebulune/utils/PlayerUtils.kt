@@ -1,13 +1,13 @@
 package foo.starred.nebulune.utils
 
-import foo.starred.athen.mixin.accessors.KeyMappingAccessor
-import foo.starred.snowbird.api.client
+import foo.starred.kontext.abstraction.client.extension.boundKey
+import foo.starred.kontext.abstraction.client.extension.client
 import net.minecraft.client.KeyMapping
 import net.minecraft.world.entity.player.Player
 
 fun rightClick() {
     val options = client.options
-    val key = (options.keyUse as KeyMappingAccessor).boundKey
+    val key = options.keyUse.boundKey()
     KeyMapping.set(key, true)
     KeyMapping.click(key)
     KeyMapping.set(key, false)
@@ -15,7 +15,7 @@ fun rightClick() {
 
 fun leftClick() {
     val options = client.options
-    val key = (options.keyAttack as KeyMappingAccessor).boundKey
+    val key = options.keyAttack.boundKey()
     KeyMapping.set(key, true)
     KeyMapping.click(key)
     KeyMapping.set(key, false)

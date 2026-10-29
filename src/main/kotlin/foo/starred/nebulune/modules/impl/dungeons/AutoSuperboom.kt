@@ -3,8 +3,8 @@
 package foo.starred.nebulune.modules.impl.dungeons
 
 import com.mojang.serialization.Codec
-import foo.starred.athen.annotations.Load
-import foo.starred.athen.annotations.OnlyIn
+import foo.starred.athen.annotations.impl.LoadableAthenModule
+import foo.starred.athen.annotations.impl.AthenModuleScope
 import foo.starred.athen.api.location.island.impl.PresetSkyBlockIsland
 import foo.starred.athen.api.messaging.impl.MessagingAPI.mod
 import foo.starred.athen.api.scheduling.Scheduler
@@ -15,18 +15,18 @@ import foo.starred.athen.modules.Module
 import foo.starred.nebulune.mixin.accessors.InventoryAccessor
 import foo.starred.nebulune.utils.command
 import foo.starred.nebulune.utils.leftClick
-import foo.starred.snowbird.api.client
-import foo.starred.snowbird.api.lie
-import foo.starred.snowbird.api.scheduling.scheduler.extensions.clientTicks
-import foo.starred.snowbird.api.scheduling.scheduler.extensions.start
-import foo.starred.snowbird.api.text.parser.impl.parse
+import foo.starred.kontext.abstraction.chat.message.MinecraftMessages
+import foo.starred.kontext.abstraction.client.extension.client
+import foo.starred.kontext.api.scheduling.scheduler.extensions.clientTicks
+import foo.starred.kontext.api.scheduling.scheduler.extensions.start
+import foo.starred.kontext.api.text.parser.impl.parse
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.resources.Identifier
 import net.minecraft.world.phys.BlockHitResult
 import tech.thatgravyboat.skyblockapi.api.remote.api.SkyBlockId.Companion.getSkyBlockId
 
-@Load
-@OnlyIn(islands = [PresetSkyBlockIsland.THE_CATACOMBS])
+@LoadableAthenModule
+@AthenModuleScope(islands = [PresetSkyBlockIsland.THE_CATACOMBS])
 object AutoSuperboom : Module(
     "Auto superboom",
     "Automatically swaps to and uses the superboom if clicking on a breakable wall.",
@@ -98,7 +98,7 @@ object AutoSuperboom : Module(
                     val b = a.substringBefore(":")
                     val c = a.substringAfter(":")
 
-                    " <dark_gray>- <gray>$b:<r>$c".parse().lie()
+                    " <dark_gray>- <gray>$b:<r>$c".parse().let { MinecraftMessages.display(it) }
                 }
             }
         }

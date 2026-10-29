@@ -51,7 +51,7 @@ dependencies {
     implementation(libs.kbus)
     implementation(libs.kommand)
     implementation(libs.klassgraph)
-    implementation(libs.snowbird.find())
+    implementation(libs.kontext.find())
     implementation(libs.cascade.find())
     implementation(libs.parallax.find())
     implementation(libs.updater.find())

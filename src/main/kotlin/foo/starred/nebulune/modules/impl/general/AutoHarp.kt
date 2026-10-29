@@ -1,23 +1,23 @@
 package foo.starred.nebulune.modules.impl.general
 
-import foo.starred.athen.annotations.Load
-import foo.starred.athen.annotations.OnlyIn
+import foo.starred.athen.annotations.impl.LoadableAthenModule
+import foo.starred.athen.annotations.impl.AthenModuleScope
 import foo.starred.athen.api.location.island.impl.PresetSkyBlockIsland
 import foo.starred.athen.config.dsl.impl.category.ConfigCategory
 import foo.starred.athen.events.GuiEvent
 import foo.starred.athen.events.TickEvent
 import foo.starred.athen.modules.Module
-import foo.starred.athen.utils.guiClick
+import foo.starred.kontext.abstraction.gui.MinecraftGui
 import foo.starred.kbus.extensions.runWhen
-import foo.starred.snowbird.api.client
-import foo.starred.snowbird.api.data.Observable
+import foo.starred.kontext.abstraction.client.extension.client
+import foo.starred.kontext.api.data.Observable
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import net.minecraft.world.inventory.ContainerInput
 import net.minecraft.world.inventory.MenuType
 import net.minecraft.world.item.Items
 
-@Load
-@OnlyIn(islands = [PresetSkyBlockIsland.THE_PARK, PresetSkyBlockIsland.PRIVATE_ISLAND])
+@LoadableAthenModule
+@AthenModuleScope(islands = [PresetSkyBlockIsland.THE_PARK, PresetSkyBlockIsland.PRIVATE_ISLAND])
 object AutoHarp : Module(
     "Auto harp",
     "Automatically does Melody's Harp for you!",
@@ -56,7 +56,7 @@ object AutoHarp : Module(
             hash = hash0
 
             if (slot == -1) return@on
-            guiClick(screen.menu.containerId, slot, clickType = ContainerInput.CLONE)
+            MinecraftGui.click(screen.menu.containerId, slot, clickType = ContainerInput.CLONE)
         }.runWhen(bool)
     }
 }

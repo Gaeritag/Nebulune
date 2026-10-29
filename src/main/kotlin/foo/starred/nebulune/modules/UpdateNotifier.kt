@@ -1,7 +1,7 @@
 package foo.starred.nebulune.modules
 
 import com.google.gson.JsonArray
-import foo.starred.athen.annotations.Priority
+import foo.starred.athen.annotations.impl.LoadableAthenModule
 import foo.starred.athen.api.messaging.impl.MessagingAPI.mod
 import foo.starred.athen.api.network.http.WebAPI.request
 import foo.starred.athen.api.scheduling.Scheduler
@@ -9,12 +9,12 @@ import foo.starred.athen.config.theme.impl.catppuccin.MochaColorScheme
 import foo.starred.athen.events.LocationEvent
 import foo.starred.athen.events.core.on
 import foo.starred.nebulune.Nebulune
-import foo.starred.snowbird.api.mainThread
-import foo.starred.snowbird.api.text.parser.impl.parse
-import foo.starred.snowbird.utils.showTitle
+import foo.starred.kontext.abstraction.client.extension.mainThread
+import foo.starred.kontext.abstraction.title.MinecraftTitle
+import foo.starred.kontext.api.text.parser.impl.parse
 import kotlin.time.Duration.Companion.seconds
 
-@Priority
+@LoadableAthenModule
 object UpdateNotifier {
     private const val GITHUB_API = "https://api.github.com/repos/Gaeritag/Nebulune/releases"
     private val versionRegex = Regex("""(\d+)\.(\d+)\.(\d+)(?:-r(\d+))?""") // https://regex101.com/r/An6dOq/1
@@ -51,7 +51,7 @@ object UpdateNotifier {
         val latest = latestVersion?.takeIf { it > current } ?: return
 
         mainThread {
-            "<aqua>Update available: <red>${latest.display()}".parse().showTitle()
+            MinecraftTitle.display("<aqua>Update available: <red>${latest.display()}".parse())
             "<hover:<${MochaColorScheme.Mauve.argb}>Click to view release!><click:url:https://github.com/Gaeritag/Nebulune/releases/${latest.tag}><yellow>Update available for <${MochaColorScheme.Green.argb}>Nebulune: <red>${current.display()} <gray>-> <aqua>${latest.display()}".mod()
         }
     }

@@ -2,11 +2,11 @@
 
 package foo.starred.nebulune.modules.impl.general
 
-import foo.starred.athen.annotations.Load
+import foo.starred.athen.annotations.impl.LoadableAthenModule
 import foo.starred.athen.api.messaging.enums.MessagePrefixType
 import foo.starred.athen.api.messaging.impl.MessagingAPI.mod
-import foo.starred.athen.api.minecraft.text.measurer.VanillaFontMeasurer
-import foo.starred.athen.api.minecraft.text.renderer.VanillaFontRenderer
+import foo.starred.kontext.abstraction.text.measurer.MinecraftFontMeasurer
+import foo.starred.kontext.abstraction.text.renderer.MinecraftFontRenderer
 import foo.starred.athen.api.scheduling.Scheduler
 import foo.starred.athen.api.scheduling.Ticking
 import foo.starred.athen.events.GuiEvent
@@ -14,27 +14,27 @@ import foo.starred.athen.events.InputEvent
 import foo.starred.athen.events.PacketEvent
 import foo.starred.athen.events.TickEvent
 import foo.starred.athen.events.core.on
-import foo.starred.athen.mixin.accessors.KeyMappingAccessor
 import foo.starred.athen.modules.impl.general.LoadoutKeybinds
-import foo.starred.athen.utils.guiClick
+import foo.starred.kontext.abstraction.gui.MinecraftGui
 import foo.starred.kbus.extensions.runWhen
 import foo.starred.nebulune.accessors.ILoadoutSlot
 import foo.starred.nebulune.mixin.accessors.LoadoutKeybindsAccessor
 import foo.starred.nebulune.utils.command
-import foo.starred.snowbird.api.client
-import foo.starred.snowbird.api.command
-import foo.starred.snowbird.api.data.Observable.Companion.and
-import foo.starred.snowbird.api.inputs.impl.KeyboardInputState
-import foo.starred.snowbird.api.mainThread
-import foo.starred.snowbird.api.scheduling.scheduler.extensions.clientTicks
-import foo.starred.snowbird.api.text.parser.impl.parse
-import foo.starred.snowbird.utils.stripped
+import foo.starred.kontext.abstraction.chat.command.MinecraftCommands
+import foo.starred.kontext.abstraction.client.extension.boundKey
+import foo.starred.kontext.abstraction.client.extension.client
+import foo.starred.kontext.abstraction.client.extension.mainThread
+import foo.starred.kontext.abstraction.input.impl.KeyboardInputState
+import foo.starred.kontext.api.data.Observable.Companion.and
+import foo.starred.kontext.api.format.extension.string.stripped
+import foo.starred.kontext.api.scheduling.scheduler.extensions.clientTicks
+import foo.starred.kontext.api.text.parser.impl.parse
 import net.minecraft.client.KeyMapping
 import net.minecraft.network.protocol.game.ClientboundContainerClosePacket
 import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket
 import net.minecraft.network.protocol.game.ServerboundContainerClosePacket
 
-@Load
+@LoadableAthenModule
 object LoadoutHelper {
 
     @Suppress("UNCHECKED_CAST", "CAST_NEVER_SUCCEEDS")
@@ -63,16 +63,16 @@ object LoadoutHelper {
         val example = "Equipping <gray>[<red>2<gray>]".parse().visualOrderText
 
         constrain {
-            VanillaFontMeasurer.constrain(example)
+            MinecraftFontMeasurer.constrain(example)
         }
 
         preview {
-            VanillaFontRenderer.extract(graphics, example, 0, 0)
+            MinecraftFontRenderer.extract(graphics, example, 0, 0)
         }
 
         render {
             if (!render) return@render
-            VanillaFontRenderer.extract(graphics, display.value ?: return@render, 0, 0)
+            MinecraftFontRenderer.extract(graphics, display.value ?: return@render, 0, 0)
         }
     }
 
@@ -107,7 +107,7 @@ object LoadoutHelper {
                 id = -1
                 start = System.currentTimeMillis()
 
-                "loadout".command()
+                MinecraftCommands.client("loadout")
             }
         }
 
@@ -119,7 +119,7 @@ object LoadoutHelper {
 
             if (!moveEquip && swapping) {
                 for (a in all) {
-                    if ((a as KeyMappingAccessor).boundKey == key) return@on cancel()
+                    if (a.boundKey() == key) return@on cancel()
                 }
             }
             if (swapping) return@on
@@ -131,7 +131,7 @@ object LoadoutHelper {
             id = -1
             start = System.currentTimeMillis()
 
-            "loadout".command()
+            MinecraftCommands.client("loadout")
             cancel()
         }.runWhen(LoadoutKeybinds.observable and autoEquip.state)
 
@@ -179,7 +179,7 @@ object LoadoutHelper {
             if (menu.containerId != id) return@on
 
             val mcSlot = menu.slots.getOrNull(slot.idx)?.takeIf { !it.item.isEmpty } ?: return@on
-            if (!slot.equipped) guiClick(id, slot.idx)
+            if (!slot.equipped) MinecraftGui.click(id, slot.index)
 
             close()
             reset()

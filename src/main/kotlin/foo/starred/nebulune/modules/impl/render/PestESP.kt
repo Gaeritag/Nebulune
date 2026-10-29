@@ -1,7 +1,7 @@
 package foo.starred.nebulune.modules.impl.render
 
-import foo.starred.athen.annotations.Load
-import foo.starred.athen.annotations.OnlyIn
+import foo.starred.athen.annotations.impl.AthenModuleScope
+import foo.starred.athen.annotations.impl.LoadableAthenModule
 import foo.starred.athen.api.location.island.impl.PresetSkyBlockIsland
 import foo.starred.athen.api.scheduling.Scheduler
 import foo.starred.athen.config.dsl.impl.category.ConfigCategory
@@ -10,11 +10,11 @@ import foo.starred.athen.events.LocationEvent
 import foo.starred.athen.events.PacketEvent
 import foo.starred.athen.events.WorldRenderEvent
 import foo.starred.athen.modules.Module
-import foo.starred.athen.utils.render.renderPos
+import foo.starred.kontext.abstraction.client.extension.client
+import foo.starred.kontext.api.entity.extension.renderVec3
+import foo.starred.kontext.api.scheduling.scheduler.extensions.clientTicks
 import foo.starred.nebulune.utils.extractTracer
 import foo.starred.parallax.api.primitives.ParallaxBox
-import foo.starred.snowbird.api.level
-import foo.starred.snowbird.api.scheduling.scheduler.extensions.clientTicks
 import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EquipmentSlot
@@ -23,8 +23,8 @@ import net.minecraft.world.phys.AABB
 import tech.thatgravyboat.skyblockapi.utils.extentions.getTexture
 import java.util.concurrent.ConcurrentHashMap
 
-@Load
-@OnlyIn(islands = [PresetSkyBlockIsland.GARDEN])
+@LoadableAthenModule
+@AthenModuleScope(islands = [PresetSkyBlockIsland.GARDEN])
 object PestESP : Module(
     "Pest ESP",
     "ESPs for Pests!",
@@ -43,7 +43,7 @@ object PestESP : Module(
 
         on<PacketEvent.Receive, ClientboundSetEntityDataPacket> {
             Scheduler.schedule(2.clientTicks) {
-                val entity = level?.getEntity(id) as? ArmorStand ?: return@schedule
+                val entity = client.level?.getEntity(id) as? ArmorStand ?: return@schedule
                 if (!entity.hasItemInSlot(EquipmentSlot.HEAD)) return@schedule
                 if (entity in entities) return@schedule
 
@@ -58,7 +58,7 @@ object PestESP : Module(
             for (e in entities) {
                 if (!e.isAlive) continue
 
-                val p = e.renderPos.add(-0.5, 1.0, -0.5)
+                val p = e.renderVec3().add(-0.5, 1.0, -0.5)
                 ParallaxBox.frame(AABB.unitCubeFromLowerCorner(p), color, thickness.toFloat(), depthTest)
                 if (tracer) extractTracer(p, color, thickness.toFloat(), depthTest)
             }

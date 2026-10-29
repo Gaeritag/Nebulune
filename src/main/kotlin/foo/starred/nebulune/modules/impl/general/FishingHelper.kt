@@ -2,8 +2,8 @@
 
 package foo.starred.nebulune.modules.impl.general
 
-import foo.starred.athen.annotations.Load
-import foo.starred.athen.annotations.OnlyIn
+import foo.starred.athen.annotations.impl.LoadableAthenModule
+import foo.starred.athen.annotations.impl.AthenModuleScope
 import foo.starred.athen.api.scheduling.Scheduler
 import foo.starred.athen.config.dsl.impl.category.ConfigCategory
 import foo.starred.athen.events.EntityEvent
@@ -11,19 +11,17 @@ import foo.starred.athen.modules.Module
 import foo.starred.athen.utils.customData
 import foo.starred.athen.utils.id
 import foo.starred.nebulune.utils.rightClick
-import foo.starred.snowbird.api.client
-import foo.starred.snowbird.api.held
-import foo.starred.snowbird.api.player
-import foo.starred.snowbird.api.scheduling.scheduler.extensions.clientTicks
-import foo.starred.snowbird.api.scheduling.scheduler.extensions.start
-import foo.starred.snowbird.utils.stripped
+import foo.starred.kontext.abstraction.client.extension.client
+import foo.starred.kontext.api.format.extension.string.stripped
+import foo.starred.kontext.api.scheduling.scheduler.extensions.clientTicks
+import foo.starred.kontext.api.scheduling.scheduler.extensions.start
 import net.minecraft.client.player.LocalPlayer
 import net.minecraft.world.entity.projectile.FishingHook
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
 
-@Load
-@OnlyIn(skyblock = true)
+@LoadableAthenModule
+@AthenModuleScope(skyblock = true)
 object FishingHelper : Module(
     "Fishing helper",
     "Helper features for fishing.",
@@ -44,7 +42,7 @@ object FishingHelper : Module(
     init {
         on<EntityEvent.Load> {
             val e = entity as? FishingHook ?: return@on
-            if (e.owner != player) return@on
+            if (e.owner != client.player) return@on
             val p = client.player ?: return@on
             if (p.mainHandItem.id() == "SOUL_WHIP" || p.mainHandItem.id() == "FLAMING_FLAY") return@on
             bobber = e
@@ -81,7 +79,7 @@ object FishingHelper : Module(
             if (!enabled || !recast || !`recast$check`) return@repeat
             if (client.player == null) return@repeat
             if (bobber?.isAlive == true) return@repeat
-            if (held?.item != Items.FISHING_ROD) return@repeat
+            if (client.player?.mainHandItem?.item != Items.FISHING_ROD) return@repeat
 
             rightClick()
         }

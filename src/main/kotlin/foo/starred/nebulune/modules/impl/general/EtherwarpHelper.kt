@@ -1,19 +1,19 @@
 package foo.starred.nebulune.modules.impl.general
 
-import foo.starred.athen.annotations.Load
-import foo.starred.athen.annotations.OnlyIn
+import foo.starred.athen.annotations.impl.LoadableAthenModule
+import foo.starred.athen.annotations.impl.AthenModuleScope
 import foo.starred.athen.api.scheduling.Scheduler
 import foo.starred.athen.config.dsl.impl.category.ConfigCategory
 import foo.starred.athen.events.InputEvent
-import foo.starred.athen.mixin.accessors.KeyMappingAccessor
 import foo.starred.athen.modules.Module
 import foo.starred.athen.utils.customData
 import foo.starred.athen.utils.id
 import foo.starred.kbus.extensions.runWhen
 import foo.starred.nebulune.utils.rightClick
-import foo.starred.snowbird.api.client
-import foo.starred.snowbird.api.scheduling.scheduler.extensions.clientTicks
-import foo.starred.snowbird.api.scheduling.scheduler.extensions.start
+import foo.starred.kontext.abstraction.client.extension.boundKey
+import foo.starred.kontext.abstraction.client.extension.client
+import foo.starred.kontext.api.scheduling.scheduler.extensions.clientTicks
+import foo.starred.kontext.api.scheduling.scheduler.extensions.start
 import net.minecraft.client.KeyMapping
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.item.ItemStack
@@ -22,8 +22,8 @@ import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.component.SwingAnimation
 *///?}
 
-@Load
-@OnlyIn(skyblock = true)
+@LoadableAthenModule
+@AthenModuleScope(skyblock = true)
 object EtherwarpHelper : Module(
     "Etherwarp helper",
     "Helper features for Etherwarp.",
@@ -51,15 +51,12 @@ object EtherwarpHelper : Module(
             if (!a && !shift) return@on
 
             if (!a) {
-                KeyMapping.set((client.options.keyShift as KeyMappingAccessor).boundKey, true)
+                KeyMapping.set(client.options.keyShift.boundKey(), true)
                 Scheduler.schedule(ints.random().clientTicks.start) {
                     action()
 
                     Scheduler.schedule(1.clientTicks.start) {
-                        KeyMapping.set(
-                            (client.options.keyShift as KeyMappingAccessor).boundKey,
-                            false
-                        )
+KeyMapping.set(client.options.keyShift.boundKey(), false)
                     }
                 }
 

@@ -3,20 +3,20 @@
 package foo.starred.nebulune
 
 import foo.starred.athen.Athen
-import foo.starred.athen.annotations.AnnotationLoader
+import foo.starred.athen.annotations.loader.AthenAnnotationLoader
 import foo.starred.athen.api.scheduling.Scheduler
-import foo.starred.snowbird.api.scheduling.scheduler.extensions.serverTicks
+import foo.starred.kontext.api.scheduling.scheduler.extensions.serverTicks
 import foo.starred.updater.logic.source.impl.GitHubUpdateSource
 import net.fabricmc.api.ClientModInitializer
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.time.Duration.Companion.milliseconds
 
 object Nebulune : ClientModInitializer {
-    const val modVersion: String = /*$ mod_version*/ "0.3.7"
+    const val modVersion: String = /*$ mod_version*/ "0.4.0"
     const val modId: String = /*$ mod_id*/ "nebulune"
 
     override fun onInitializeClient() {
-        AnnotationLoader.load("foo.starred.nebulune")
+        AthenAnnotationLoader.load("foo.starred.nebulune")
         Athen.LOGGER.info("Nebulune loaded.")
         GitHubUpdateSource("Gaeritag/Nebulune", id = modId).init(modVersion)
     }

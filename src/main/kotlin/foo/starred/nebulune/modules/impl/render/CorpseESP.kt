@@ -1,7 +1,7 @@
 package foo.starred.nebulune.modules.impl.render
 
-import foo.starred.athen.annotations.Load
-import foo.starred.athen.annotations.OnlyIn
+import foo.starred.athen.annotations.impl.AthenModuleScope
+import foo.starred.athen.annotations.impl.LoadableAthenModule
 import foo.starred.athen.api.location.island.impl.PresetSkyBlockIsland
 import foo.starred.athen.api.scheduling.Scheduler
 import foo.starred.athen.config.dsl.impl.category.ConfigCategory
@@ -9,13 +9,12 @@ import foo.starred.athen.events.LocationEvent
 import foo.starred.athen.events.MessageEvent
 import foo.starred.athen.events.WorldRenderEvent
 import foo.starred.athen.modules.Module
-import foo.starred.athen.utils.render.renderBoundingBox
+import foo.starred.kontext.abstraction.client.extension.client
+import foo.starred.kontext.api.entity.extension.renderAABB
+import foo.starred.kontext.api.scheduling.scheduler.extensions.clientTicks
 import foo.starred.nebulune.utils.extractStyledBox
 import foo.starred.nebulune.utils.extractTracer
 import foo.starred.parallax.api.primitives.ParallaxText
-import foo.starred.snowbird.api.level
-import foo.starred.snowbird.api.player
-import foo.starred.snowbird.api.scheduling.scheduler.extensions.clientTicks
 import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.entity.decoration.ArmorStand
 import net.minecraft.world.item.ItemStack
@@ -28,8 +27,8 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.math.floor
 
-@Load
-@OnlyIn(islands = [PresetSkyBlockIsland.MINESHAFT])
+@LoadableAthenModule
+@AthenModuleScope(islands = [PresetSkyBlockIsland.MINESHAFT])
 object CorpseESP : Module(
     "Corpse ESP",
     "Highlights frozen corpses in Glacite Mineshafts.",
@@ -106,13 +105,13 @@ object CorpseESP : Module(
     init {
         Scheduler.repeat((20).clientTicks) {
             if (corpseCache.isEmpty()) return@repeat
-            val lvl = level ?: return@repeat
+            val lvl = client.level ?: return@repeat
             corpseCache.entries.removeIf { lvl.getEntity(it.key)?.isAlive != true }
         }
 
         on<WorldRenderEvent.Extract> {
-            val p = player ?: return@on
-            val lvl = level ?: return@on
+            val p = client.player ?: return@on
+            val lvl = client.level ?: return@on
 
             for (entity in lvl.entitiesForRendering()) {
                 val armorStand = entity as? ArmorStand ?: continue
@@ -137,7 +136,7 @@ object CorpseESP : Module(
                         val z = floor(armorStand.z)
                         AABB(x, y, z, x + 1.0, y + 1.0, z + 1.0)
                     }
-                    else -> armorStand.renderBoundingBox
+                    else -> armorStand.renderAABB()
                 }
 
                 extractStyledBox(box, color, highlightStyle, lineWidth, depth = depthTest)
@@ -181,7 +180,7 @@ object CorpseESP : Module(
 
         on<MessageEvent.Chat.Receive> {
             if (stripped.contains("CORPSE LOOT!")) {
-                val p = player?.position() ?: return@on
+                val p = client.player?.position() ?: return@on
                 claimed.add(p)
             }
         }

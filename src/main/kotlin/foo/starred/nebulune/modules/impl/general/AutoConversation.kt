@@ -1,21 +1,21 @@
 package foo.starred.nebulune.modules.impl.general
 
-import foo.starred.athen.annotations.Load
-import foo.starred.athen.annotations.OnlyIn
+import foo.starred.athen.annotations.impl.LoadableAthenModule
+import foo.starred.athen.annotations.impl.AthenModuleScope
 import foo.starred.athen.api.scheduling.Scheduler
 import foo.starred.athen.config.dsl.impl.category.ConfigCategory
 import foo.starred.athen.events.MessageEvent
 import foo.starred.athen.modules.Module
-import foo.starred.snowbird.api.scheduling.scheduler.extensions.clientTicks
-import foo.starred.snowbird.api.scheduling.scheduler.extensions.start
-import foo.starred.snowbird.utils.colorCoded
+import foo.starred.kontext.api.format.extension.component.colored
+import foo.starred.kontext.api.scheduling.scheduler.extensions.clientTicks
+import foo.starred.kontext.api.scheduling.scheduler.extensions.start
 import net.minecraft.client.Minecraft
 import net.minecraft.network.chat.ClickEvent
 import net.minecraft.network.protocol.common.ServerboundCustomClickActionPacket
 import tech.thatgravyboat.skyblockapi.utils.text.TextColor
 
-@Load
-@OnlyIn(skyblock = true)
+@LoadableAthenModule
+@AthenModuleScope(skyblock = true)
 object AutoConversation : Module(
     "Auto conversation",
     "Automatically has a conversation with NPCs!",
@@ -39,7 +39,7 @@ object AutoConversation : Module(
                 queue.addAll(current.siblings)
 
                 val clickEvent = current.style.clickEvent as? ClickEvent.Custom ?: continue
-                if (!b || current.style.color?.value == TextColor.GREEN || current.colorCoded().contains("§a")) {
+                if (!b || current.style.color?.value == TextColor.GREEN || current.colored().contains("§a")) {
                     a.add(clickEvent)
                 }
             }

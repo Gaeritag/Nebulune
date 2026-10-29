@@ -3,27 +3,29 @@
 package foo.starred.nebulune.modules.impl.general
 
 import com.mojang.serialization.Codec
-import foo.starred.athen.annotations.Load
+import foo.starred.athen.annotations.impl.LoadableAthenModule
 import foo.starred.athen.api.messaging.impl.MessagingAPI.mod
 import foo.starred.athen.api.storage.JsonStore
 import foo.starred.athen.config.dsl.impl.category.ConfigCategory
 import foo.starred.athen.events.InputEvent
 import foo.starred.athen.events.TickEvent
-import foo.starred.athen.mixin.accessors.KeyMappingAccessor
 import foo.starred.athen.modules.Module
 import foo.starred.kbus.extensions.runWhen
 import foo.starred.nebulune.utils.command
 import foo.starred.nebulune.utils.leftClick
 import foo.starred.nebulune.utils.rightClick
-import foo.starred.snowbird.api.*
-import foo.starred.snowbird.api.inputs.impl.GenericInputState
-import foo.starred.snowbird.api.text.parser.impl.parse
+import foo.starred.kontext.abstraction.chat.generic.MinecraftChat
+import foo.starred.kontext.abstraction.chat.message.MinecraftMessages
+import foo.starred.kontext.abstraction.client.extension.boundKey
+import foo.starred.kontext.abstraction.client.extension.client
+import foo.starred.kontext.abstraction.input.impl.GenericInputState
+import foo.starred.kontext.api.text.parser.impl.parse
 import net.minecraft.client.KeyMapping
 import net.minecraft.world.phys.BlockHitResult
 import tech.thatgravyboat.skyblockapi.api.datatype.DataTypes
 import tech.thatgravyboat.skyblockapi.api.datatype.getData
 
-@Load
+@LoadableAthenModule
 object AutoClicker : Module(
     "Auto clicker",
     "Automatically clicks for you!",
@@ -86,7 +88,7 @@ object AutoClicker : Module(
 
             val h0 = client.hitResult as? BlockHitResult
             if (h0 != null && !lv.getBlockState(h0.blockPos).isAir && d && breaking.value) {
-                KeyMapping.set((client.options.keyAttack as KeyMappingAccessor).boundKey, true)
+                KeyMapping.set(client.options.keyAttack.boundKey(), true)
                 return@on
             }
 
@@ -109,7 +111,7 @@ object AutoClicker : Module(
 
         on<InputEvent.Keyboard.Release> {
             if (keyEvent.key() != `left$key`.value) return@on
-            KeyMapping.set((client.options.keyAttack as KeyMappingAccessor).boundKey, false)
+            KeyMapping.set(client.options.keyAttack.boundKey(), false)
         }.runWhen(breaking.state)
 
         command {
@@ -156,18 +158,18 @@ object AutoClicker : Module(
             }
 
             "ac" / "list" {
-                val a = ("<gray>" + ("-".repeat())).parse()
+                val a = ("<gray>" + MinecraftChat.repeat("-")).parse()
 
                 "Autoclicker whitelist:".mod()
-                a.lie()
+                MinecraftMessages.display(a)
 
-                "Left whitelist:".lie()
-                for (s in set1.value) " <dark_gray>- <gray>$s".parse().lie()
-                a.lie()
+                MinecraftMessages.display("Left whitelist:")
+                for (s in set1.value) MinecraftMessages.display(" <dark_gray>- <gray>$s")
+                MinecraftMessages.display(a)
 
-                "Right whitelist:".lie()
-                for (s in set2.value) " <dark_gray>- <gray>$s".parse().lie()
-                a.lie()
+                MinecraftMessages.display("Right whitelist:")
+                for (s in set2.value) MinecraftMessages.display(" <dark_gray>- <gray>$s")
+                MinecraftMessages.display(a)
 
                 if (!enabled) "Please turn on the feature \"AutoClicker\"".mod()
             }
@@ -175,7 +177,7 @@ object AutoClicker : Module(
     }
 
     private fun fn(): String? {
-        val held = held
+        val held = client.player?.mainHandItem
         return held?.getData(DataTypes.UUID)?.toString() ?: held?.getData(DataTypes.SKYBLOCK_ID)?.skyblockId ?: held?.hoverName?.string
     }
 

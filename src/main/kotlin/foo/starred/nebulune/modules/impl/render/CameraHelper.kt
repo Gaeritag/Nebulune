@@ -1,9 +1,9 @@
 package foo.starred.nebulune.modules.impl.render
 
-import foo.starred.athen.annotations.Load
+import foo.starred.athen.annotations.impl.LoadableAthenModule
 import foo.starred.athen.modules.impl.render.CameraHelper
 
-@Load
+@LoadableAthenModule
 object CameraHelper {
     private val _clip by CameraHelper.config.switch("Camera clip")
     private val _dist by CameraHelper.config.switch("Custom distance")

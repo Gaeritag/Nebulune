@@ -1,7 +1,7 @@
 package foo.starred.nebulune.modules.impl.kuudra
 
-import foo.starred.athen.annotations.Load
-import foo.starred.athen.annotations.OnlyIn
+import foo.starred.athen.annotations.impl.LoadableAthenModule
+import foo.starred.athen.annotations.impl.AthenModuleScope
 import foo.starred.athen.api.kuudra.KuudraAPI
 import foo.starred.athen.api.kuudra.enums.KuudraPhase
 import foo.starred.athen.api.location.island.impl.PresetSkyBlockIsland
@@ -11,14 +11,14 @@ import foo.starred.athen.events.InputEvent
 import foo.starred.athen.modules.Module
 import foo.starred.nebulune.mixin.accessors.InventoryAccessor
 import foo.starred.nebulune.utils.rightClick
-import foo.starred.snowbird.api.client
-import foo.starred.snowbird.api.scheduling.scheduler.extensions.clientTicks
-import foo.starred.snowbird.api.scheduling.scheduler.extensions.start
-import foo.starred.snowbird.utils.stripped
+import foo.starred.kontext.abstraction.client.extension.client
+import foo.starred.kontext.api.scheduling.scheduler.extensions.clientTicks
+import foo.starred.kontext.api.scheduling.scheduler.extensions.start
+import foo.starred.kontext.api.format.extension.string.stripped
 import net.minecraft.world.item.Items
 
-@Load
-@OnlyIn(islands = [PresetSkyBlockIsland.KUUDRA])
+@LoadableAthenModule
+@AthenModuleScope(islands = [PresetSkyBlockIsland.KUUDRA])
 object AutoPearl : Module(
     "Auto pearl",
     "Automatically throws a pearl if you right click when holding a supply.",

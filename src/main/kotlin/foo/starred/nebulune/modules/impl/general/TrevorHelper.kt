@@ -2,8 +2,8 @@
 
 package foo.starred.nebulune.modules.impl.general
 
-import foo.starred.athen.annotations.Load
-import foo.starred.athen.annotations.OnlyIn
+import foo.starred.athen.annotations.impl.LoadableAthenModule
+import foo.starred.athen.annotations.impl.AthenModuleScope
 import foo.starred.athen.api.location.island.impl.PresetSkyBlockIsland
 import foo.starred.athen.api.scheduling.Scheduler
 import foo.starred.athen.config.dsl.impl.category.ConfigCategory
@@ -12,19 +12,20 @@ import foo.starred.athen.events.LocationEvent
 import foo.starred.athen.events.MessageEvent
 import foo.starred.athen.events.WorldRenderEvent
 import foo.starred.athen.modules.Module
-import foo.starred.athen.utils.render.renderBoundingBox
-import foo.starred.athen.utils.render.renderPos
+import foo.starred.kontext.abstraction.chat.command.MinecraftCommands
+import foo.starred.kontext.abstraction.title.MinecraftTitle
+import foo.starred.kontext.api.entity.extension.renderAABB
+import foo.starred.kontext.api.entity.extension.renderVec3
+import foo.starred.kontext.api.format.extension.component.literal
+import foo.starred.kontext.api.format.extension.string.stripped
+import foo.starred.kontext.api.format.extension.time.parseDuration
+import foo.starred.kontext.api.scheduling.scheduler.extensions.clientTicks
+import foo.starred.kontext.api.text.parser.impl.parse
 import foo.starred.cascade.primitives.impl.TextPrimitive
 import foo.starred.cascade.wrappers.text.impl.CascadeTextWrapper
 import foo.starred.nebulune.utils.extractTracer
 import foo.starred.parallax.api.primitives.ParallaxBox
-import foo.starred.snowbird.api.command
-import foo.starred.snowbird.api.scheduling.scheduler.extensions.clientTicks
-import foo.starred.snowbird.api.text.parser.impl.parse
-import foo.starred.snowbird.utils.alert
-import foo.starred.snowbird.utils.literal
-import foo.starred.snowbird.utils.stripped
-import foo.starred.snowbird.utils.toDurationFromMillis
+
 import net.minecraft.network.chat.ClickEvent
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.animal.chicken.Chicken
@@ -40,8 +41,8 @@ import java.awt.Color
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
-@Load
-@OnlyIn(islands = [PresetSkyBlockIsland.THE_BARN])
+@LoadableAthenModule
+@AthenModuleScope(islands = [PresetSkyBlockIsland.THE_BARN])
 object TrevorHelper : Module(
     "Trevor helper",
     "Helper features for Trevor the Trapper!",
@@ -64,7 +65,7 @@ object TrevorHelper : Module(
     private val hud = config.hud("Cooldown timer") {
         if (false) { TextPrimitive.text { wrapper = CascadeTextWrapper; text = "Cooldown: §c12.4s".literal() }; return@hud }
         if (cooldown <= 0) return@hud
-        val t = (cooldown - System.currentTimeMillis()).coerceAtLeast(0).toDurationFromMillis(secondsDecimals = 1)
+        val t = ((cooldown - System.currentTimeMillis()).coerceAtLeast(0) / 1000.0).parseDuration(decimals = 1)
 
         TextPrimitive.text { wrapper = CascadeTextWrapper; text = "Cooldown: §c$t".literal() }
     }
@@ -97,8 +98,8 @@ object TrevorHelper : Module(
             val max = if (entity is Horse) entity.serverMaxHealth / 2f else entity.serverMaxHealth
             if (max != rarity.hp) return@on
 
-            ParallaxBox.frame(entity.renderBoundingBox, rarity.color, depth = false)
-            if (`esp$tracer`) extractTracer(entity.renderPos, rarity.color)
+            ParallaxBox.frame(entity.renderAABB(), rarity.color, depth = false)
+            if (`esp$tracer`) extractTracer(entity.renderVec3(), rarity.color)
         }
 
         on<MessageEvent.Chat.Receive> {
@@ -107,7 +108,8 @@ object TrevorHelper : Module(
                 cooldown = System.currentTimeMillis() + 20_000
 
                 Scheduler.schedule(20.seconds) {
-                    if (endAlert) `alert$message`.parse().alert(soundType = `alert$sound`.sound)
+                    `alert$sound`.play()
+                    if (endAlert) MinecraftTitle.display(`alert$message`.parse())
                     cooldown = 0
                 }
             } ?: return@on
@@ -118,14 +120,14 @@ object TrevorHelper : Module(
                 val ms = (cooldown - System.currentTimeMillis() - (callOff * 1000).toLong()).coerceAtLeast(0)
                 val extra = (callDelay + (0..2).random()) * 50L
 
-                Scheduler.schedule((ms + extra).milliseconds) { "/call trevor".command() }
+                Scheduler.schedule((ms + extra).milliseconds) { MinecraftCommands.client("/call trevor") }
                 return@on reset()
             }
 
             if (!autoAccept) return@on
             if (message.siblings.getOrNull(0)?.stripped() == "Accept the trapper's task to hunt the animal?") {
                 Scheduler.schedule((acceptDelay + (0..2).random()).clientTicks) {
-                    (message.siblings[3].style.clickEvent as? ClickEvent.RunCommand)?.command?.command()
+                    (message.siblings[3].style.clickEvent as? ClickEvent.RunCommand)?.command?.let { MinecraftCommands.client(it) }
                 }
 
                 return@on

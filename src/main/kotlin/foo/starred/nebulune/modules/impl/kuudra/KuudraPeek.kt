@@ -1,7 +1,7 @@
 package foo.starred.nebulune.modules.impl.kuudra
 
-import foo.starred.athen.annotations.Load
-import foo.starred.athen.annotations.OnlyIn
+import foo.starred.athen.annotations.impl.LoadableAthenModule
+import foo.starred.athen.annotations.impl.AthenModuleScope
 import foo.starred.athen.api.kuudra.KuudraAPI
 import foo.starred.athen.api.kuudra.enums.KuudraPhase
 import foo.starred.athen.api.kuudra.enums.KuudraTier
@@ -10,12 +10,12 @@ import foo.starred.athen.api.messaging.impl.MessagingAPI.mod
 import foo.starred.athen.config.dsl.impl.category.ConfigCategory
 import foo.starred.athen.events.TickEvent
 import foo.starred.athen.modules.Module
-import foo.starred.snowbird.api.client
-import foo.starred.snowbird.api.text.parser.impl.parse
-import foo.starred.snowbird.utils.alert
+import foo.starred.kontext.abstraction.client.extension.client
+import foo.starred.kontext.abstraction.title.MinecraftTitle
+import foo.starred.kontext.api.text.parser.impl.parse
 
-@Load
-@OnlyIn(islands = [PresetSkyBlockIsland.KUUDRA])
+@LoadableAthenModule
+@AthenModuleScope(islands = [PresetSkyBlockIsland.KUUDRA])
 object KuudraPeek : Module(
     "Kuudra peek",
     "Tries to detect which direction Kuudra will peek from!",
@@ -65,7 +65,7 @@ object KuudraPeek : Module(
             side = ns
 
             "Kuudra peeked from <red>${side.str}<r>!".mod()
-            "<red>${side.name}!".parse().alert()
+            MinecraftTitle.display("<red>${side.name}!".parse())
         }
     }
 }

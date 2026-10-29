@@ -1,23 +1,22 @@
 package foo.starred.nebulune.modules.impl.dungeons
 
-import foo.starred.athen.annotations.Load
-import foo.starred.athen.annotations.OnlyIn
+import foo.starred.athen.annotations.impl.LoadableAthenModule
+import foo.starred.athen.annotations.impl.AthenModuleScope
 import foo.starred.athen.api.location.island.impl.PresetSkyBlockIsland
 import foo.starred.athen.api.scheduling.Scheduler
 import foo.starred.athen.config.dsl.impl.category.ConfigCategory
 import foo.starred.athen.events.GuiEvent
 import foo.starred.athen.events.PacketEvent
 import foo.starred.athen.modules.Module
-import foo.starred.snowbird.api.client
-import foo.starred.snowbird.api.scheduling.scheduler.extensions.clientTicks
-import foo.starred.snowbird.utils.send
-import foo.starred.snowbird.utils.stripped
+import foo.starred.kontext.abstraction.client.extension.client
+import foo.starred.kontext.api.format.extension.string.stripped
+import foo.starred.kontext.api.scheduling.scheduler.extensions.clientTicks
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket
 import net.minecraft.network.protocol.game.ServerboundContainerClosePacket
 
-@Load
-@OnlyIn(islands = [PresetSkyBlockIsland.THE_CATACOMBS])
+@LoadableAthenModule
+@AthenModuleScope(islands = [PresetSkyBlockIsland.THE_CATACOMBS])
 object ChestCloser : Module(
     "Chest closer",
     "Automatically closes chests.",
@@ -41,7 +40,7 @@ object ChestCloser : Module(
             it.cancel()
 
             val r = (minDelay..maxDelay.coerceAtLeast(minDelay)).random()
-            if (r == 0) return@on ServerboundContainerClosePacket(containerId).send()
+            if (r == 0) return@on client.connection?.send(ServerboundContainerClosePacket(containerId)) ?: Unit
 
             Scheduler.schedule(r.clientTicks) {
                 client.player?.closeContainer()
