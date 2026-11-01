@@ -1,6 +1,6 @@
 [versions]
 id = "nebulune"
 name = "Nebulune"
-version = "0.4.0"
+version = "0.4.2"
 group = "foo.starred"
 tweaker = "nebulune.accesswidener"

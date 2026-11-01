@@ -6,8 +6,6 @@ import foo.starred.athen.api.scheduling.Scheduler
 import foo.starred.athen.config.dsl.impl.category.ConfigCategory
 import foo.starred.athen.events.InputEvent
 import foo.starred.athen.modules.Module
-import foo.starred.athen.utils.customData
-import foo.starred.athen.utils.id
 import foo.starred.kbus.extensions.runWhen
 import foo.starred.nebulune.utils.rightClick
 import foo.starred.kontext.abstraction.client.extension.boundKey
@@ -15,8 +13,11 @@ import foo.starred.kontext.abstraction.client.extension.client
 import foo.starred.kontext.api.scheduling.scheduler.extensions.clientTicks
 import foo.starred.kontext.api.scheduling.scheduler.extensions.start
 import net.minecraft.client.KeyMapping
+import net.minecraft.core.component.DataComponents
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.item.ItemStack
+import tech.thatgravyboat.skyblockapi.api.datatype.DataTypes
+import tech.thatgravyboat.skyblockapi.api.datatype.getData
 //? if >= 26.3 {
 /*import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.item.component.SwingAnimation
@@ -35,7 +36,7 @@ object EtherwarpHelper : Module(
     private val ints = intArrayOf(2, 3, 4)
 
     fun ItemStack.etherwarp(): Boolean {
-        return customData()?.getBoolean("ethermerge")?.orElse(false) == true || id() == "ETHERWARP_CONDUIT"
+        return get(DataComponents.CUSTOM_DATA)?.copyTag()?.getBoolean("ethermerge")?.orElse(false) == true || getData(DataTypes.ID) == "ETHERWARP_CONDUIT"
     }
 
     init {

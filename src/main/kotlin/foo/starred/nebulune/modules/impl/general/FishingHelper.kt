@@ -8,17 +8,15 @@ import foo.starred.athen.api.scheduling.Scheduler
 import foo.starred.athen.config.dsl.impl.category.ConfigCategory
 import foo.starred.athen.events.EntityEvent
 import foo.starred.athen.modules.Module
-import foo.starred.athen.utils.customData
-import foo.starred.athen.utils.id
 import foo.starred.nebulune.utils.rightClick
 import foo.starred.kontext.abstraction.client.extension.client
 import foo.starred.kontext.api.format.extension.string.stripped
 import foo.starred.kontext.api.scheduling.scheduler.extensions.clientTicks
 import foo.starred.kontext.api.scheduling.scheduler.extensions.start
-import net.minecraft.client.player.LocalPlayer
 import net.minecraft.world.entity.projectile.FishingHook
-import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
+import tech.thatgravyboat.skyblockapi.api.datatype.DataTypes
+import tech.thatgravyboat.skyblockapi.api.datatype.getData
 
 @LoadableAthenModule
 @AthenModuleScope(skyblock = true)
@@ -44,7 +42,7 @@ object FishingHelper : Module(
             val e = entity as? FishingHook ?: return@on
             if (e.owner != client.player) return@on
             val p = client.player ?: return@on
-            if (p.mainHandItem.id() == "SOUL_WHIP" || p.mainHandItem.id() == "FLAMING_FLAY") return@on
+            if (p.mainHandItem.getData(DataTypes.ID) in setOf("SOUL_WHIP", "FLAMING_FLAY")) return@on
             bobber = e
         }
 

@@ -2,7 +2,7 @@
 
 A **QoL addon for Athen**, featuring additional features and functionality beyond standard QoL.
 
-NOTE: You will need Athen installed for Nebulune to work.
+NOTE: Nebulune 0.4.2 requires Athen 0.4.2 or newer and supports Minecraft 26.1.x, 26.2.x, and 26.3.x. Install the Athen jar matching your Minecraft version.
 Get Athen at: https://modrinth.com/mod/athen
 
 ---

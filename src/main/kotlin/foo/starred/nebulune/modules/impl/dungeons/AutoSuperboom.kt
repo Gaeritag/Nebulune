@@ -19,6 +19,7 @@ import foo.starred.kontext.abstraction.chat.message.MinecraftMessages
 import foo.starred.kontext.abstraction.client.extension.client
 import foo.starred.kontext.api.scheduling.scheduler.extensions.clientTicks
 import foo.starred.kontext.api.scheduling.scheduler.extensions.start
+import foo.starred.kontext.api.storage.impl.generic.extension.mutableSet
 import foo.starred.kontext.api.text.parser.impl.parse
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.resources.Identifier
